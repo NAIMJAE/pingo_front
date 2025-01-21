@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_font/theme/text_theme.dart';
 import 'package:pingo_font/theme/theme.dart';
 
 class MainPage extends StatelessWidget {
