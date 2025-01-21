@@ -23,7 +23,7 @@ class MainPage extends StatelessWidget {
 
             // 0xFF009990 0xFF15B392 0xFF73EC8B 0xFF48CFCB 0xFF9DDE8B 0xFF64CCC5
             Text('Color',
-                style: TextStyle(color: Color(0xFF009990), fontSize: 30)),
+                style: TextStyle(color: Color(0xFFF1D3CE), fontSize: 30)),
             Text('Color',
                 style: TextStyle(color: Color(0xFF15B392), fontSize: 30)),
             Text('Color',
