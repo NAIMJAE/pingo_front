@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_font/models/keyword_model/keyword_category.dart';
-import 'package:pingo_font/models/keyword_model/keyword_group.dart';
+import 'package:pingo_front/models/keyword_model/keyword_category.dart';
+import 'package:pingo_front/models/keyword_model/keyword_group.dart';
 
 class KeywordPage extends StatefulWidget {
   const KeywordPage({super.key});

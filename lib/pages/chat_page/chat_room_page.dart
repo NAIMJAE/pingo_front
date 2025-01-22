@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_font/pages/chat_page/components/chat_room_body.dart';
+import 'package:pingo_front/pages/chat_page/components/chat_room_body.dart';
 
 class ChatRoomPage extends StatelessWidget {
   final String chatRoomName;

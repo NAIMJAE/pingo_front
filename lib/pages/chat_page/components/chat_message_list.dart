@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_font/pages/chat_page/chat_room_page.dart';
+import 'package:pingo_front/pages/chat_page/chat_room_page.dart';
 
 class ChatMessageList extends StatefulWidget {
   const ChatMessageList({super.key});
