@@ -1,4 +1,4 @@
-package com.pingo.pingo_font;
+package com.pingo.pingo_front;
 
 import io.flutter.embedding.android.FlutterActivity;
 

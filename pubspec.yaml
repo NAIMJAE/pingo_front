@@ -1,5 +1,5 @@
-name: pingo_font
-description: "pingo_font"
+name: pingo_front
+description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -86,8 +86,6 @@ flutter:
         - asset: assets/fonts/NanumSquareNeoOTF-Bd.otf
         - asset: assets/fonts/NanumSquareNeoOTF-Eb.otf
         - asset: assets/fonts/NanumSquareNeoOTF-Hv.otf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
