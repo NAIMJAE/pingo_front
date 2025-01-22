@@ -24,34 +24,46 @@ enum MessageType { text, image, sticker }
 // viewModel
 final List<Message> messages = [
   Message(
-    content: "받아주세용",
+    content:
+        "받아주세용dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    isMe: false,
+    timestamp: DateTime.now(),
+    type: MessageType.text,
+    readCount: 1,
+    profileImageUrl: 'https://picsum.photos/250/250',
+  ),
+  Message(
+    content: "받아주세용ddddddddddddddddddd",
     isMe: true,
     timestamp: DateTime.now(),
     type: MessageType.text,
     readCount: 1,
-    profileImageUrl: 'sdadf',
+    profileImageUrl: 'https://picsum.photos/250/250',
   ),
 ];
 // 메서드 추가로 빼기
 
-class ChatMsgBody extends StatefulWidget {
-  const ChatMsgBody({super.key});
+class ChatRoomBody extends StatefulWidget {
+  const ChatRoomBody({super.key});
 
   @override
-  State<ChatMsgBody> createState() => _ChatMsgBodyState();
+  State<ChatRoomBody> createState() => _ChatRoomBodyState();
 }
 
-class _ChatMsgBodyState extends State<ChatMsgBody> {
+class _ChatRoomBodyState extends State<ChatRoomBody> {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ListView.builder(
-          itemCount: messages.length,
-          itemBuilder: (context, index) {
-            final message = messages[index];
-          },
-        )
+        Expanded(
+          child: ListView.builder(
+            itemCount: messages.length,
+            itemBuilder: (context, index) {
+              final message = messages[index];
+              return _buildeMessageItem(message);
+            },
+          ),
+        ),
       ],
     );
   }
@@ -63,21 +75,50 @@ Widget _buildeMessageItem(Message message) {
     child: Container(
       margin: EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        crossAxisAlignment:
-            message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisAlignment:
+            message.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Visibility(
-            visible: !message.isMe,
-            child: CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage(message.profileImageUrl),
-            ),
+          if (!message.isMe)
+            CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(message.profileImageUrl)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            // 정렬 변경
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SizedBox(width: 5),
+              Container(
+                constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: message.isMe ? Colors.blue : Colors.grey[300],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  message.content,
+                  style: TextStyle(
+                    color: message.isMe ? Colors.white : Colors.black,
+                  ),
+                ),
+              ),
+              SizedBox(width: 5),
+              _buildRead(message),
+            ],
           ),
-          Container(
-            decoration: BoxDecoration(color: Colors.green),
-          )
         ],
       ),
     ),
+  );
+}
+
+Widget _buildRead(Message message) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Text('11'),
+      Text('14:22'),
+    ],
   );
 }

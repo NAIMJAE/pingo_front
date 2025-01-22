@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pingo_font/pages/chat_page/chat_room_page.dart';
 
 class ChatMessageList extends StatefulWidget {
   const ChatMessageList({super.key});
@@ -28,6 +29,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
           SizedBox(height: 10),
           ...List.generate(20, (index) {
             return _chatList(
+              context,
               'https://picsum.photos/250/250',
               'User $index',
               'Message $index',
@@ -39,18 +41,23 @@ class _ChatMessageListState extends State<ChatMessageList> {
   }
 }
 
-Widget _chatList(String imgUrl, String chatName, String chatMsg) {
+Widget _chatList(
+    BuildContext context, String imgUrl, String chatName, String chatMsg) {
   return ListTile(
-    contentPadding: EdgeInsets.symmetric(horizontal: 4.0),
-    leading: CircleAvatar(
-      backgroundImage: NetworkImage(imgUrl),
-      radius: 28, // 기본 크기 설정
-    ),
-    title: Text(chatName),
-    subtitle: Text(chatMsg),
-    trailing: Icon(Icons.play_arrow),
-    onTap: () {
-      print('Tapped on $chatName');
-    },
-  );
+      contentPadding: EdgeInsets.symmetric(horizontal: 4.0),
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(imgUrl),
+        radius: 28, // 기본 크기 설정
+      ),
+      title: Text(chatName),
+      subtitle: Text(chatMsg),
+      trailing: Icon(Icons.play_arrow),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatRoomPage(chatRoomName: chatName),
+          ),
+        );
+      });
 }
