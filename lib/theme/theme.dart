@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 TextStyle pingTextStyle(double fontSize,
     {FontWeight fontWeight = FontWeight.normal, required Color mColor}) {
   return TextStyle(
-    fontFamily: 'GamTan',
+    fontFamily: 'Neo',
     fontSize: fontSize,
     fontWeight: fontWeight,
     color: mColor,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_font/models/keyword_model/keyword_cate.dart';
+import 'package:pingo_font/models/keyword_model/keyword_category.dart';
+import 'package:pingo_font/models/keyword_model/keyword_group.dart';
 
 class KeywordPage extends StatefulWidget {
   const KeywordPage({super.key});
@@ -11,73 +12,73 @@ class KeywordPage extends StatefulWidget {
 class _KeywordPageState extends State<KeywordPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  List<KeywordCate> cateList = [];
+  List<KeywordCategory> categoryList = [];
+  List<KeywordGroup> groupList = [];
 
   @override
   void initState() {
     super.initState();
-    cateList = keywordCateList;
-    _tabController = TabController(length: cateList.length, vsync: this);
+    categoryList = kCategoryList;
+    groupList = KGroupList;
+    _tabController = TabController(length: categoryList.length, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: ListView(
         children: [
-          TabBar(
-            padding: EdgeInsets.zero,
-            controller: _tabController,
-            tabs: [
-              ...List.generate(
-                cateList.length,
-                (index) => _keywordTab(cateList[index].keywordCateName),
-              ),
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                ...List.generate(
-                  cateList.length,
-                  (index) => _keywordTabView(),
-                )
-              ],
-            ),
+          ...List.generate(
+            categoryList.length,
+            (index) => _keywordBox(categoryList[index], groupList),
           )
         ],
       ),
     );
   }
 
-  Widget _keywordTab(text) {
-    return Tab(
-      child: Text(text, style: Theme.of(context).textTheme.headlineMedium),
+  Widget _keywordBox(KeywordCategory kCategory, List<KeywordGroup> groupList) {
+    List<KeywordGroup> filteredList = groupList
+        .where((group) => group.kCategoryId == kCategory.kCategoryId)
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(kCategory.kCategoryName,
+              style: Theme.of(context).textTheme.displayMedium),
+        ),
+        SizedBox(
+          height: 200,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              ...List.generate(
+                filteredList.length,
+                (index) => _keywordCard(filteredList[index]),
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _keywordTabView() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Wrap(
-        spacing: 8.0,
-        children: [
-          box(),
-          box(),
-          box(),
-        ],
-      ),
-    );
-  }
-
-  Widget box() {
+  Widget _keywordCard(KeywordGroup kGroup) {
     return Container(
-      width: 100,
-      height: 100,
+      margin: EdgeInsets.symmetric(horizontal: 16.0),
+      width: 400,
       decoration: BoxDecoration(
-        color: Colors.green,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadiusDirectional.circular(20),
+        color: Colors.deepPurpleAccent,
+      ),
+      child: Column(
+        children: [
+          Text(kGroup.kGroupName,
+              style: Theme.of(context).textTheme.displaySmall)
+        ],
       ),
     );
   }

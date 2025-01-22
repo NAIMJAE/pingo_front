@@ -79,11 +79,13 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: GamTan
+    - family: Neo
       fonts:
-        - asset: assets/fonts/감탄로드돋움체 Bold.otf
-        - asset: assets/fonts/감탄로드돋움체 Regular.otf
-        - asset: assets/fonts/감탄로드돋움체 Thin.otf
+        - asset: assets/fonts/NanumSquareNeoOTF-Rg.otf
+        - asset: assets/fonts/NanumSquareNeoOTF-Lt.otf
+        - asset: assets/fonts/NanumSquareNeoOTF-Bd.otf
+        - asset: assets/fonts/NanumSquareNeoOTF-Eb.otf
+        - asset: assets/fonts/NanumSquareNeoOTF-Hv.otf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
