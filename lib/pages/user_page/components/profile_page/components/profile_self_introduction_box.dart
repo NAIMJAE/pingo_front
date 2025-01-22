@@ -18,7 +18,7 @@ class ProfileSelfIntroductionBox extends StatelessWidget {
               '자기소개',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 8.0),
+            const SizedBox(height: 4.0),
             TextField(
               maxLines: 5, // 여러 줄 입력 가능
               maxLength: 1000, // 최대 1000자 입력 가능
