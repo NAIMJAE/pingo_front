@@ -4,7 +4,7 @@ AppBar CommonAppBar() {
   return AppBar(
     title: Row(
       children: [
-        Image.asset('assets/images/cc.PNG', width: 40),
+        Image.asset('assets/images/pingo3.png', width: 40),
         Text(
           'Pingo',
           style: TextStyle(fontSize: 30, color: Colors.white),
