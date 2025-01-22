@@ -12,7 +12,13 @@ class ChatPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(
-          children: [],
+          children: [
+            ChatSearchHeader(),
+            SizedBox(height: 12),
+            ChatMatch(),
+            SizedBox(height: 12),
+            ChatMessageList(),
+          ],
         ),
       ),
     );

@@ -8,7 +8,7 @@ class ChatSearchHeader extends StatefulWidget {
 }
 
 class _ChatSearchHeaderState extends State<ChatSearchHeader> {
-  final search = TextEditingController();
+  TextEditingController search = TextEditingController();
   final scroll = ScrollController();
 
   @override
@@ -33,7 +33,7 @@ class _ChatSearchHeaderState extends State<ChatSearchHeader> {
                 await Future.delayed(Duration(seconds: 2));
                 scroll.jumpTo(scroll.position.maxScrollExtent);
               },
-              controller: search,
+              controller: search, // 키보드의 서치버튼 클릭시 clear 처리
               decoration: InputDecoration(
                 focusedBorder: InputBorder.none,
                 // border: InputBorder.none, // 기본 테두리 제거

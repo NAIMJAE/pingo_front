@@ -22,20 +22,24 @@ class ChatMatch extends StatelessWidget {
         SizedBox(height: 8),
         SizedBox(
           height: 150,
-          child: ListView.builder(
+          child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            itemCount: 5, // index 받아와서 넣어줘야함
-            itemBuilder: (context, index) {
-              return NewMatchItem(
-                imageUrl: 'https://picsum.photos/250/250', // 실제 이미지 URL
-                name: 'ㅇㄱㅇ', // 실제 이름
-                connection: true,
-                onTap: () {
-                  print('클릭했음');
-                  // 매치 클릭 처리 -> 클릭했을 때 채팅방으로 이동
+            child: Row(
+              children: List.generate(
+                10,
+                (index) {
+                  return NewMatchItem(
+                    imageUrl: 'https://picsum.photos/250/250', // 실제 이미지 URL
+                    name: 'ㅇㄱㅇ', // 실제 이름
+                    connection: true,
+                    onTap: () {
+                      print('클릭했음');
+                      // 매치 클릭 처리 -> 클릭했을 때 채팅방으로 이동
+                    },
+                  );
                 },
-              );
-            },
+              ),
+            ),
           ),
         ),
       ],
