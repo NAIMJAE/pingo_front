@@ -16,12 +16,13 @@ class ProfileSelfIntroductionBox extends StatelessWidget {
           children: [
             Text(
               '자기소개',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 4.0),
             TextField(
-              maxLines: 5, // 여러 줄 입력 가능
-              maxLength: 1000, // 최대 1000자 입력 가능
+              maxLines: 5,
+              maxLength: 1000,
+              keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 border: OutlineInputBorder(), // 테두리 스타일
                 hintText: '자기소개를 입력하세요', // 힌트 텍스트
