@@ -13,14 +13,12 @@ class KeywordPage extends StatefulWidget {
 class _KeywordPageState extends State<KeywordPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  List<KeywordCategory> categoryList = [];
   List<KeywordGroup> groupList = [];
 
   @override
   void initState() {
     super.initState();
-    categoryList = kCategoryList;
-    groupList = KGroupList;
+
     _tabController = TabController(length: categoryList.length, vsync: this);
   }
 
