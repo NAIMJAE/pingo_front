@@ -9,7 +9,9 @@ AppBar ProfileAppBar(context) {
     scrolledUnderElevation: 0,
     title: Text(
       '프로필',
-      style: Theme.of(context).textTheme.headlineMedium,
+      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
     ),
     centerTitle: true,
     actions: [
