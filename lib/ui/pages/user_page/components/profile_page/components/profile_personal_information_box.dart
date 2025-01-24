@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'jop_page/first_job_select_page.dart';
+import 'jop_page/second_job_select_page.dart';
+
 class ProfilePersonalInformationBox extends StatelessWidget {
   ProfilePersonalInformationBox({Key? key}) : super(key: key);
 
@@ -38,13 +41,13 @@ class ProfilePersonalInformationBox extends StatelessWidget {
               children: [
                 _buildPersonalInfoElement(
                   context,
-                  '거주지',
-                  _buildAddressInfo(context),
+                  '1차 직종',
+                  _build1stJobInfo(context),
                 ),
                 _buildPersonalInfoElement(
                   context,
-                  '직종',
-                  _buildJobInfo(context),
+                  '2차 직종',
+                  _build2ndJobInfo(context),
                 ),
               ],
             ),
@@ -52,13 +55,27 @@ class ProfilePersonalInformationBox extends StatelessWidget {
               children: [
                 _buildPersonalInfoElement(
                   context,
+                  '거주지',
+                  _buildAddressInfo(context),
+                ),
+                _buildPersonalInfoElement(
+                  context,
                   '종교',
                   _buildReligionInfo(context),
                 ),
+              ],
+            ),
+            Row(
+              children: [
                 _buildPersonalInfoElement(
                   context,
                   '흡연여부',
                   _buildSmokingInfo(context),
+                ),
+                _buildPersonalInfoElement(
+                  context,
+                  '음주여부',
+                  _buildDrinkingInfo(context),
                 ),
               ],
             ),
@@ -168,21 +185,78 @@ class ProfilePersonalInformationBox extends StatelessWidget {
     }
   }
 
+  // 직종
+  // 상태 관리용 Notifier
+  final ValueNotifier<String?> firstJobNotifier = ValueNotifier(null);
+  // 1차 직종 정보
+  Widget _build1stJobInfo(context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FirstJobSelectPage(
+              onJobSelected: (selectedJob) {
+                firstJobNotifier.value = selectedJob; // 선택한 직종 업데이트
+              },
+            ),
+          ),
+        );
+      },
+      child: ValueListenableBuilder<String?>(
+        valueListenable: firstJobNotifier,
+        builder: (context, selectedJob, child) {
+          return Text(
+            selectedJob ?? '1차 직종을 선택하세요',
+            style: Theme.of(context).textTheme.titleLarge,
+          );
+        },
+      ),
+    );
+  }
+
+  // 상태 관리용 Notifier
+  final ValueNotifier<String?> secondJobNotifier = ValueNotifier(null);
+  // 2차 직종 정보
+  Widget _build2ndJobInfo(context) {
+    return GestureDetector(
+      onTap: () {
+        if (firstJobNotifier.value != null) {
+          // 1차 직종이 선택된 경우에만
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SecondJobSelectPage(
+                firstJob: firstJobNotifier.value!,
+                onSubJobSelected: (selectedSubJob) {
+                  secondJobNotifier.value = selectedSubJob; // 선택한 2차 직종 업데이트
+                },
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('먼저 1차 직종을 선택하세요.')),
+          );
+        }
+      },
+      child: ValueListenableBuilder<String?>(
+        valueListenable: secondJobNotifier,
+        builder: (context, selectedSubJob, child) {
+          return Text(
+            selectedSubJob ?? '2차 직종을 선택하세요',
+            style: Theme.of(context).textTheme.titleLarge,
+          );
+        },
+      ),
+    );
+  }
+
   // 거주지
   Widget _buildAddressInfo(context) {
     return Container(
       child: Text(
         '주소',
-        style: Theme.of(context).textTheme.titleLarge,
-      ),
-    );
-  }
-
-  // 직종
-  Widget _buildJobInfo(context) {
-    return Container(
-      child: Text(
-        '직업',
         style: Theme.of(context).textTheme.titleLarge,
       ),
     );
@@ -203,6 +277,16 @@ class ProfilePersonalInformationBox extends StatelessWidget {
     return Container(
       child: Text(
         '흡연여부',
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+    );
+  }
+
+  // 음주여부
+  Widget _buildDrinkingInfo(context) {
+    return Container(
+      child: Text(
+        '음주여부',
         style: Theme.of(context).textTheme.titleLarge,
       ),
     );
