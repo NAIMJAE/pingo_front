@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../data/models/user_model/mypage_menu.dart';
 import 'components/myinfo_box.dart';
 import 'components/mypage_box.dart';
-import '../../models/user_model/mypage_menu.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/pages/chat_page/chat_room_page.dart';
+
+import '../chat_room_page.dart';
 
 class ChatMessageList extends StatefulWidget {
   const ChatMessageList({super.key});
@@ -19,7 +20,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
           Padding(
             padding: const EdgeInsets.all(4.0), // 페이지 좌우 여백
             child: Text(
-              '새 매치',
+              '나의 채팅',
               style: TextStyle(
                 fontSize: 12, // 크기 수정
                 fontWeight: FontWeight.bold,
@@ -61,3 +62,5 @@ Widget _chatList(
         );
       });
 }
+
+// 모델

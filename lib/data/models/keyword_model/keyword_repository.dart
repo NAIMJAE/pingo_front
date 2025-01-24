@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:pingo_front/commons/utils/logger.dart';
-import 'package:pingo_front/models/keyword_model/keyword_group.dart';
-import 'package:pingo_front/models/response_dto.dart';
+
+import '../../../_core/utils/logger.dart';
+import 'keyword_group.dart';
 
 class KeywordRepository {
   final Dio _dio = Dio();

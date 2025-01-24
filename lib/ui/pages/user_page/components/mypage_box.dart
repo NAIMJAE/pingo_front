@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../models/user_model/mypage_menu.dart';
+
+import '../../../../data/models/user_model/mypage_menu.dart';
 
 class MypageBox extends StatelessWidget {
   final List<MypageMenu> myPageMenuList;

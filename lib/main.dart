@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/pages/sign_page/sign_in_page.dart';
-import 'pages/main_screen.dart';
-import 'theme/theme.dart';
+
+import '_core/theme/theme.dart';
+import 'ui/pages/main_screen.dart';
 
 void main() {
   runApp(const PingoApp());

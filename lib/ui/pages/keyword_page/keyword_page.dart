@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/commons/utils/logger.dart';
-import 'package:pingo_front/models/keyword_model/keyword.dart';
-import 'package:pingo_front/models/keyword_model/keyword_group.dart';
+
+import '../../../_core/utils/logger.dart';
+import '../../../data/models/keyword_model/keyword.dart';
+import '../../../data/models/keyword_model/keyword_group.dart';
 
 class KeywordPage extends StatefulWidget {
   const KeywordPage({super.key});
@@ -22,17 +23,17 @@ class _KeywordPageState extends State<KeywordPage>
     groupList = [
       KeywordGroup(kwId: 'kc01', kwName: '성격', kwMessage: null, childKeyword: [
         Keyword(
-            kwId: 'cg11',
+            kwId: 'kg11',
             kwName: '외향',
             kwParentId: 'kc01',
             kwMessage: '외향적인 사람'),
         Keyword(
-            kwId: 'cg12',
+            kwId: 'kg12',
             kwName: '내향',
             kwParentId: 'kc01',
             kwMessage: '내향적인 사람'),
         Keyword(
-            kwId: 'cg13',
+            kwId: 'kg13',
             kwName: '분석',
             kwParentId: 'kc01',
             kwMessage: '분석적인 사람')

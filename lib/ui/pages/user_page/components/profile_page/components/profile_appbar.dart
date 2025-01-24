@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../components/common_appbar_line.dart';
+import '../../../../../widgets/common_appbar_line.dart';
 
 AppBar ProfileAppBar(context) {
   return AppBar(
