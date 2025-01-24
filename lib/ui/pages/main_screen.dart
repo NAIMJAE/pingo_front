@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../components/common_appbar.dart';
+import '../widgets/common_appbar.dart';
 import 'chat_page/chat_page.dart';
 import 'keyword_page/keyword_page.dart';
 import 'main_page/main_page.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/pages/sign_page/sign_in_page.dart';
+
+import '../sign_in_page.dart';
 
 class SignUpPage extends StatelessWidget {
   SignUpPage({super.key});

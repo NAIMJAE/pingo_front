@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/models/main-model/profile.dart';
-import 'package:pingo_front/pages/main_page/components/CircleButtons.dart';
 import 'package:flutter/cupertino.dart';
+
+import '../../../data/models/main-model/profile.dart';
+import 'components/CircleButtons.dart';
 
 // 변경 필요한 페이지라 stf
 class MainPage extends StatefulWidget {

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/pages/chat_page/components/chat_match.dart';
-import 'package:pingo_front/pages/chat_page/components/chat_message_list.dart';
-import 'package:pingo_front/pages/chat_page/components/chat_search_header.dart';
+
+import 'components/chat_match.dart';
+import 'components/chat_message_list.dart';
+import 'components/chat_search_header.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});

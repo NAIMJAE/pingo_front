@@ -47,6 +47,7 @@ class ChatMatch extends StatelessWidget {
   }
 }
 
+// model
 class NewMatchItem extends StatelessWidget {
   final String imageUrl;
   final String name;

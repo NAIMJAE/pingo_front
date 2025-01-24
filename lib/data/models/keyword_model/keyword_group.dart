@@ -1,4 +1,4 @@
-import 'package:pingo_front/models/keyword_model/keyword.dart';
+import 'keyword.dart';
 
 class KeywordGroup {
   String? kwId;
