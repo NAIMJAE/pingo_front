@@ -155,12 +155,6 @@ class _MainPageState extends State<MainPage> {
               color: Colors.green,
               size: 70,
             ),
-            // 부스터 버튼
-            CircleButton(
-              icon: CupertinoIcons.paperplane_fill,
-              color: Colors.purple,
-              size: 60,
-            ),
           ],
         ),
       ),
