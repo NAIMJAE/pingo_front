@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '_core/theme/theme.dart';
 import 'ui/pages/main_screen.dart';
 
 void main() {
-  runApp(const PingoApp());
+  runApp(ProviderScope(child: PingoApp()));
 }
 
 class PingoApp extends StatefulWidget {

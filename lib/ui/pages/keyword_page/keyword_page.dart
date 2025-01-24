@@ -1,62 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/data/model_views/keyword_view_model/keyword_view_model.dart';
 
 import '../../../_core/utils/logger.dart';
 import '../../../data/models/keyword_model/keyword.dart';
 import '../../../data/models/keyword_model/keyword_group.dart';
 
-class KeywordPage extends StatefulWidget {
+class KeywordPage extends ConsumerStatefulWidget {
   const KeywordPage({super.key});
 
   @override
-  State<KeywordPage> createState() => _KeywordPageState();
+  ConsumerState<KeywordPage> createState() => _KeywordPageState();
 }
 
-class _KeywordPageState extends State<KeywordPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  List<KeywordGroup> groupList = [];
-
+class _KeywordPageState extends ConsumerState<KeywordPage> {
   @override
   void initState() {
     super.initState();
-
-    groupList = [
-      KeywordGroup(kwId: 'kc01', kwName: '성격', kwMessage: null, childKeyword: [
-        Keyword(
-            kwId: 'kg11',
-            kwName: '외향',
-            kwParentId: 'kc01',
-            kwMessage: '외향적인 사람'),
-        Keyword(
-            kwId: 'kg12',
-            kwName: '내향',
-            kwParentId: 'kc01',
-            kwMessage: '내향적인 사람'),
-        Keyword(
-            kwId: 'kg13',
-            kwName: '분석',
-            kwParentId: 'kc01',
-            kwMessage: '분석적인 사람')
-      ]),
-    ];
-    _tabController = TabController(length: groupList.length, vsync: this);
+    ref.read(KeywordViewModelProvider.notifier).fetchKeywords();
   }
 
   @override
   Widget build(BuildContext context) {
+    final groupList = ref.watch(KeywordViewModelProvider);
+    final kGNotifier = ref.read(KeywordViewModelProvider.notifier);
+
     return Scaffold(
       body: ListView(
-        children: [
-          ...List.generate(
-            groupList.length,
-            (index) => _keywordBox(groupList[index]),
-          )
-        ],
+        children: groupList.entries.map((entry) {
+          final key = entry.key;
+          final keywordGroup = entry.value;
+          return _keywordBox(context, keywordGroup);
+        }).toList(),
       ),
     );
   }
 
-  Widget _keywordBox(KeywordGroup keywordGroup) {
+  // 키워드 그룹 List UI
+  Widget _keywordBox(BuildContext buildContext, KeywordGroup keywordGroup) {
     List<Keyword> keywords = keywordGroup.childKeyword!;
 
     return Column(
@@ -65,7 +46,7 @@ class _KeywordPageState extends State<KeywordPage>
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(keywordGroup.kwName!,
-              style: Theme.of(context).textTheme.displaySmall),
+              style: Theme.of(buildContext).textTheme.displaySmall),
         ),
         SizedBox(
           height: 200,
@@ -74,7 +55,7 @@ class _KeywordPageState extends State<KeywordPage>
             scrollDirection: Axis.horizontal,
             itemCount: keywords.length,
             itemBuilder: (context, index) {
-              return _keywordCard(keywords[index]);
+              return _keywordCard(buildContext, keywords[index]);
             },
           ),
         ),
@@ -82,7 +63,8 @@ class _KeywordPageState extends State<KeywordPage>
     );
   }
 
-  Widget _keywordCard(Keyword keyword) {
+  // 개별 키워드 카드 UI
+  Widget _keywordCard(BuildContext buildContext, Keyword keyword) {
     return GestureDetector(
       onTap: () {
         logger.d('${keyword.kwName} CLICK!');
@@ -108,13 +90,13 @@ class _KeywordPageState extends State<KeywordPage>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(keyword.kwName!,
-                  style: Theme.of(context)
+                  style: Theme.of(buildContext)
                       .textTheme
                       .displaySmall!
                       .copyWith(color: Colors.white)),
               Text(
                 keyword.kwMessage!,
-                style: Theme.of(context)
+                style: Theme.of(buildContext)
                     .textTheme
                     .headlineMedium!
                     .copyWith(color: Colors.white),
