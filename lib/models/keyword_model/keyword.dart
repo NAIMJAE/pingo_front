@@ -1,15 +1,18 @@
 class Keyword {
-  String keywordId;
-  String keywordName;
-  String kGroupId;
+  String? kwId;
+  String? kwName;
+  String? kwParentId;
+  String? kwMessage;
 
   Keyword(
-      {required this.keywordId,
-      required this.keywordName,
-      required this.kGroupId});
+      {required this.kwId,
+      required this.kwName,
+      required this.kwParentId,
+      required this.kwMessage});
 
-  @override
-  String toString() {
-    return 'keyword{keywordId: $keywordId, keywordName: $keywordName, kGroupId: $kGroupId}';
-  }
+  Keyword.fromJson(Map<String, dynamic> json)
+      : kwId = json['kwId'],
+        kwName = json['kwName'],
+        kwParentId = json['kwParentId'],
+        kwMessage = json['kwMessage'];
 }
