@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:pingo_front/commons/utils/logger.dart';
 import 'package:pingo_front/models/keyword_model/keyword_group.dart';
 import 'package:pingo_front/models/response_dto.dart';
 
@@ -13,13 +14,15 @@ class KeywordRepository {
       final result = response.data;
 
       if (result['resultCode'] == '1') {
-        Map<String, KeywordGroup> aa;
-        Map<String, dynamic> bb = result['data'];
+        Map<String, KeywordGroup> keywordGroup = {};
+        Map<String, dynamic> data = result['data'];
 
-        // for문에서 bb를 돌려서
-        // KeywordGroup의 formjson을 호출
-        // KeywordGroup의 childKeyword에서 keyword의 fromjson 호출
-        // 마지막에 map에 put
+        logger.d(data);
+
+        for (var key in data.keys) {
+          keywordGroup.addAll({key: KeywordGroup.fromJson(data[key])});
+        }
+        logger.d(keywordGroup);
       }
     }
   }

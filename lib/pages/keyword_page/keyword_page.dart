@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pingo_front/commons/utils/logger.dart';
-import 'package:pingo_front/models/keyword_model/keyword_category.dart';
+import 'package:pingo_front/models/keyword_model/keyword.dart';
 import 'package:pingo_front/models/keyword_model/keyword_group.dart';
 
 class KeywordPage extends StatefulWidget {
@@ -19,7 +19,26 @@ class _KeywordPageState extends State<KeywordPage>
   void initState() {
     super.initState();
 
-    _tabController = TabController(length: categoryList.length, vsync: this);
+    groupList = [
+      KeywordGroup(kwId: 'kc01', kwName: '성격', kwMessage: null, childKeyword: [
+        Keyword(
+            kwId: 'cg11',
+            kwName: '외향',
+            kwParentId: 'kc01',
+            kwMessage: '외향적인 사람'),
+        Keyword(
+            kwId: 'cg12',
+            kwName: '내향',
+            kwParentId: 'kc01',
+            kwMessage: '내향적인 사람'),
+        Keyword(
+            kwId: 'cg13',
+            kwName: '분석',
+            kwParentId: 'kc01',
+            kwMessage: '분석적인 사람')
+      ]),
+    ];
+    _tabController = TabController(length: groupList.length, vsync: this);
   }
 
   @override
@@ -28,25 +47,23 @@ class _KeywordPageState extends State<KeywordPage>
       body: ListView(
         children: [
           ...List.generate(
-            categoryList.length,
-            (index) => _keywordBox(categoryList[index], groupList),
+            groupList.length,
+            (index) => _keywordBox(groupList[index]),
           )
         ],
       ),
     );
   }
 
-  Widget _keywordBox(KeywordCategory kCategory, List<KeywordGroup> groupList) {
-    List<KeywordGroup> filteredList = groupList
-        .where((group) => group.kCategoryId == kCategory.kCategoryId)
-        .toList();
+  Widget _keywordBox(KeywordGroup keywordGroup) {
+    List<Keyword> keywords = keywordGroup.childKeyword!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text(kCategory.kCategoryName,
+          child: Text(keywordGroup.kwName!,
               style: Theme.of(context).textTheme.displaySmall),
         ),
         SizedBox(
@@ -54,9 +71,9 @@ class _KeywordPageState extends State<KeywordPage>
           child: ListView.builder(
             cacheExtent: 2500,
             scrollDirection: Axis.horizontal,
-            itemCount: filteredList.length,
+            itemCount: keywords.length,
             itemBuilder: (context, index) {
-              return _keywordCard(filteredList[index]);
+              return _keywordCard(keywords[index]);
             },
           ),
         ),
@@ -64,10 +81,10 @@ class _KeywordPageState extends State<KeywordPage>
     );
   }
 
-  Widget _keywordCard(KeywordGroup kGroup) {
+  Widget _keywordCard(Keyword keyword) {
     return GestureDetector(
       onTap: () {
-        logger.d('${kGroup.kGroupName} CLICK!');
+        logger.d('${keyword.kwName} CLICK!');
       },
       child: Container(
         margin: EdgeInsets.only(left: 16.0, bottom: 8.0),
@@ -75,8 +92,8 @@ class _KeywordPageState extends State<KeywordPage>
         decoration: BoxDecoration(
           borderRadius: BorderRadiusDirectional.circular(20),
           image: DecorationImage(
-              image: AssetImage(
-                  'assets/images/keyword_page/${kGroup.kGroupId}.jpg'),
+              image:
+                  AssetImage('assets/images/keyword_page/${keyword.kwId}.jpg'),
               fit: BoxFit.cover),
         ),
         child: Container(
@@ -89,13 +106,13 @@ class _KeywordPageState extends State<KeywordPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(kGroup.kGroupName,
+              Text(keyword.kwName!,
                   style: Theme.of(context)
                       .textTheme
                       .displaySmall!
                       .copyWith(color: Colors.white)),
               Text(
-                kGroup.kGroupMessage,
+                keyword.kwMessage!,
                 style: Theme.of(context)
                     .textTheme
                     .headlineMedium!
