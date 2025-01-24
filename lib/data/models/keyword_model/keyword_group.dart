@@ -16,7 +16,7 @@ class KeywordGroup {
       : kwId = json['kwId'],
         kwName = json['kwName'],
         kwMessage = json['kwMessage'],
-        childKeyword = (json['childKeyword'] as List<Keyword>?)
+        childKeyword = (json['childKeyword'] as List<dynamic>?)
             ?.map((child) => Keyword.fromJson(child as Map<String, dynamic>))
             .toList();
 }
