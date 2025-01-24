@@ -10,7 +10,7 @@ final List<Map<String, String>> profiles = [
   {
     'image': 'assets/images/bb.png',
     'name': '정지현',
-    'age': '32',
+    'age': '12',
     'status': '미혼',
     'distance': '10km 거리에 있음',
   },
