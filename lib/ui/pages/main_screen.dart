@@ -4,7 +4,7 @@ import '../widgets/common_appbar.dart';
 import 'chat_page/chat_page.dart';
 import 'keyword_page/keyword_page.dart';
 import 'main_page/main_page.dart';
-import 'match_state_page/match_state_page.dart';
+import 'swipe_state_page/swipe_state_page.dart';
 import 'user_page/user_page.dart';
 
 class MainScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             MainPage(),
             KeywordPage(),
-            MatchStatePage(),
+            SwipeStatePage(),
             ChatPage(),
             UserPage(),
           ],

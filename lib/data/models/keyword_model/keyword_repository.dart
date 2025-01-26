@@ -1,30 +1,22 @@
 import 'package:dio/dio.dart';
 import 'package:pingo_front/data/models/response_dto.dart';
+import 'package:pingo_front/data/models/root_url.dart';
 
-import '../../../_core/utils/logger.dart';
 import 'keyword_group.dart';
 
+// 스프링 서버와 통신하는 repository
 class KeywordRepository {
   final Dio _dio = Dio();
-  final String _url = 'http://10.0.2.2:8080/pingo';
 
+  // localhost:8080/pingo/keyword로 http 통신
+  // 통신의 결과를 ResponseDTO.validation로 검증하고 알맞은 데이터 타입으로 매핑
   Future<Map<String, KeywordGroup>> fetchKeyword() async {
-    logger.d('fetchKeyword 시작');
-    final response = await _dio.get('$_url/keyword');
-
-    logger.d('1111');
-
+    final response = await _dio.get('$rootURL/keyword');
     Map<String, dynamic> data = ResponseDTO.validation(response.data);
-
-    logger.d('2222');
 
     Map<String, KeywordGroup> keywordGroup = {};
 
-    logger.d('3333');
-
     for (var key in data.keys) {
-      logger.d('key : ${key}');
-      logger.d('key : ${KeywordGroup.fromJson(data[key])}');
       keywordGroup.addAll({key: KeywordGroup.fromJson(data[key])});
     }
     return keywordGroup;

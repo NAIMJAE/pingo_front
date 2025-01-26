@@ -9,18 +9,16 @@ class KeywordViewModel extends Notifier<Map<String, KeywordGroup>> {
 
   @override
   Map<String, KeywordGroup> build() {
-    logger.d('build');
     return {};
   }
 
+  // repository를 실행시키는 메서드
+  // 실행 결과로 반환받은 데이터를 state에 저장
   Future<void> fetchKeywords() async {
     try {
       final keywordMap = await _repository.fetchKeyword();
-      // Map의 값만 리스트로 변환하여 상태 업데이트
       state = keywordMap;
-      logger.d(state);
     } catch (e) {
-      // 에러 발생 시 로그 추가 및 상태 초기화
       state = {};
       logger.e('Failed to fetch keywords: $e');
     }
