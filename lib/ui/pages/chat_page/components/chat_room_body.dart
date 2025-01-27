@@ -8,6 +8,7 @@ import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
 // consumer 처리하기.
 class ChatRoomBody extends ConsumerWidget {
   TextEditingController _messageController = TextEditingController();
+  final scroll = ScrollController();
 
   ChatRoomBody({super.key});
 
@@ -20,6 +21,8 @@ class ChatRoomBody extends ConsumerWidget {
       children: [
         Expanded(
           child: ListView.builder(
+            controller: scroll,
+            shrinkWrap: true,
             itemCount: messages.length,
             itemBuilder: (context, index) {
               final message = messages[index];
@@ -42,20 +45,24 @@ class ChatRoomBody extends ConsumerWidget {
                   profileImageUrl:
                       'https://picsum.photos/250/250', // 기본 프로필 이미지
                 );
-                logger.d('이거먼데 : ${defaultMessage.toString()}');
                 // 새 메시지 생성
                 final newMessage = defaultMessage.copyWith(
                   messageContent: _messageController.text, // 입력 필드에서 가져온 내용
                   fromId: '1', // 보낸 사람 ID (로그인한 사용자 ID)
                   messageTime: DateTime.now(), // 현재 시간
                 );
-                logger.d('이건 머나오는데 : ${newMessage.toString()}');
 
                 // 메시지 추가
                 messageNotifier.addMessage(newMessage);
 
                 // 입력 필드 초기화
                 _messageController.clear();
+                // 최하단으로 스크롤 내리려고하는데..
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (scroll.hasClients) {
+                    scroll.jumpTo(scroll.position.maxScrollExtent);
+                  }
+                });
               },
               icon: Icon(Icons.send),
             ),
