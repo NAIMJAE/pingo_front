@@ -92,16 +92,18 @@ class _MatchStatePageState extends ConsumerState<SwipeStatePage>
         spacing: 12.0,
         runSpacing: 12.0,
         children: [
-          ...List.generate(swipeDetailList.length,
-              (index) => _userInfoCard(cardWidth, swipeDetailList[index]))
+          ...List.generate(
+              swipeDetailList.length,
+              (index) => _userInfoCard(
+                  buildContext, cardWidth, swipeDetailList[index]))
         ],
       ),
     );
   }
 
-  Widget _userInfoCard(cardWidth, UserSwipeDetails swipeDetail) {
+  Widget _userInfoCard(
+      BuildContext buildContext, cardWidth, UserSwipeDetails swipeDetail) {
     return Container(
-      padding: EdgeInsets.all(12.0),
       width: cardWidth,
       height: 200,
       decoration: BoxDecoration(
@@ -111,18 +113,37 @@ class _MatchStatePageState extends ConsumerState<SwipeStatePage>
           fit: BoxFit.cover,
         ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            swipeDetail.userName!,
-            style: TextStyle(color: Colors.white),
+      child: Container(
+        padding: EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadiusDirectional.circular(10),
+          gradient: LinearGradient(
+            colors: [Color.fromRGBO(0, 0, 0, 0.5), Color.fromRGBO(0, 0, 0, 0)],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
           ),
-          Text(
-            '나이는 userInfo에서',
-            style: TextStyle(color: Colors.white),
-          ),
-        ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              swipeDetail.userName!,
+              style: Theme.of(buildContext)
+                  .textTheme
+                  .headlineLarge!
+                  .copyWith(color: Colors.white),
+            ),
+            const SizedBox(width: 8.0),
+            Text(
+              '27',
+              style: Theme.of(buildContext)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(color: Colors.white),
+            ),
+          ],
+        ),
       ),
     );
   }
