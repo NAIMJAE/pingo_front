@@ -27,7 +27,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CommonAppBar(),
+        appBar: CommonAppBar(context),
         body: IndexedStack(
           index: _selectedIndex,
           children: [

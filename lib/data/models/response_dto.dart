@@ -8,10 +8,10 @@ class ResponseDTO {
       // 성공
       return response['data'];
     } else if (resultCode == '2') {
-      // 실패 - 경우??
-      return null;
+      // 통신은 성공했지만 결과값이 성공이 아닌 경우
+      return response['data'];
     } else {
-      // 실패
+      // 통신 실패
       return null;
     }
   }
