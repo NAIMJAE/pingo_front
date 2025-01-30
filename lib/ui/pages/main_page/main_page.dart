@@ -1,121 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../data/models/main-model/profile.dart';
+import '../../../data/models/main-model/Profile.dart';
+import '../../../data/model_views/main_view_model/main_page_viewmodel.dart';
+import 'components/ProfileCard.dart';
 import 'components/CircleButtons.dart';
 
-// 변경 필요한 페이지라 stf
-class MainPage extends StatefulWidget {
+class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  ConsumerState<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
-  int currentIndex = 0; // 프로필 인덱스
-  final PageController _pageController =
-      PageController(viewportFraction: 0.85); // 애니메이션 처리
-
-  // 스와이프 동작 처리 메서드
-  void onSwipe(DragEndDetails details) {
-    final velocity = details.primaryVelocity;
-    if (velocity == null) return;
-
-    // 밑, 위 스와이프 및 기능 추가는 추후에정 틀만 만들어놓음
-    setState(() {
-      if (velocity > 0) {
-        // 오른쪽 스와이프 -> 싫어요
-        if (currentIndex > 0) currentIndex--;
-        print("싫어요!");
-      } else if (velocity < 0) {
-        // 왼쪽 스와이프 -> 좋아요
-        if (currentIndex < profiles.length - 1) currentIndex++;
-        print("좋아요!");
-      }
-    });
-  }
-
+class _MainPageState extends ConsumerState<MainPage>
+    with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    final profile = profiles[currentIndex];
+    final viewModel = ref.read(mainPageViewModelProvider(this).notifier);
+    final animationController = viewModel.animationController;
+    final currentIndex = ref.watch(mainPageViewModelProvider(this));
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: GestureDetector(
-        onHorizontalDragEnd: onSwipe,
-        child: PageView.builder(
-          controller: _pageController,
-          itemCount: profiles.length,
-          itemBuilder: (context, index) {
-            final profile = profiles[index];
+        onPanUpdate: viewModel.onPanUpdate,
+        onPanEnd: (_) => viewModel.onPanEnd(size),
+        child: AnimatedBuilder(
+          animation: animationController,
+          builder: (context, child) {
+            final offset = Offset(animationController.value * size.width,
+                viewModel.posY * size.height);
+
             return Stack(
               children: [
-                // 프로필 이미지
-                Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(profile['image']!),
-                      fit: BoxFit.cover,
-                    ),
+                Positioned(
+                  child: ProfileCard(
+                    profile: profiles[(currentIndex + 1) % profiles.length],
                   ),
                 ),
-                // 프로필 정보
-                Positioned(
-                  bottom: 100,
-                  left: 16,
-                  right: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '근처',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            '${profile['name']} ${profile['age']} ${profile['status']}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            CupertinoIcons.location_solid,
-                            color: Colors.white70,
-                            size: 16,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            profile['distance']!,
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Transform.translate(
+                    offset: offset,
+                    child: ProfileCard(
+                      profile: profiles[currentIndex],
+                    ),
                   ),
                 ),
               ],
@@ -123,46 +54,52 @@ class _MainPageState extends State<MainPage> {
           },
         ),
       ),
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 20),
+      bottomNavigationBar: _buildBottomNavigationBar(viewModel),
+    );
+  }
+
+  Widget _buildBottomNavigationBar(MainPageViewModel viewModel) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      color: Colors.black,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildAnimatedButton(Icons.replay, Colors.grey, -1,
+              viewModel.undoSwipe), // 🔄 되돌리기 버튼 추가
+          _buildAnimatedButton(
+              Icons.close, Colors.pink, 0, viewModel.onSwipeLeft),
+          _buildAnimatedButton(Icons.star, Colors.blue, 2, viewModel.onSwipeUp),
+          _buildAnimatedButton(
+              Icons.favorite, Colors.green, 1, viewModel.onSwipeRight),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnimatedButton(
+      IconData icon, Color color, int index, VoidCallback onTap) {
+    final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
+    final isHighlighted = viewModel.highlightedButton == index;
+
+    return GestureDetector(
+      onTap: () {
+        viewModel.highlightedButton = index;
+        onTap();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        width: isHighlighted ? 80 : 60, // 🔥 스와이프할 때도 버튼 크기 변경
+        height: isHighlighted ? 80 : 60,
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: color,
+          shape: BoxShape.circle,
+          boxShadow: isHighlighted
+              ? [BoxShadow(color: color.withOpacity(0.5), blurRadius: 20)]
+              : [],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // 재시도 버튼
-            CircleButton(
-              icon: Icons.replay,
-              color: Colors.grey,
-              size: 60,
-            ),
-            // 싫어요 버튼
-            CircleButton(
-              icon: Icons.close,
-              color: Colors.pink,
-              size: 70,
-            ),
-            // 슈퍼 좋아요 버튼
-            CircleButton(
-              icon: Icons.star,
-              color: Colors.blue,
-              size: 60,
-            ),
-            // 좋아요 버튼
-            CircleButton(
-              icon: Icons.favorite,
-              color: Colors.green,
-              size: 70,
-            ),
-            // 부스터 버튼
-            CircleButton(
-              icon: CupertinoIcons.paperplane_fill,
-              color: Colors.purple,
-              size: 60,
-            ),
-          ],
-        ),
+        child: Icon(icon, color: Colors.white, size: 35),
       ),
     );
   }
