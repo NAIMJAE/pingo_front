@@ -26,10 +26,10 @@ class SwipeStatePage extends ConsumerStatefulWidget {
   const SwipeStatePage({super.key});
 
   @override
-  ConsumerState<SwipeStatePage> createState() => _MatchStatePageState();
+  ConsumerState<SwipeStatePage> createState() => _SwipeStatePageState();
 }
 
-class _MatchStatePageState extends ConsumerState<SwipeStatePage>
+class _SwipeStatePageState extends ConsumerState<SwipeStatePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 

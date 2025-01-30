@@ -1,0 +1,227 @@
+import 'package:flutter/material.dart';
+
+// step3 회원 기본 정보 입력
+class UserBasicInfoStep extends StatefulWidget {
+  final Function nextStep;
+  final dynamic userData;
+  final dynamic signupNotifier;
+
+  const UserBasicInfoStep(this.nextStep, this.userData, this.signupNotifier,
+      {super.key});
+
+  @override
+  State<UserBasicInfoStep> createState() => _UserBasicInfoStepState();
+}
+
+class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
+  final TextEditingController _userNameController = TextEditingController();
+  final TextEditingController _userBirthController = TextEditingController();
+  String? _selectedGender;
+  final TextEditingController _userNickController = TextEditingController();
+  final TextEditingController _userAddressController = TextEditingController();
+
+  String information = '';
+
+  // 날짜 선택 함수
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _userBirthController.text =
+            "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+      });
+    }
+  }
+
+  // 입력한 회원 기본 정보 유효성 검증 함수
+  void checkValidation() async {
+    String userName = _userNameController.text.trim();
+    String userBirth = _userBirthController.text.trim();
+    String? userGender = _selectedGender;
+    String userNick = _userNickController.text.trim();
+    String userAddress = _userAddressController.text.trim();
+
+    if (userName.isEmpty ||
+        userBirth.isEmpty ||
+        userGender == null ||
+        userNick.isEmpty ||
+        userAddress.isEmpty) {
+      setState(() {
+        information = '모든 항목을 입력해주세요.';
+      });
+      return;
+    }
+
+    int result = await widget.signupNotifier.validationBasicInfo(
+        userName, userBirth, userGender, userNick, userAddress);
+
+    setState(() {
+      switch (result) {
+        case 1:
+          information = '이름은 2~10자의 한글만 입력 가능합니다.';
+          break;
+        case 2:
+          information = '생년월일은 현재 날짜보다 미래일 수 없습니다.';
+          break;
+        case 3:
+          information = '유효한 날짜 형식이 아닙니다. (예: 2000-01-01)';
+          break;
+        case 4:
+          information = '닉네임은 2~10자의 한글 또는 영어만 입력 가능합니다.';
+          break;
+        case 5:
+          information = '';
+          widget.nextStep();
+          break;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 32.0),
+      width: double.infinity,
+      height: double.infinity,
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _textInputBox('이름', '', false, _userNameController),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _selectDate(context),
+                  child: AbsorbPointer(
+                    child: _textInputBox(
+                      '생년월일',
+                      'YYYY-MM-DD',
+                      false,
+                      _userBirthController,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _selectBirth('성별'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _textInputBox('닉네임', '', false, _userNickController),
+          const SizedBox(height: 20),
+          _textInputBox('주소', '', false, _userAddressController),
+          const SizedBox(height: 20),
+          information.isNotEmpty
+              ? Text(
+                  information,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold, color: Colors.red),
+                )
+              : SizedBox(),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+              ),
+              onPressed: checkValidation,
+              child: Text(
+                '다음',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 회원 기본 정보 입력 위젯
+  Widget _textInputBox(String title, String textHint, bool obscure,
+      TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 4.0),
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+            hintText: textHint,
+            hintStyle: TextStyle(color: Colors.grey),
+          ),
+          obscureText: obscure,
+        ),
+      ],
+    );
+  }
+
+  // 생년월일 입력을 위한 날짜 선택 위젯
+  Widget _selectBirth(String title) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 4.0),
+        SizedBox(
+          height: 50,
+          child: DropdownButtonFormField<String>(
+            value: _selectedGender,
+            decoration: InputDecoration(
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            items: ['남성', '여성'].map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            onChanged: (newValue) {
+              setState(() {
+                _selectedGender = newValue;
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
