@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/models/main-model/Profile.dart';
 import '../../../data/model_views/main_view_model/main_page_viewmodel.dart';
 import 'components/ProfileCard.dart';
-import 'components/CircleButtons.dart';
 
 class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
@@ -65,13 +64,14 @@ class _MainPageState extends ConsumerState<MainPage>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildAnimatedButton(Icons.replay, Colors.grey, -1,
-              viewModel.undoSwipe), // 🔄 되돌리기 버튼 추가
           _buildAnimatedButton(
-              Icons.close, Colors.pink, 0, viewModel.onSwipeLeft),
-          _buildAnimatedButton(Icons.star, Colors.blue, 2, viewModel.onSwipeUp),
+              Icons.replay, Colors.grey, -1, viewModel.undoSwipe), //  되돌리기 버튼
           _buildAnimatedButton(
-              Icons.favorite, Colors.green, 1, viewModel.onSwipeRight),
+              Icons.close, Colors.pink, 0, viewModel.onSwipeLeft), //  거절 버튼
+          _buildAnimatedButton(
+              Icons.star, Colors.blue, 2, viewModel.onSwipeUp), //  슈퍼 좋아요 버튼
+          _buildAnimatedButton(Icons.favorite, Colors.green, 1,
+              viewModel.onSwipeRight), //  좋아요 버튼
         ],
       ),
     );
@@ -90,7 +90,7 @@ class _MainPageState extends ConsumerState<MainPage>
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
-        width: isHighlighted ? 80 : 60, // 🔥 스와이프할 때도 버튼 크기 변경
+        width: isHighlighted ? 80 : 60, //  스와이프할 때도 버튼 크기 변경
         height: isHighlighted ? 80 : 60,
         decoration: BoxDecoration(
           color: color,

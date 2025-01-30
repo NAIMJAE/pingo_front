@@ -6,8 +6,8 @@ import '../../../data/models/main-model/profile.dart';
 class MainPageViewModel extends StateNotifier<int> {
   late final AnimationController animationController;
   double posY = 0.0;
-  int? highlightedButton; // 🔥 현재 강조할 버튼 (0: 왼쪽, 1: 오른쪽, 2: 위쪽)
-  int? lastSwipedIndex; // 🔄 되돌리기 기능을 위한 마지막 스와이프 인덱스
+  int? highlightedButton; //  현재 강조할 버튼 (0: 왼쪽, 1: 오른쪽, 2: 위쪽)
+  int? lastSwipedIndex; //  되돌리기 기능을 위한 마지막 스와이프 인덱스
 
   MainPageViewModel(TickerProvider vsync) : super(0) {
     animationController = AnimationController(
@@ -18,7 +18,7 @@ class MainPageViewModel extends StateNotifier<int> {
     );
 
     animationController.addListener(() {
-      state = state; // ✅ UI 강제 갱신
+      state = state; //  UI 강제 갱신
     });
   }
 
@@ -27,16 +27,16 @@ class MainPageViewModel extends StateNotifier<int> {
         (animationController.value + details.delta.dx / 500).clamp(-1.5, 1.5);
     posY = (posY + details.delta.dy / 500).clamp(-1.5, 1.5);
 
-    // 🔥 스와이프 방향에 따라 버튼 강조 효과 추가
+    // 스와이프 방향에 따라 버튼 강조 효과 추가
     int? newHighlightedButton;
     if (animationController.value <= -0.3) {
       newHighlightedButton = 0; // ❌ 거절 버튼 강조
     } else if (animationController.value >= 0.3) {
-      newHighlightedButton = 1; // 💚 좋아요 버튼 강조
+      newHighlightedButton = 1; //  좋아요 버튼 강조
     } else if (posY <= -0.3) {
-      newHighlightedButton = 2; // ⭐ 슈퍼 좋아요 버튼 강조
+      newHighlightedButton = 2; // 슈퍼 좋아요 버튼 강조
     } else {
-      newHighlightedButton = null; // 🔄 초기화
+      newHighlightedButton = null; //  초기화
     }
 
     // 🔥 버튼 상태가 변경되었을 경우에만 UI 갱신 (최적화)
@@ -52,30 +52,34 @@ class MainPageViewModel extends StateNotifier<int> {
 
     if (animationController.value <= -horizontalBound) {
       onSwipeLeft();
+      print('거절 버튼');
     } else if (animationController.value >= horizontalBound) {
       onSwipeRight();
+      print('좋아요 버튼');
     } else if (posY <= -verticalBound) {
       onSwipeUp();
+      print('슈퍼좋아요 버튼');
     } else {
       resetPosition();
+      print('초기화 버튼');
     }
 
-    highlightedButton = null; // 🔄 초기화
+    highlightedButton = null; //  초기화
     state = state; // ✅ UI 갱신
   }
 
   void onSwipeLeft() {
-    lastSwipedIndex = state; // 🔄 되돌리기 위해 상태 저장
+    lastSwipedIndex = state; //  되돌리기 위해 상태 저장
     _animateAndSwitchCard(-1.5);
   }
 
   void onSwipeRight() {
-    lastSwipedIndex = state; // 🔄 되돌리기 위해 상태 저장
+    lastSwipedIndex = state; //  되돌리기 위해 상태 저장
     _animateAndSwitchCard(1.5);
   }
 
   void onSwipeUp() {
-    lastSwipedIndex = state; // 🔄 되돌리기 위해 상태 저장
+    lastSwipedIndex = state; //  되돌리기 위해 상태 저장
     _animateAndSwitchCard(-1.5, vertical: true);
   }
 
