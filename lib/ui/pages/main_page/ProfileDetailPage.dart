@@ -2,10 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:pingo_front/data/models/main-model/Profile.dart';
 import 'package:pingo_front/data/models/main-model/ProfileDetail.dart';
 
-class ProfileDetailPage extends StatelessWidget {
+class ProfileDetailPage extends StatefulWidget {
   final Profile profile;
 
   const ProfileDetailPage({required this.profile, Key? key}) : super(key: key);
+
+  @override
+  _ProfileDetailPageState createState() => _ProfileDetailPageState();
+}
+
+class _ProfileDetailPageState extends State<ProfileDetailPage> {
+  int currentImageIndex = 0; // 현재 표시 중인 이미지 인덱스
+
+  void _showNextImage() {
+    setState(() {
+      currentImageIndex =
+          (currentImageIndex + 1) % widget.profile.images.length;
+    });
+  }
+
+  void _showPreviousImage() {
+    setState(() {
+      currentImageIndex =
+          (currentImageIndex - 1) % widget.profile.images.length;
+      if (currentImageIndex < 0) {
+        currentImageIndex = widget.profile.images.length - 1;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +37,8 @@ class ProfileDetailPage extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          // 상단 고정 영역
           _buildHeader(context),
-
-          // 중앙 이미지 영역
           _buildImageSection(),
-
-          // 하단 상세 정보 (스크롤 가능)
           Expanded(child: _buildProfileDetails()),
         ],
       ),
@@ -37,58 +56,73 @@ class ProfileDetailPage extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
           ),
           Text(
-            '${profile.name}, ${profile.age}',
+            '${widget.profile.name}, ${widget.profile.age}',
             style: TextStyle(
               color: Colors.white,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(width: 40), // 아이콘 크기 맞추기 위한 빈 공간
+          SizedBox(width: 40),
         ],
       ),
     );
   }
 
   Widget _buildImageSection() {
-    return Column(
-      children: [
-        Container(
-          height: 300,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(profile.images.first),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            profile.images.length,
-            (index) => Container(
-              width: 20,
-              height: 5,
-              margin: EdgeInsets.symmetric(horizontal: 3),
-              decoration: BoxDecoration(
-                color:
-                    index == 0 ? Colors.white : Colors.white.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(5),
+    return GestureDetector(
+      onTapUp: (TapUpDetails details) {
+        final tapPosition = details.globalPosition.dx;
+        final screenWidth = MediaQuery.of(context).size.width;
+
+        if (tapPosition < screenWidth / 2) {
+          _showPreviousImage();
+        } else {
+          _showNextImage();
+        }
+      },
+      child: Column(
+        children: [
+          SizedBox(height: 10), // 🔥 이미지 위치 조금 아래로 조정
+          Container(
+            height: 500, // 🔥 기존 300에서 살짝 줄여 자연스럽게 보이게 조정
+            width: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(widget.profile.images[currentImageIndex]),
+                fit: BoxFit.cover,
               ),
             ),
           ),
-        ),
-      ],
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              widget.profile.images.length,
+              (index) => Container(
+                width: 20,
+                height: 5,
+                margin: EdgeInsets.symmetric(horizontal: 3),
+                decoration: BoxDecoration(
+                  color: index == currentImageIndex
+                      ? Colors.white
+                      : Colors.white.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildProfileDetails() {
     final details = [
-      ProfileDetail(icon: Icons.person, title: "자기소개", value: profile.status),
       ProfileDetail(
-          icon: Icons.location_on, title: "거리", value: profile.distance),
+          icon: Icons.person, title: "자기소개", value: widget.profile.status),
+      ProfileDetail(
+          icon: Icons.location_on, title: "거리", value: widget.profile.distance),
       ProfileDetail(icon: Icons.school, title: "학력", value: "대학 졸업"),
       ProfileDetail(icon: Icons.star, title: "성격 유형", value: "INTJ"),
       ProfileDetail(icon: Icons.pets, title: "반려동물", value: "강아지 키움"),
@@ -125,7 +159,10 @@ class ProfileDetailPage extends StatelessWidget {
           Text(
             "$title: ",
             style: TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           Expanded(
             child: Text(
