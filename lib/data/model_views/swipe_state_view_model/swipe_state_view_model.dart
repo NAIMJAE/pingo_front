@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/models/swipe_state_model/swipe_state_repository.dart';
+import 'package:pingo_front/data/repository/swipe_state_repository/swipe_state_repository.dart';
 import 'package:pingo_front/data/models/swipe_state_model/user_swipe_details.dart';
 
 class SwipeStateViewModel

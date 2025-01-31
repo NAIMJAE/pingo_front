@@ -97,7 +97,7 @@ class SignUpPage extends StatelessWidget {
               context,
               () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => SignInPage()),
+                  MaterialPageRoute(builder: (context) => SignInPage(() {})),
                 );
               },
               Colors.deepOrangeAccent,

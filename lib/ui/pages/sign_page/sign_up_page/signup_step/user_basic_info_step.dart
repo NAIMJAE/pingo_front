@@ -139,7 +139,13 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
                   borderRadius: BorderRadius.circular(4.0),
                 ),
               ),
-              onPressed: checkValidation,
+              onPressed: _userNameController.text.trim() != '' &&
+                      _userBirthController.text.trim() != '' &&
+                      _selectedGender != null &&
+                      _userNickController.text.trim() != '' &&
+                      _userAddressController.text.trim() != ''
+                  ? () => checkValidation()
+                  : null,
               child: Text(
                 '다음',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -168,9 +174,10 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
         TextField(
           controller: controller,
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            ),
+            enabledBorder:
+                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            border:
+                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
             filled: true,
             fillColor: Colors.white,
             hintText: textHint,
@@ -201,6 +208,10 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
             decoration: InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+                borderRadius: BorderRadius.circular(4.0),
+              ),
               border: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey),
                 borderRadius: BorderRadius.circular(4.0),

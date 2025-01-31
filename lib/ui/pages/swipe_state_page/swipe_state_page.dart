@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/model_views/swipe_state_view_model/swipe_state_view_model.dart';
-import 'package:pingo_front/data/models/root_url.dart';
+import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:pingo_front/data/models/swipe_state_model/user_swipe_details.dart';
 
 // swipes 테이블에서 내가 스와이프한 유저, 나를 스와이프한 유저 조회

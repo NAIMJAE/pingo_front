@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:pingo_front/data/models/response_dto.dart';
-import 'package:pingo_front/data/models/root_url.dart';
+import 'package:pingo_front/data/network/response_dto.dart';
+import 'package:pingo_front/data/repository/root_url.dart';
 
-import 'keyword_group.dart';
+import '../../models/keyword_model/keyword_group.dart';
 
 // 스프링 서버와 통신하는 repository
 class KeywordRepository {

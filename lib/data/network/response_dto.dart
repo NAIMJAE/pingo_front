@@ -9,10 +9,7 @@ class ResponseDTO {
       return response['data'];
     } else if (resultCode == '2') {
       // 통신은 성공했지만 결과값이 성공이 아닌 경우
-      return response['data'];
-    } else {
-      // 통신 실패
-      return null;
+      return throw Exception('Server Data Error');
     }
   }
 }

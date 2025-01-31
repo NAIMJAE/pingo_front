@@ -21,8 +21,12 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    # 상수로 선언 가능한 생성자에 대해 경고를 표시하지 않음으로 설정.
+    prefer_const_constructors: false
+    # 변하지 않는 변수에 대해 const로 선언하지 않아도 경고를 표시하지 않음.
+    prefer_const_declarations: false
+    # 불변 컬렉션(List, Map, Set 등)에 대해 const를 사용하지 않아도 경고를 표시하지 않음.
+    prefer_const_literals_to_create_immutables: false
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

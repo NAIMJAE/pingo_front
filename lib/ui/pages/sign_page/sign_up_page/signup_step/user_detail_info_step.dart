@@ -63,7 +63,7 @@ class _UserDetailInfoStepState extends State<UserDetailInfoStep> {
         userSmoking == null ||
         userBloodType == null) {
       setState(() {
-        information = '모든 항목을 입력해주세요.';
+        information = '모든 항목을 선택해주세요.';
       });
       return;
     }
@@ -126,7 +126,14 @@ class _UserDetailInfoStepState extends State<UserDetailInfoStep> {
                   borderRadius: BorderRadius.circular(4.0),
                 ),
               ),
-              onPressed: checkValidation,
+              onPressed: _selected1stJob != null &&
+                      _selected2ndJob != null &&
+                      _selectedReligion != null &&
+                      _selectedDrinking != null &&
+                      _selectedSmoking != null &&
+                      _selectedBloodType != null
+                  ? () => checkValidation()
+                  : null,
               child: Text(
                 '다음',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -156,9 +163,14 @@ class _UserDetailInfoStepState extends State<UserDetailInfoStep> {
           child: AbsorbPointer(
             child: TextField(
               decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: _selected1stJob != null && _selected2ndJob != null
+                          ? Colors.red
+                          : Colors.grey),
                 ),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey)),
                 filled: true,
                 fillColor: Colors.white,
                 hintText: "직업 선택 (ex. 개발 - 프론트엔드)",
@@ -202,16 +214,14 @@ class _UserDetailInfoStepState extends State<UserDetailInfoStep> {
                     border: Border.all(
                         color: isSelected ? Colors.redAccent : Colors.grey),
                     borderRadius: BorderRadius.circular(8.0),
-                    color: isSelected
-                        ? Colors.redAccent.withOpacity(0.2)
-                        : Colors.white,
+                    color: isSelected ? Colors.redAccent : Colors.white,
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     option,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: isSelected ? Colors.redAccent : Colors.black),
+                        color: isSelected ? Colors.white : Colors.black),
                   ),
                 ),
               ),

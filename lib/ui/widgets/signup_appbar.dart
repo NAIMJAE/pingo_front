@@ -2,20 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:pingo_front/ui/pages/sign_page/components/sign_up_page.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/sign_up_page2.dart';
 
-AppBar CommonAppBar(context) {
+AppBar signupAppBar(context, currentStep, _prevStep) {
   return AppBar(
     title: Row(
       children: [
-        Image.asset('assets/images/pingo1.png', width: 40),
         Text(
-          'Pingo',
+          '회원 가입',
           style: TextStyle(fontSize: 30, color: Colors.black),
         ),
       ],
     ),
-    actions: [
-      Padding(padding: const EdgeInsets.all(8.0), child: Icon(Icons.settings)),
-    ],
     backgroundColor: Colors.white,
+    leading: IconButton(
+      onPressed: () {
+        if (currentStep == 0 || currentStep > 6) {
+          Navigator.pop(context);
+        } else {
+          _prevStep();
+        }
+      },
+      icon: Icon(Icons.arrow_back),
+    ),
   );
 }
