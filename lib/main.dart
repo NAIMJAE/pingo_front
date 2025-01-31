@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/view_models/global_view_model/session_gvm.dart';
+import 'package:pingo_front/data/model_views/global_view_model/session_gvm.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_in_page.dart';
 
 import '_core/theme/theme.dart';

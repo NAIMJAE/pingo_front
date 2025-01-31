@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signup_view_model.dart';
+import 'package:pingo_front/data/model_views/signup_view_model/signup_view_model.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/signup_complete_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_basic_info_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_favorite_keyword_step.dart';
