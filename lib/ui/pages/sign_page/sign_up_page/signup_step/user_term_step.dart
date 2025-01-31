@@ -11,7 +11,7 @@ Widget userTermStep(BuildContext context, Function _nextStep, userData) {
       children: [
         Container(
           width: double.infinity,
-          height: 200,
+          height: 300,
           padding: EdgeInsets.all(10.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4.0),
@@ -19,7 +19,9 @@ Widget userTermStep(BuildContext context, Function _nextStep, userData) {
           ),
           child: SingleChildScrollView(
             child: Text(
-                '이용약관~\n이용약관~\n이용약관~\n이용약관~\n이용약관~\n이용약관~\n이용약관~\n이용약관~\n이용약관~\n이용약관~\n이용약관~\n이용약관~\n이용약관~\n이용약관~\n'),
+              '이용약관 내용',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
         ),
         const SizedBox(height: 10.0),

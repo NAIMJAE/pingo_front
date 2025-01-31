@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/keyword_model/keyword_group.dart';
-import 'package:pingo_front/data/models/keyword_model/keyword_repository.dart';
+import 'package:pingo_front/data/repository/keyword_repository/keyword_repository.dart';
 
 class KeywordViewModel extends Notifier<Map<String, KeywordGroup>> {
   final KeywordRepository _repository;

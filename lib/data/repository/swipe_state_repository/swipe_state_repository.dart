@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/models/response_dto.dart';
-import 'package:pingo_front/data/models/root_url.dart';
+import 'package:pingo_front/data/network/response_dto.dart';
+import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:pingo_front/data/models/swipe_state_model/user_swipe_details.dart';
 
 class SwipeStateRepository {

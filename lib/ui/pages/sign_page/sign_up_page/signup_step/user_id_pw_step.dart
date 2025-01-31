@@ -58,7 +58,7 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
       height: double.infinity,
       alignment: Alignment.center,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           _textInputBox('아이디', '영문+숫자 (6~12자리)', false, _userIdController),
           const SizedBox(height: 20),
@@ -86,7 +86,11 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
                   borderRadius: BorderRadius.circular(4.0),
                 ),
               ),
-              onPressed: checkValidation,
+              onPressed: _userIdController.text.trim() != '' &&
+                      _userPw1Controller.text.trim() != '' &&
+                      _userPw2Controller.text.trim() != ''
+                  ? () => checkValidation()
+                  : null,
               child: Text(
                 '다음',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -115,9 +119,10 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
         TextField(
           controller: controller,
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            ),
+            enabledBorder:
+                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            border:
+                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
             filled: true,
             fillColor: Colors.white,
             hintText: textHint,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/model_views/keyword_view_model/keyword_view_model.dart';
+import 'package:pingo_front/data/view_models/keyword_view_model/keyword_view_model.dart';
 
 import '../../../_core/utils/logger.dart';
 import '../../../data/models/keyword_model/keyword.dart';

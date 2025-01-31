@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/model_views/signup_view_model/signup_view_model.dart';
+import 'package:pingo_front/data/view_models/signup_view_model/signup_view_model.dart';
+import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/signup_complete_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_basic_info_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_favorite_keyword_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_my_keyword_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_profile_step.dart';
 import 'package:pingo_front/ui/widgets/common_appbar.dart';
+import 'package:pingo_front/ui/widgets/signup_appbar.dart';
 
 import 'signup_step/user_detail_info_step.dart';
 import 'signup_step/user_id_pw_step.dart';
@@ -49,7 +51,16 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
       _controller.reset();
       _controller.forward();
       logger.d(currentStep);
-      logger.d(ref.watch(signupViewModelProvider).toString());
+    });
+  }
+
+  // 이전 step으로 돌아가는 함수
+  void _prevStep() {
+    setState(() {
+      currentStep--;
+      _controller.reset();
+      _controller.forward();
+      logger.d(currentStep);
     });
   }
 
@@ -58,30 +69,32 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
     final userData = ref.watch(signupViewModelProvider);
     final signupNotifier = ref.read(signupViewModelProvider.notifier);
 
-    return Scaffold(
-      appBar: CommonAppBar(context),
-      body: Column(
-        children: [
-          SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-          _signupNavigation(currentStep),
-          const SizedBox(height: 40),
-          Expanded(
-            child: Center(
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: _buildStepWidget(context, userData, signupNotifier),
+    return SafeArea(
+      child: Scaffold(
+        appBar: signupAppBar(context, currentStep, _prevStep),
+        body: Column(
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+            _signupNavigation(currentStep),
+            const SizedBox(height: 40),
+            Expanded(
+              child: Center(
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: _buildStepWidget(context, userData, signupNotifier),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      // 임시 개발용 버튼
-      floatingActionButton: FloatingActionButton(
-        onPressed: _nextStep,
-        child: Icon(Icons.arrow_forward),
+          ],
+        ),
+        // 임시 개발용 버튼
+        floatingActionButton: FloatingActionButton(
+          onPressed: _nextStep,
+          child: Icon(Icons.arrow_forward),
+        ),
       ),
     );
   }
@@ -104,7 +117,7 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
       case 6:
         return UserFavoriteKeywordStep(_nextStep, userData, signupNotifier);
       default:
-        return _buildCompleteStep();
+        return SignupCompleteStep(_nextStep, userData, signupNotifier);
     }
   }
 
@@ -163,47 +176,6 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
               ),
         ),
       ],
-    );
-  }
-
-  // 마지막 완료 페이지
-  Widget _buildCompleteStep() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 32.0),
-      width: double.infinity,
-      height: double.infinity,
-      alignment: Alignment.center,
-      child: Column(
-        children: [
-          Text(
-            '회원가입 완료',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-              ),
-              onPressed: () {
-                // 아직 완료 이후의 함수 처리 안함
-              },
-              child: Text(
-                '로그인 화면으로 이동',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-            ),
-          )
-        ],
-      ),
     );
   }
 }

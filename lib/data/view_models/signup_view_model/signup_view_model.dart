@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/keyword_model/keyword.dart';
-import 'package:pingo_front/data/models/user_model/user_signup.dart';
-import 'package:pingo_front/data/models/user_model/user_signup_repository.dart';
+import 'package:pingo_front/data/models/sign_model/user_signup.dart';
+import 'package:pingo_front/data/repository/sign_repository/user_signup_repository.dart';
 
 // 회원가입을 위해 사용하는 view-model
 // 메서드로 있는 각각의 validation은 값을 검증하고 state에 값을 채움
@@ -160,16 +160,17 @@ class SignupViewModel extends Notifier<UserSignup> {
     String result = selectedKeywordIds.join("_");
 
     state.userFavoriteKeyword = result;
-    signupInfoToServer();
-    return 0;
+    return 1;
   }
 
   // 회원 가입 정보 서버로 보내기
-  void signupInfoToServer() async {
+  Future<bool> signupInfoToServer() async {
     try {
-      await _repository.fetchSignup(state, profileImage!);
+      bool result = await _repository.fetchSignup(state, profileImage!);
+      return result;
     } catch (e) {
       logger.e('Failed to fetch signupInfoToServer: $e');
+      return false;
     }
   }
 }
