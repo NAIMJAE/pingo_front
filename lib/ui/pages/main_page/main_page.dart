@@ -57,6 +57,7 @@ class _MainPageState extends ConsumerState<MainPage>
     );
   }
 
+  // 하단 컨테이너 위젯
   Widget _buildBottomNavigationBar(MainPageViewModel viewModel) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -77,6 +78,7 @@ class _MainPageState extends ConsumerState<MainPage>
     );
   }
 
+  // 메인 하단 버튼 위젯
   Widget _buildAnimatedButton(
       IconData icon, Color color, int index, VoidCallback onTap) {
     final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
