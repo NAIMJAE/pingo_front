@@ -13,21 +13,25 @@ import '../root_url.dart';
 // 회원가입 Repository
 class UserSignupRepository {
   final Dio _dio = Dio();
+  final CustomDio _customDio = CustomDio();
 
   // 아이디 중복 검증
   Future<bool> fetchValidateId(String userId) async {
     final response =
-        await _dio.get('/validateId', queryParameters: {'inputId': userId});
-    bool data = ResponseDTO.validation(response.data);
-    return data;
+        await _customDio.get('/validateId', query: {'inputId': userId});
+
+    if (response != null) {
+      return response as bool;
+    } else {
+      return false;
+    }
   }
 
   // 3차 키워드 조회
   Future<List<Keyword>> fetch3ndKeyword() async {
-    final response = await _dio.get('$rootURL/3ndKeyword');
-    dynamic data = ResponseDTO.validation(response.data);
+    List<dynamic> response = (await _customDio.get('/3ndKeyword')) as List;
     List<Keyword> result =
-        (data as List).map((item) => Keyword.fromJson(item)).toList();
+        (response as List).map((item) => Keyword.fromJson(item)).toList();
     return result;
   }
 
@@ -46,10 +50,10 @@ class UserSignupRepository {
 
     logger.d(formData);
 
-    final response = await _dio.post(
-      '$rootURL/signup',
+    final response = await _customDio.post(
+      '/signup',
       data: formData,
-      options: Options(headers: {"Content-Type": "multipart/form-data"}),
+      contentType: 'multipart/form-data',
     );
 
     bool result = ResponseDTO.validation(response.data);
