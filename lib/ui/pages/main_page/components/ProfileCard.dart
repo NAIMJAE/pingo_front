@@ -269,7 +269,7 @@ class _ProfileCardState extends State<ProfileCard> {
     );
   }
 
-  // 📌 프로필 정보 항목 UI
+  // 프로필 정보 항목 UI
   Widget _buildInfoSection(IconData icon, String title, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
