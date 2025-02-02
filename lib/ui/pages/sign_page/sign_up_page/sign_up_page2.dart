@@ -7,7 +7,6 @@ import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_bas
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_favorite_keyword_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_my_keyword_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_profile_step.dart';
-import 'package:pingo_front/ui/widgets/common_appbar.dart';
 import 'package:pingo_front/ui/widgets/signup_appbar.dart';
 
 import 'signup_step/user_detail_info_step.dart';
@@ -72,23 +71,27 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
     return SafeArea(
       child: Scaffold(
         appBar: signupAppBar(context, currentStep, _prevStep),
-        body: Column(
-          children: [
-            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-            _signupNavigation(currentStep),
-            const SizedBox(height: 40),
-            Expanded(
-              child: Center(
-                child: SlideTransition(
-                  position: _slideAnimation,
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: _buildStepWidget(context, userData, signupNotifier),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+              _signupNavigation(currentStep),
+              const SizedBox(height: 40),
+              IntrinsicHeight(
+                child: Center(
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child:
+                          _buildStepWidget(context, userData, signupNotifier),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: MediaQuery.of(context).viewInsets.bottom / 10),
+            ],
+          ),
         ),
         // 임시 개발용 버튼
         floatingActionButton: FloatingActionButton(

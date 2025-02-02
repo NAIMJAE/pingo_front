@@ -61,7 +61,6 @@ class SignupViewModel extends Notifier<UserSignup> {
       userName, userBirth, userGender, userNick, userAddress) {
     final RegExp nameRegex = RegExp(r'^[가-힣]{2,10}$');
     if (!nameRegex.hasMatch(userName)) {
-      print('❌ 이름은 2~10자의 한글만 입력 가능합니다.');
       return 1;
     }
 
@@ -72,18 +71,15 @@ class SignupViewModel extends Notifier<UserSignup> {
       print(birthDate);
 
       if (birthDate.isAfter(DateTime.now())) {
-        print('❌ 생년월일은 현재 날짜보다 미래일 수 없습니다.');
         return 2;
       }
       state.userInfo.userBirth = birthDate;
     } catch (e) {
-      print('❌ 유효한 날짜 형식이 아닙니다. (예: 2000-01-01)');
       return 3;
     }
 
     final RegExp nickRegex = RegExp(r'^[a-zA-Z가-힣]{2,10}$');
     if (!nickRegex.hasMatch(userNick)) {
-      print('❌ 닉네임은 2~10자의 한글 또는 영어만 입력 가능합니다.');
       return 4;
     }
 
