@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/view_models/main_view_model/main_page_viewmodel.dart';
+import 'package:pingo_front/data/model_views/main_view_model/main_page_viewmodel.dart';
 
 import '../../../data/models/main-model/Profile.dart';
 import 'components/ProfileCard.dart';

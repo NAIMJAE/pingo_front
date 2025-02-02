@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pingo_front/data/models/main-model/Profile.dart';
 import 'package:pingo_front/data/models/main-model/ProfileDetail.dart';
+import 'package:pingo_front/ui/pages/main_page/ProfileDetailPage.dart';
 
 class ProfileCard extends StatefulWidget {
   final Profile profile;
@@ -14,24 +15,6 @@ class ProfileCard extends StatefulWidget {
 class _ProfileCardState extends State<ProfileCard> {
   int currentImageIndex = 0; // 현재 표시 중인 이미지 인덱스
   bool isDetailVisible = false; // 상세 정보 표시 여부
-
-  // 📌 프로필 상세 정보를 반환하는 메서드
-  List<ProfileDetail> _getProfileDetails() {
-    return [
-      ProfileDetail(
-          icon: Icons.person, title: "자기소개", value: widget.profile.status),
-      ProfileDetail(
-          icon: Icons.location_on, title: "거리", value: widget.profile.distance),
-      ProfileDetail(icon: Icons.school, title: "학력", value: "대학 졸업"),
-      ProfileDetail(icon: Icons.star, title: "성격 유형", value: "INTJ"),
-      ProfileDetail(icon: Icons.pets, title: "반려동물", value: "강아지 키움"),
-      ProfileDetail(icon: Icons.sports_soccer, title: "운동", value: "축구, 헬스"),
-      ProfileDetail(icon: Icons.music_note, title: "취미", value: "음악 감상, 피아노"),
-      ProfileDetail(icon: Icons.coffee, title: "좋아하는 음료", value: "아메리카노"),
-      ProfileDetail(icon: Icons.movie, title: "좋아하는 영화", value: "SF, 액션"),
-      ProfileDetail(icon: Icons.book, title: "관심 있는 책", value: "심리학 서적"),
-    ];
-  }
 
   void _showNextImage() {
     setState(() {
@@ -185,9 +168,13 @@ class _ProfileCardState extends State<ProfileCard> {
                   right: 16,
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        isDetailVisible = true;
-                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ProfileDetailPage(profile: widget.profile),
+                        ),
+                      );
                     },
                     child: CircleAvatar(
                       backgroundColor: Colors.white,
@@ -200,97 +187,7 @@ class _ProfileCardState extends State<ProfileCard> {
             ),
           ),
         ),
-
-        // 📌 상세 정보 섹션 (이미지 아래에 위치)
-        if (isDetailVisible)
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: _buildProfileDetails(),
-          ),
       ],
-    );
-  }
-
-  // 📌 프로필 상세 정보 위젯 (스크롤 가능)
-  Widget _buildProfileDetails() {
-    final details = _getProfileDetails(); // 동적으로 리스트 생성
-
-    return Container(
-      height: 400,
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 📌 닫기 버튼 (⬇️ 버튼)
-          Align(
-            alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  isDetailVisible = false;
-                });
-              },
-              child: Icon(Icons.keyboard_arrow_down,
-                  color: Colors.white, size: 30),
-            ),
-          ),
-          SizedBox(height: 10),
-
-          // 📌 이름, 나이
-          Text(
-            '${widget.profile.name} ${widget.profile.age}',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 10),
-
-          // 📌 리스트뷰 적용 (스크롤 가능)
-          Expanded(
-            child: ListView.builder(
-              itemCount: details.length,
-              itemBuilder: (context, index) {
-                final detail = details[index];
-                return _buildInfoSection(
-                    detail.icon, detail.title, detail.value);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 📌 프로필 정보 항목 UI
-  Widget _buildInfoSection(IconData icon, String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.white70, size: 22),
-          SizedBox(width: 8),
-          Text(
-            "$title: ",
-            style: TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
