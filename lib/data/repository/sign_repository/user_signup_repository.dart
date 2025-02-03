@@ -10,12 +10,11 @@ import 'package:pingo_front/data/network/custom_dio.dart';
 import '../../network/response_dto.dart';
 import '../root_url.dart';
 
-// 회원가입 Repository
+/// 회원가입 Repository
 class UserSignupRepository {
-  final Dio _dio = Dio();
   final CustomDio _customDio = CustomDio();
 
-  // 아이디 중복 검증
+  /// 아이디 중복 검증
   Future<bool> fetchValidateId(String userId) async {
     final response =
         await _customDio.get('/validateId', query: {'inputId': userId});
@@ -27,7 +26,7 @@ class UserSignupRepository {
     }
   }
 
-  // 3차 키워드 조회
+  /// 3차 키워드 조회
   Future<List<Keyword>> fetch3ndKeyword() async {
     List<dynamic> response = (await _customDio.get('/3ndKeyword')) as List;
     List<Keyword> result =
@@ -35,7 +34,7 @@ class UserSignupRepository {
     return result;
   }
 
-  // 회원가입 데이터 전송
+  /// 회원가입 데이터 전송
   Future<bool> fetchSignup(UserSignup signupData, File profileImage) async {
     // 일단 테스트 버튼을 없애면 null 값이 있을 경우 이 함수가 호출이 되지는 않지만
     // 그래도 이 함수에서 전송할 UserSignup 객체에 null이 있는지 확인하는 작업 추가 필요함
