@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.pingo.pingo_front"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "25.1.8937393" // NDK 버전 명시적으로 설정
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

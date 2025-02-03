@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:logger/logger.dart';
+import 'package:pingo_front/_core/utils/location.dart';
 import 'package:pingo_front/data/model_views/global_view_model/session_gvm.dart';
-import 'package:pingo_front/data/model_views/signup_view_model/signup_view_model.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_in_page.dart';
-
 import '_core/theme/theme.dart';
 import 'ui/pages/main_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Flutter 초기화
+  await LocationService.initializeLocation(); // ✅ 위치 정보 초기화 호출
   runApp(ProviderScope(child: PingoApp()));
 }
 
@@ -27,7 +30,7 @@ class _PingoAppState extends ConsumerState<PingoApp> {
     screenIndex = ref.read(sessionGvmProvider.notifier).checkLoginState();
   }
 
-  // 로그인 검증시 화면 전환 함수
+  // 로그인 검증 후 화면 전환 함수
   void toggleScreenAfterLogin() {
     setState(() {
       screenIndex = 1;
@@ -47,9 +50,3 @@ class _PingoAppState extends ConsumerState<PingoApp> {
     );
   }
 }
-
-/**
- * ■ 추가할 기능
- * - golbalKey<NavigatorState>를 통해 페이지 관리 및 오류 처리
- * -
- */
