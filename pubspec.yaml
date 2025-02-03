@@ -46,6 +46,8 @@ dependencies:
   uuid: ^4.5.1 #정지현 uuid추가용
   image_picker: ^1.0.4
   flutter_card_swiper: ^6.0.0
+  stomp_dart_client: ^2.1.1 #JJH
+  json_annotation: ^4.8.0
 
 dev_dependencies:
   flutter_test:
