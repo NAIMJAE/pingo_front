@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/model_views/chat_model_views/chat_room_model_view.dart';
+import 'package:pingo_front/data/model_views/chat_view_model/chat_room_view_model.dart';
+import 'package:pingo_front/data/model_views/stomp_view_model.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
 
 // consumer 처리하기.
@@ -17,6 +18,9 @@ class ChatRoomBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final messages = ref.watch(chatRoomProvider); // 상태값 꺼내오기
     final messageNotifier = ref.read(chatRoomProvider.notifier); // 창고 직ㅈ버 접근
+
+    final stompViewModel = ref.watch(stompViewModelProvider.notifier);
+
     return Column(
       children: [
         Expanded(
@@ -51,9 +55,10 @@ class ChatRoomBody extends ConsumerWidget {
                   fromId: '1', // 보낸 사람 ID (로그인한 사용자 ID)
                   messageTime: DateTime.now(), // 현재 시간
                 );
+                stompViewModel.sendMessage(newMessage);
 
                 // 메시지 추가
-                messageNotifier.addMessage(newMessage);
+                // messageNotifier.addMessage(newMessage);
 
                 // 입력 필드 초기화
                 _messageController.clear();
