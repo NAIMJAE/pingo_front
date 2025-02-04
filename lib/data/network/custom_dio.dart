@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/network/response_dto.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class CustomDio {
   final Dio dio;
@@ -106,3 +107,6 @@ class CustomDio {
     return null;
   }
 }
+
+// 금고
+const secureStorage = FlutterSecureStorage();

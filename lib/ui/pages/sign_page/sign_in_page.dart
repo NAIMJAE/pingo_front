@@ -1,119 +1,163 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/data/model_views/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/repository/sign_repository/user_signin_repository.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/sign_up_page2.dart';
 
 import 'components/find_id_page.dart';
 import 'components/find_pw_page.dart';
 import 'components/sign_up_page.dart';
 
-class SignInPage extends StatelessWidget {
+class SignInPage extends ConsumerStatefulWidget {
   Function toggleScreenAfterLogin;
   SignInPage(this.toggleScreenAfterLogin, {super.key});
 
-  String _username = '';
-  String _password = '';
+  @override
+  ConsumerState<SignInPage> createState() => _SignInPageState();
+}
 
-  final _formKey = GlobalKey<FormState>();
+class _SignInPageState extends ConsumerState<SignInPage> {
+  final TextEditingController _userIdController = TextEditingController();
+  final TextEditingController _userPwController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    SigninViewModel signinViewModel = ref.read(sessionProvider.notifier);
+
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // 개발 단계 임시
-            SizedBox(
-              width: 200,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4.0),
-                  ),
-                ),
-                onPressed: () {
-                  toggleScreenAfterLogin();
-                },
-                child: Text(
-                  '메인페이지로(임시)',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            //
-            Image.asset(
-              'assets/images/pingo1.png',
-              width: 200,
-              height: 200,
-            ),
-            // Form 위젯 추가
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  _buildSignInTextField(
-                    '사용자 이름을 입력하세요',
-                    'username 을 입력하시오',
-                    _username,
-                  ),
-                  const SizedBox(height: 24.0),
-                  _buildSignInTextField(
-                    '패스워드를 입력하세요',
-                    '패스워드를 입력 하시오',
-                    _password,
-                  ),
-                  const SizedBox(height: 16.0),
-                  _buildSignInButton(
-                    context,
-                    () {
-                      if (_formKey.currentState!.validate()) {
-                        print('true을 반환');
-                        _formKey.currentState!.save();
-                        // 서버로 데이터 전송 코드 여기에 추가
-                      }
+      body: SingleChildScrollView(
+        child: IntrinsicHeight(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 32.0),
+            width: double.infinity,
+            height: double.infinity,
+            alignment: Alignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // 개발 단계 임시
+                SizedBox(
+                  width: 200,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      widget.toggleScreenAfterLogin();
                     },
-                    Colors.deepOrangeAccent,
-                    'Sign in',
+                    child: Text(
+                      '메인페이지로(임시)',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildFindUserInfo(
-                  context,
-                  FindIdPage(),
-                  '아이디 찾기',
                 ),
-                const SizedBox(width: 16.0),
-                _buildFindUserInfo(
-                  context,
-                  FindPwPage(),
-                  '비밀번호 찾기',
+                const SizedBox(height: 20),
+                //
+                Image.asset(
+                  'assets/images/pingo1.png',
+                  width: 200,
+                  height: 200,
                 ),
+                // Form 위젯 추가
+
+                TextField(
+                  controller: _userIdController,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: '아이디를 입력하세요.',
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                  obscureText: false,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _userPwController,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: '비밀번호를 입력하세요.',
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 10),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                    ),
+                    onPressed: _userIdController.text.trim() != '' &&
+                            _userPwController.text.trim() != ''
+                        ? () => signinViewModel.login(
+                            _userIdController.text.trim(),
+                            _userPwController.text.trim())
+                        : null,
+                    child: Text(
+                      '로그인',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ),
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildFindUserInfo(
+                      context,
+                      FindIdPage(),
+                      '아이디 찾기',
+                    ),
+                    const SizedBox(width: 16.0),
+                    _buildFindUserInfo(
+                      context,
+                      FindPwPage(),
+                      '비밀번호 찾기',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '계정이 없으신가요? ',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    _buildFindUserInfo(
+                      context,
+                      SignUpPage2(),
+                      'Sign up',
+                    ),
+                  ],
+                ),
+                SizedBox(height: MediaQuery.of(context).viewInsets.bottom / 10),
               ],
             ),
-            const SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '계정이 없으신가요? ',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                _buildFindUserInfo(
-                  context,
-                  SignUpPage2(),
-                  'Sign up',
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
