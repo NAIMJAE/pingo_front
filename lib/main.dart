@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 import 'package:pingo_front/_core/utils/location.dart';
 import 'package:pingo_front/data/model_views/global_view_model/session_gvm.dart';
+import 'package:pingo_front/data/model_views/signup_view_model/signup_view_model.dart';
+import 'package:pingo_front/data/model_views/stomp_view_model.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_in_page.dart';
 import '_core/theme/theme.dart';
 import 'ui/pages/main_screen.dart';
@@ -28,6 +30,10 @@ class _PingoAppState extends ConsumerState<PingoApp> {
   void initState() {
     super.initState();
     screenIndex = ref.read(sessionGvmProvider.notifier).checkLoginState();
+
+    // STOMP 웹소캣 연결
+    Future.microtask(
+        () => ref.read(stompViewModelProvider.notifier).stompConnect());
   }
 
   // 로그인 검증 후 화면 전환 함수
@@ -48,5 +54,12 @@ class _PingoAppState extends ConsumerState<PingoApp> {
             : MainScreen(),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // 앱 꺼지면 웹소캣 해제
+    ref.read(stompViewModelProvider.notifier).stompDisconnect();
+    super.dispose();
   }
 }

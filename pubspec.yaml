@@ -47,6 +47,8 @@ dependencies:
   image_picker: ^1.0.4
   flutter_card_swiper: ^6.0.0
   geolocator: ^10.1.0 #GPS
+  stomp_dart_client: ^2.1.1 #JJH
+  json_annotation: ^4.8.0
 
 dev_dependencies:
   flutter_test:
