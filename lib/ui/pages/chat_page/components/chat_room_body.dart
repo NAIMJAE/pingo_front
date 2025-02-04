@@ -55,10 +55,11 @@ class ChatRoomBody extends ConsumerWidget {
                   fromId: '1', // 보낸 사람 ID (로그인한 사용자 ID)
                   messageTime: DateTime.now(), // 현재 시간
                 );
+                logger.i('머머 $newMessage.toString()');
+                messageNotifier.addMessage(newMessage);
                 stompViewModel.sendMessage(newMessage);
 
                 // 메시지 추가
-                // messageNotifier.addMessage(newMessage);
 
                 // 입력 필드 초기화
                 _messageController.clear();

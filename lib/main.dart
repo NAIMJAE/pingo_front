@@ -32,6 +32,7 @@ class _PingoAppState extends ConsumerState<PingoApp> {
     screenIndex = ref.read(sessionGvmProvider.notifier).checkLoginState();
 
     // STOMP 웹소캣 연결
+    // 현재 코드 실행이 끝난 직후에 실행할 비동기 작업을 예약
     Future.microtask(
         () => ref.read(stompViewModelProvider.notifier).stompConnect());
   }

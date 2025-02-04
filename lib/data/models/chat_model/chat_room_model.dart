@@ -49,6 +49,52 @@ class Message {
   String toString() {
     return 'Message{messageNo: $messageNo, chatNo: $chatNo, fromId: $fromId, messageContent: $messageContent, messageTime: $messageTime, type: $type, readCount: $readCount, profileImageUrl: $profileImageUrl}';
   }
+
+  // // factory : 객체재사용할 수 있음
+  // factory Message.fromJson(Map<String, dynamic> json) {
+  //   return Message(
+  //     chatNo: json['chatNo'],
+  //     fromId: json['fromId'],
+  //     messageContent: json['messageContent'],
+  //     messageTime: json['messageTime'] != null
+  //         ? DateTime.parse(json['messageTime'])
+  //         : null,
+  //     type:
+  //         json['type'] != null ? MessageType.values.byName(json['type']) : null,
+  //     readCount: json['readCount'],
+  //     profileImageUrl: json['profileImageUrl'],
+  //   );
+  // }
+
+  // Json으로 받아온것을 객체로 변환
+  Message.fromJson(Map<String, dynamic> json)
+      : messageNo = json['messageNo'] ?? Uuid().v4(),
+        chatNo = json['chatNo'],
+        fromId = json['fromId'],
+        messageContent = json['messageContent'],
+        messageTime = json['messageTime'] != null
+            ? DateTime.parse(json['messageTime'])
+            : null,
+        type = json['type'] != null
+            ? MessageType.values.byName(json['type'])
+            : null,
+        readCount = json['readCount'] ?? 1,
+        profileImageUrl = json['profileImageUrl'] ?? '';
+
+  // Json으로 변환
+  Map<String, dynamic> toJson() {
+    return {
+      'messageNo': messageNo,
+      'chatNo': chatNo,
+      'fromId': fromId,
+      'messageContent': messageContent,
+      'messageTime': messageTime?.toIso8601String(),
+      'type': type?.name,
+      'readCount': readCount,
+      'profileImageUrl': profileImageUrl,
+    };
+  }
 }
 
 enum MessageType { text, image, sticker }
+// 'messageTime': messageTime?.toIso8601String(),
