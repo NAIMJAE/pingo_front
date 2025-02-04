@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/model_views/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
+import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class StompViewModel extends Notifier<bool> {
@@ -21,12 +22,12 @@ class StompViewModel extends Notifier<bool> {
     // stompclient 콜백메서드를 등록할 수 있는 웹소캣의 객체
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://localhost:8080/chat',
-        // onConnect: _onConnect, // 연결 성공시 실행할 콜백 함수
+        url: wsRootURL,
+        onConnect: _onConnect, // 연결 성공시 실행할 콜백 함수
         onWebSocketError: (dynamic error) =>
-            print('에러'), // 웹소캣 자체 오류 감지 , 서버 문제
+            print(error.toString()), // 웹소캣 자체 오류 감지 , 서버 문제
         onStompError: (dynamic error) =>
-            print('에러'), // stomp 프로토콜 오류 감지, 잘못된 메시지 형식
+            print('에러2'), // stomp 프로토콜 오류 감지, 잘못된 메시지 형식
         onDisconnect: (StompFrame frame) => print('엘어'), // 웹소켓 연결 해제 감지
       ),
     );
@@ -38,25 +39,28 @@ class StompViewModel extends Notifier<bool> {
 
   // 서버에서 메시지 받아오기 받은 메세지를 저장소(chatRoomProvider에 추가할예정)
   // 서버에서 메시지를 받아올 경로
-  void _onConnect(StompFrame frame, String roomNumber) {
+  void _onConnect(StompFrame frame) {
     stompClient?.subscribe(
-      destination: '/sub/${roomNumber}',
+      destination: '/sub/1',
       callback: (StompFrame frame) {
-        // final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
-        // final Message message = Message.fromJson(jsonData);
-        // // 이전 채팅 가져와야 하기 때문에
-        // _addMessage(message);
+        final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
+        final Message message = Message.fromJson(jsonData);
+        // 이전 채팅 가져와야 하기 때문에
+        logger.i('이거이거이거 $message');
+        _addMessage(message);
       },
     );
-    logger.e('머시기');
+    logger.i('연결');
   }
 
   // 서버로 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
   void sendMessage(Message message) {
+    final messages = jsonEncode(message.toJson());
     stompClient?.send(
-      destination: '/pub',
-      body: jsonEncode(message), // 수정 예정 객체 -> JSON 문자열 변환
+      destination: '/pub/1',
+      body: messages, // 수정 예정 객체 -> JSON 문자열 변환
     );
+    logger.i('머나와 $messages.toString()');
   }
 
   // 연결 해제 하는 메서드 depose일때
@@ -69,6 +73,7 @@ class StompViewModel extends Notifier<bool> {
   void _addMessage(Message message) {
     final messageNotifier = ref.read(chatRoomProvider.notifier);
     messageNotifier.addMessage(message);
+    logger.i(messageNotifier);
   }
 }
 
