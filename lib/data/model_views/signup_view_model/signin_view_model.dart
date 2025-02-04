@@ -12,6 +12,32 @@ class SigninViewModel extends Notifier<SessionUser> {
     return SessionUser();
   }
 
+  // 로그인 체크
+  Future<bool> checkLoginState() async {
+    String? accessToken = await secureStorage.read(key: 'accessToken');
+    if (accessToken == null) {
+      return false;
+    }
+
+    Map<String, dynamic> response =
+        await repository.loginWithToken(accessToken);
+
+    response = response['data'];
+
+    if (response['message'] == '자동 로그인 성공') {
+      state = SessionUser(
+        userNo: response['userNo'],
+        userRole: response['userRole'],
+        accessToken: accessToken,
+        isLogin: true,
+      );
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // 로그인
   Future<void> login(String userId, String userPw) async {
     Map<String, String> loginData = {
       "userId": userId,

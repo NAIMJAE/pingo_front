@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:logger/logger.dart';
 import 'package:pingo_front/_core/utils/location.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/model_views/global_view_model/session_gvm.dart';
-import 'package:pingo_front/data/model_views/signup_view_model/signup_view_model.dart';
+import 'package:pingo_front/data/model_views/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/model_views/stomp_view_model.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_in_page.dart';
 import '_core/theme/theme.dart';
@@ -24,12 +23,21 @@ class PingoApp extends ConsumerStatefulWidget {
 }
 
 class _PingoAppState extends ConsumerState<PingoApp> {
-  late int screenIndex;
+  int? screenIndex;
 
   @override
   void initState() {
     super.initState();
-    screenIndex = ref.read(sessionGvmProvider.notifier).checkLoginState();
+
+    // initState()에서 비동기 작업 실행
+    Future.microtask(() async {
+      bool loginCheck =
+          await ref.read(sessionProvider.notifier).checkLoginState();
+
+      setState(() {
+        screenIndex = loginCheck ? 1 : 0;
+      });
+    });
 
     // STOMP 웹소캣 연결
     // 현재 코드 실행이 끝난 직후에 실행할 비동기 작업을 예약
