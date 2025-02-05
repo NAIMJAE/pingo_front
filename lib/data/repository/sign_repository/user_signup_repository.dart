@@ -17,7 +17,7 @@ class UserSignupRepository {
   /// 아이디 중복 검증
   Future<bool> fetchValidateId(String userId) async {
     final response =
-        await _customDio.get('/validateId', query: {'inputId': userId});
+        await _customDio.get('/permit/validateId', query: {'inputId': userId});
 
     if (response != null) {
       return response as bool;
@@ -28,7 +28,8 @@ class UserSignupRepository {
 
   /// 3차 키워드 조회
   Future<List<Keyword>> fetch3ndKeyword() async {
-    List<dynamic> response = (await _customDio.get('/3ndKeyword')) as List;
+    List<dynamic> response =
+        (await _customDio.get('/permit/3ndKeyword')) as List;
     List<Keyword> result =
         (response as List).map((item) => Keyword.fromJson(item)).toList();
     return result;
@@ -50,14 +51,12 @@ class UserSignupRepository {
     logger.d(formData);
 
     final response = await _customDio.post(
-      '/signup',
+      '/permit/signup',
       data: formData,
       contentType: 'multipart/form-data',
     );
 
-    bool result = ResponseDTO.validation(response.data);
-
-    return result;
+    return response;
     // 서버 로직 완료 후 성공 실패 처리 남음
   }
 }

@@ -29,3 +29,4 @@ CREATE TABLE "userImage"
 
 
 -- 설정 쿼리문
+

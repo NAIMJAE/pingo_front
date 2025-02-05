@@ -8,10 +8,10 @@ class SessionGvm extends Notifier<SessionUser> {
   @override
   SessionUser build() {
     return SessionUser(
-        userNo: null, userName: null, accessToken: null, isLogin: false);
+        userNo: null, userRole: null, accessToken: null, isLogin: false);
   }
 
-  // 1. 디바이스 어딘가에 저장된 로그인 정보를 불러와서 isLogin을 true로 변경하는 함수
+  // 1. 디바이스 어딘가에 저장된 로그인f 정보를 불러와서 isLogin을 true로 변경하는 함수
   int checkLoginState() {
     // 임시 로직
     // 나중에는 isLogin 여부에 따라 return 값 변경해야함

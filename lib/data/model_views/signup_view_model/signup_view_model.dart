@@ -82,6 +82,11 @@ class SignupViewModel extends Notifier<UserSignup> {
     if (!nickRegex.hasMatch(userNick)) {
       return 4;
     }
+    if (userGender == '남성') {
+      userGender = 'M';
+    } else {
+      userGender = 'F';
+    }
 
     state.users.userName = userName;
     state.users.userGender = userGender;
@@ -122,12 +127,28 @@ class SignupViewModel extends Notifier<UserSignup> {
         break;
     }
 
+    String? mappingBloodType;
+    switch (userBloodType) {
+      case 'A형':
+        mappingBloodType = 'A';
+        break;
+      case 'B형':
+        mappingBloodType = 'B';
+        break;
+      case 'AB형':
+        mappingBloodType = 'AB';
+        break;
+      case 'O형':
+        mappingBloodType = 'O';
+        break;
+    }
+
     state.userInfo.user1stJob = userJob1;
     state.userInfo.user2ndJob = userJob2;
     state.userInfo.userReligion = userReligion;
     state.userInfo.userDrinking = mappingDrinking;
     state.userInfo.userSmoking = mappingSmoking;
-    state.userInfo.userBloodType = userBloodType;
+    state.userInfo.userBloodType = mappingBloodType;
     return 1;
   }
 
