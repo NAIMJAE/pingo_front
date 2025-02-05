@@ -1,21 +1,28 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
+import 'package:pingo_front/data/repository/location_repository/location_repository.dart';
 
 class LocationService {
-  static final Logger _logger = Logger(); // Logger 인스턴스 생성
+  final Logger _logger = Logger(); // Logger 인스턴스 생성
+  Position? _lastPosition; // 마지막 위치 저장
+  final LocationRepository locationRepository;
 
-  // ✅ 앱 실행 시 위치 정보 가져오기 (초기화 기능 포함)
-  static Future<void> initializeLocation() async {
+  // 생성자
+  LocationService(this.locationRepository);
+
+  // 앱 실행 시 위치 초기화 및 업데이트 체크
+  Future<void> initializeLocation() async {
     Position? position = await requestAndGetLocation();
     if (position != null) {
       _logger.i("앱 실행 시 위치 정보: ${position.latitude}, ${position.longitude}");
+      _checkAndSendLocation(position); // 초기 위치 전송
     } else {
       _logger.w("앱 실행 시 위치 정보를 가져오지 못했습니다.");
     }
   }
 
-  // ✅ 위치 권한 요청 및 현재 위치 가져오기
-  static Future<Position?> requestAndGetLocation() async {
+  // 위치 권한 요청 및 현재 위치 가져오기
+  Future<Position?> requestAndGetLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -48,5 +55,37 @@ class LocationService {
 
     _logger.i("위치 가져오기 성공: ${position.latitude}, ${position.longitude}");
     return position;
+  }
+
+  // 위치 변경 확인 후 서버 전송 (500m 이상 이동 시만 전송)
+  void _checkAndSendLocation(Position newPosition) {
+    if (_lastPosition != null) {
+      double distance = Geolocator.distanceBetween(
+        _lastPosition!.latitude,
+        _lastPosition!.longitude,
+        newPosition.latitude,
+        newPosition.longitude,
+      );
+
+      if (distance < 500) {
+        _logger.i("위치 변경이 500m 미만이므로 전송하지 않음.");
+        return;
+      }
+    }
+
+    // 위치 변경 감지됨 → 서버 전송
+    _sendLocationToServer(newPosition);
+    _lastPosition = newPosition; // 최신 위치 저장
+  }
+
+  // 서버로 위치 전송 (API 연동 필요)
+  Future<void> _sendLocationToServer(Position position) async {
+    _logger.i("서버로 위치 정보 전송: ${position.latitude}, ${position.longitude}");
+
+    await locationRepository.sendLocation({
+      'userNo': 'US12345678',
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+    });
   }
 }

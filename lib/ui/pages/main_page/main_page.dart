@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/model_views/main_view_model/main_page_viewmodel.dart';
-
-import '../../../data/models/main-model/Profile.dart';
+import 'package:pingo_front/data/models/main-model/Profile.dart';
 import 'components/ProfileCard.dart';
 
 class MainPage extends ConsumerStatefulWidget {
@@ -14,10 +13,11 @@ class MainPage extends ConsumerStatefulWidget {
 
 class _MainPageState extends ConsumerState<MainPage>
     with SingleTickerProviderStateMixin {
+  late MainPageViewModel viewModel;
+
   @override
   Widget build(BuildContext context) {
-    final viewModel = ref.read(mainPageViewModelProvider(this).notifier);
-    final animationController = viewModel.animationController;
+    final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
     final currentIndex = ref.watch(mainPageViewModelProvider(this));
     final size = MediaQuery.of(context).size;
 
@@ -27,25 +27,22 @@ class _MainPageState extends ConsumerState<MainPage>
         onPanUpdate: viewModel.onPanUpdate,
         onPanEnd: (_) => viewModel.onPanEnd(size),
         child: AnimatedBuilder(
-          animation: animationController,
+          animation: viewModel.animationController,
           builder: (context, child) {
-            final offset = Offset(animationController.value * size.width,
-                viewModel.posY * size.height);
+            final offset = Offset(
+              viewModel.animationController.value * size.width,
+              viewModel.posY * size.height,
+            );
 
             return Stack(
               children: [
-                Positioned(
-                  child: ProfileCard(
-                    profile: profiles[(currentIndex + 1) % profiles.length],
-                  ),
-                ),
+                ProfileCard(
+                    profile: profiles[(currentIndex + 1) % profiles.length]),
                 Align(
                   alignment: Alignment.topCenter,
                   child: Transform.translate(
                     offset: offset,
-                    child: ProfileCard(
-                      profile: profiles[currentIndex],
-                    ),
+                    child: ProfileCard(profile: profiles[currentIndex]),
                   ),
                 ),
               ],
@@ -53,46 +50,45 @@ class _MainPageState extends ConsumerState<MainPage>
           },
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(viewModel),
+      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
-  // 하단 컨테이너 위젯
-  Widget _buildBottomNavigationBar(MainPageViewModel viewModel) {
+  Widget _buildBottomNavigationBar() {
+    final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       color: Colors.black,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildAnimatedButton(
-              Icons.replay, Colors.grey, -1, viewModel.undoSwipe), //  되돌리기 버튼
-          _buildAnimatedButton(
-              Icons.close, Colors.pink, 0, viewModel.onSwipeLeft), //  거절 버튼
-          _buildAnimatedButton(
-              Icons.star, Colors.blue, 2, viewModel.onSwipeUp), //  슈퍼 좋아요 버튼
-          _buildAnimatedButton(Icons.favorite, Colors.green, 1,
-              viewModel.onSwipeRight), //  좋아요 버튼
+          _buildSwipeButton(Icons.replay, Colors.grey, -1, viewModel.undoSwipe),
+          _buildSwipeButton(Icons.close, Colors.pink, 0,
+              () => viewModel.animateAndSwitchCard(-1.5, direction: 'left')),
+          _buildSwipeButton(Icons.star, Colors.blue, 2,
+              () => viewModel.animateAndSwitchCard(-1.5, direction: 'up')),
+          _buildSwipeButton(Icons.favorite, Colors.green, 1,
+              () => viewModel.animateAndSwitchCard(1.5, direction: 'right')),
         ],
       ),
     );
   }
 
-  // 메인 하단 버튼 위젯
-  Widget _buildAnimatedButton(
+  Widget _buildSwipeButton(
       IconData icon, Color color, int index, VoidCallback onTap) {
     final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
     final isHighlighted = viewModel.highlightedButton == index;
 
     return GestureDetector(
       onTap: () {
-        viewModel.highlightedButton = index;
+        viewModel.setHighlightedButton(index);
         onTap();
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
-        width: isHighlighted ? 80 : 60, //  스와이프할 때도 버튼 크기 변경
+        width: isHighlighted ? 80 : 60,
         height: isHighlighted ? 80 : 60,
         decoration: BoxDecoration(
           color: color,
