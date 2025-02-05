@@ -6,8 +6,7 @@ import 'components/find_id_page.dart';
 import 'components/find_pw_page.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
-  Function toggleScreenAfterLogin;
-  SignInPage(this.toggleScreenAfterLogin, {super.key});
+  SignInPage({super.key});
 
   @override
   ConsumerState<SignInPage> createState() => _SignInPageState();
@@ -16,6 +15,10 @@ class SignInPage extends ConsumerStatefulWidget {
 class _SignInPageState extends ConsumerState<SignInPage> {
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _userPwController = TextEditingController();
+
+  void test() {
+    print('object');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +48,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           borderRadius: BorderRadius.circular(4.0),
                         ),
                       ),
-                      onPressed: () {
-                        widget.toggleScreenAfterLogin();
-                      },
+                      onPressed: () {},
                       child: Text(
                         '메인페이지로(임시)',
                         style: TextStyle(color: Colors.white, fontSize: 18),

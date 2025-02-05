@@ -14,7 +14,7 @@ class SessionUser {
 
   void updateSessionUser(Map<String, dynamic> userData) {
     userNo = userData['userNo'];
-    userName = userData['userName'];
+    userRole = userData['userRole'];
     isLogin = true;
   }
 }

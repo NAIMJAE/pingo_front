@@ -1,10 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/global_model/session_user.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/repository/sign_repository/user_signin_repository.dart';
+import 'package:pingo_front/main.dart';
 
 class SigninViewModel extends Notifier<SessionUser> {
+  final mContext = navigatorkey.currentContext!;
   UserSigninRepository repository = UserSigninRepository();
 
   @override
@@ -13,10 +16,10 @@ class SigninViewModel extends Notifier<SessionUser> {
   }
 
   // 로그인 체크
-  Future<bool> checkLoginState() async {
+  Future<void> checkLoginState() async {
     String? accessToken = await secureStorage.read(key: 'accessToken');
     if (accessToken == null) {
-      return false;
+      throw Exception('토큰 없음');
     }
 
     Map<String, dynamic> response =
@@ -31,9 +34,10 @@ class SigninViewModel extends Notifier<SessionUser> {
         accessToken: accessToken,
         isLogin: true,
       );
-      return true;
+      CustomDio.instance.setToken(accessToken);
+      Navigator.popAndPushNamed(mContext, '/mainScreen');
     } else {
-      return false;
+      throw Exception('로그인 실패');
     }
   }
 
@@ -44,7 +48,6 @@ class SigninViewModel extends Notifier<SessionUser> {
       "userPw": userPw,
     };
 
-    // Map<String, dynamic>
     Map<String, dynamic> userData =
         await repository.fetchSendSignInData(loginData);
 
@@ -54,12 +57,26 @@ class SigninViewModel extends Notifier<SessionUser> {
         key: 'accessToken', value: userData['accessToken']);
 
     state = SessionUser(
-        userNo: userData['userNo'],
-        userRole: userData['userRole'],
-        accessToken: userData['accessToken'],
-        isLogin: true);
+      userNo: userData['userNo'],
+      userRole: userData['userRole'],
+      accessToken: userData['accessToken'],
+      isLogin: true,
+    );
+    CustomDio.instance.setToken(userData['accessToken']);
+    Navigator.popAndPushNamed(mContext, '/mainScreen');
+  }
 
-    logger.d(state);
+  // 로그아웃
+  void logout() {
+    secureStorage.delete(key: 'accessToken');
+    state = SessionUser(
+      userNo: null,
+      userRole: null,
+      accessToken: null,
+      isLogin: false,
+    );
+    CustomDio.instance.clearToken();
+    Navigator.popAndPushNamed(mContext, '/signin');
   }
 }
 
