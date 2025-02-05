@@ -6,21 +6,92 @@ import 'package:pingo_front/data/model_views/chat_view_model/chat_room_view_mode
 import 'package:pingo_front/data/model_views/stomp_view_model.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
 
-// consumer 처리하기.
-class ChatRoomBody extends ConsumerWidget {
-  TextEditingController _messageController = TextEditingController();
-  final scroll = ScrollController();
+class ChatInputField extends StatefulWidget {
+  final TextEditingController messageController;
+  final ScrollController scrollController;
+  final FocusNode focusNode;
+  final Function(String) onSendMessage;
 
+  const ChatInputField({
+    Key? key,
+    required this.messageController,
+    required this.scrollController,
+    required this.focusNode,
+    required this.onSendMessage,
+  }) : super(key: key);
+
+  @override
+  _ChatInputFieldState createState() => _ChatInputFieldState();
+}
+
+class _ChatInputFieldState extends State<ChatInputField> {
+  void _sendMessage() {
+    if (widget.messageController.text.trim().isEmpty) return;
+
+    widget.onSendMessage(widget.messageController.text.trim());
+
+    widget.messageController.clear();
+    FocusScope.of(context).unfocus(); // 키보드 닫기
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      if (widget.scrollController.hasClients) {
+        widget.scrollController.animateTo(
+          widget.scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 8,
+        right: 8,
+        bottom: MediaQuery.of(context).viewInsets.bottom, // ✅ 키보드 높이만큼 자동 조정
+      ),
+      child: TextField(
+        controller: widget.messageController,
+        focusNode: widget.focusNode,
+        maxLines: 4,
+        minLines: 1,
+        decoration: InputDecoration(
+          hintText: '메시지 내용을 입력하세요',
+          suffixIcon: IconButton(
+            onPressed: _sendMessage,
+            icon: Icon(Icons.send),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// consumer 처리하기.
+class ChatRoomBody extends ConsumerStatefulWidget {
   ChatRoomBody({super.key});
+
+  @override
+  _ChatRoomBodyState createState() => _ChatRoomBodyState();
+}
+
+class _ChatRoomBodyState extends ConsumerState<ChatRoomBody> {
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController scroll = ScrollController();
+  final FocusNode _focusNode = FocusNode(); // 🔹 FocusNode 추가
 
   // 메세지내용 + 메세지 입력
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final messages = ref.watch(chatRoomProvider); // 상태값 꺼내오기
     final messageNotifier = ref.read(chatRoomProvider.notifier); // 창고 직ㅈ버 접근
-
-    final stompViewModel = ref.watch(stompViewModelProvider.notifier);
-
+    final stompViewModel = ref.read(stompViewModelProvider.notifier);
+    final sss = ref.read(stompViewModelProvider.notifier);
+// 구독해서 보고있는 주소정보에 이 데이터를 바꿔달라고 update 구독해서 보고있는 사람들은 그렇게 바뀜.
+// read 해서 상대편
+// 방송과 관련해서
     return Column(
       children: [
         Expanded(
@@ -56,7 +127,6 @@ class ChatRoomBody extends ConsumerWidget {
                   messageTime: DateTime.now(), // 현재 시간
                 );
                 logger.i('머머 $newMessage.toString()');
-                messageNotifier.addMessage(newMessage);
                 stompViewModel.sendMessage(newMessage);
 
                 // 메시지 추가

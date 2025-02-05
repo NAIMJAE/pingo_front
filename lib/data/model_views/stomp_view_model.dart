@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/model_views/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
+import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
@@ -16,19 +17,22 @@ class StompViewModel extends Notifier<bool> {
   }
 
   // 웹소캣 연결하기 initState일때사용하기
-  void stompConnect() {
+  void stompConnect() async {
     if (stompClient != null) return;
-
+    String? accessToken = await secureStorage.read(key: 'accessToken');
     // stompclient 콜백메서드를 등록할 수 있는 웹소캣의 객체
     stompClient = StompClient(
       config: StompConfig(
         url: wsRootURL,
+        webSocketConnectHeaders: {
+          'Authorization': accessToken,
+        },
         onConnect: _onConnect, // 연결 성공시 실행할 콜백 함수
         onWebSocketError: (dynamic error) =>
-            print(error.toString()), // 웹소캣 자체 오류 감지 , 서버 문제
+            print('연결안되자너 $error.toString()'), // 웹소캣 자체 오류 감지 , 서버 문제
         onStompError: (dynamic error) =>
-            print('에러2'), // stomp 프로토콜 오류 감지, 잘못된 메시지 형식
-        onDisconnect: (StompFrame frame) => print('엘어'), // 웹소켓 연결 해제 감지
+            print('잘못된 메세지 형식'), // stomp 프로토콜 오류 감지, 잘못된 메시지 형식
+        onDisconnect: (StompFrame frame) => print('연결해지'), // 웹소켓 연결 해제 감지
       ),
     );
     stompClient?.activate(); // 웹소캣 활성화
@@ -36,6 +40,8 @@ class StompViewModel extends Notifier<bool> {
   }
 
   //frame은 명령(command)와 추가적인 헤더(Header, 키 벨류 형태)와 추가적인 바디(body: payload, 전송되는 데이터)로 구성된다.
+
+  //맨처음 진입했을 때 메시지 갯수를 받아올 수 있는 콜백 메서드를 추가할 필요가 있지 않을까...?
 
   // 서버에서 메시지 받아오기 받은 메세지를 저장소(chatRoomProvider에 추가할예정)
   // 서버에서 메시지를 받아올 경로
@@ -52,6 +58,7 @@ class StompViewModel extends Notifier<bool> {
     );
     logger.i('연결');
   }
+  // 메시지 갯수
 
   // 서버로 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
   void sendMessage(Message message) {
