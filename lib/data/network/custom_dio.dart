@@ -17,7 +17,17 @@ class CustomDio {
             contentType: 'application/json;charset=utf-8',
             validateStatus: (status) => true,
           ),
-        ) {}
+        ) {
+    _initializeToken(); // 생성자에서 토큰 설정
+  }
+
+  // 생성 시 SecureStorage에서 토큰을 읽어 헤더에 추가
+  Future<void> _initializeToken() async {
+    String? token = await secureStorage.read(key: 'accessToken');
+    if (token != null) {
+      dio.options.headers['Authorization'] = token;
+    }
+  }
 
   /// Get 요청 커스텀 메서드 (통신 + 검증 후 데이터 반환)
   /// - path : 요청 주소의 path 부분
@@ -108,5 +118,10 @@ class CustomDio {
   }
 }
 
-// 금고
+// 디바이스(핸드폰)에는 각 운영체제에 맞는 보안 저장소가 있음
+// secureStorage는 flutter에서 디바이스 내의 보안 저장소를 이용하게 해주는 패키지
+// 즉, secureStorage는 저장소가 아니라 디바이스 내의 보안 저장소를 손쉽게 사용하게 해주는 패키지
+// secureStorage는 Key-Value 구조로 디바이스 내의 보안 저장소에 데이터를 저장
+// 보안 저장소인 이유는 데이터를 단순히 저장하는게 아니라 암호화 알고리즘을 이용해 저장
+// secureStorage 패키지는 read / write / delete 함수를 이용해 손쉽게 데이터를 저장
 const secureStorage = FlutterSecureStorage();

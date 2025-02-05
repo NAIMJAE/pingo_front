@@ -6,6 +6,18 @@ import 'package:pingo_front/data/repository/root_url.dart';
 class UserSigninRepository {
   final Dio _dio = Dio();
 
+  // 로그인 체크
+  Future<Map<String, dynamic>> loginWithToken(String accessToken) async {
+    Response response = await _dio.post(
+      '$rootURL/auto-signin',
+      options: Options(
+        headers: {'Authorization': accessToken},
+      ),
+    );
+    return response.data;
+  }
+
+  // 로그인
   Future<dynamic> fetchSendSignInData(loginData) async {
     try {
       Response response =
