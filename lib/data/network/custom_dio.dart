@@ -5,6 +5,7 @@ import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class CustomDio {
+  static final CustomDio _instance = CustomDio();
   final Dio dio;
 
   CustomDio()
@@ -17,19 +18,12 @@ class CustomDio {
             contentType: 'application/json;charset=utf-8',
             validateStatus: (status) => true,
           ),
-        ) {
-    _initializeToken(); // 생성자에서 토큰 설정
-  }
+        );
 
-  // 생성 시 SecureStorage에서 토큰을 읽어 헤더에 추가
-  Future<void> _initializeToken() async {
-    String? token = await secureStorage.read(key: 'accessToken');
-    if (token != null) {
-      dio.options.headers['Authorization'] = token;
-    }
-  }
+  static CustomDio get instance => _instance;
 
   /// Get 요청 커스텀 메서드 (통신 + 검증 후 데이터 반환)
+  /// final CustomDio _dio = CustomDio.instance; 로 주입받아 사용
   /// - path : 요청 주소의 path 부분
   /// - query : get 요청시 전송할 데이터 (Map 형태)
   /// - contentType : 기본값 application/json, 변경 필요시 입력
@@ -56,6 +50,7 @@ class CustomDio {
   }
 
   /// Post 요청 커스텀 메서드 (통신 + 검증 후 데이터 반환)
+  /// final CustomDio _dio = CustomDio.instance; 로 주입받아 사용
   /// - path : 요청 주소의 path 부분
   /// - data : post 요청시 전송할 데이터 (객체)
   /// - contentType : 기본값 application/json, 변경 필요시 입력
@@ -115,6 +110,22 @@ class CustomDio {
         break;
     }
     return null;
+  }
+
+  // 토큰 추가
+  Future<void> setToken(String token) async {
+    dio.options.headers['Authorization'] = token;
+    logger.i("토큰이 CustomDio에 추가됨: $token");
+
+    await Future.delayed(Duration(milliseconds: 100));
+  }
+
+  // 토큰을 삭제
+  Future<void> clearToken() async {
+    dio.options.headers.remove('Authorization');
+    logger.i("토큰이 CustomDio에서 삭제됨");
+
+    await Future.delayed(Duration(milliseconds: 100));
   }
 }
 

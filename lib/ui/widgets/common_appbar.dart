@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/ui/pages/sign_page/components/sign_up_page.dart';
-import 'package:pingo_front/ui/pages/sign_page/sign_up_page/sign_up_page2.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/data/model_views/signup_view_model/signin_view_model.dart';
 
-AppBar CommonAppBar(context) {
+AppBar CommonAppBar(context, WidgetRef ref) {
   return AppBar(
     title: Row(
       children: [
@@ -14,6 +14,15 @@ AppBar CommonAppBar(context) {
       ],
     ),
     actions: [
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: IconButton(
+          onPressed: () {
+            ref.read(sessionProvider.notifier).logout();
+          },
+          icon: Icon(Icons.logout),
+        ),
+      ),
       Padding(padding: const EdgeInsets.all(8.0), child: Icon(Icons.settings)),
     ],
     backgroundColor: Colors.white,

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/ui/pages/sign_page/components/sign_up_page.dart';
-import 'package:pingo_front/ui/pages/sign_page/sign_up_page/sign_up_page2.dart';
 
 AppBar signupAppBar(context, currentStep, _prevStep) {
   return AppBar(

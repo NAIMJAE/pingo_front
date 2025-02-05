@@ -1,17 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/network/response_dto.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:pingo_front/data/models/swipe_state_model/user_swipe_details.dart';
 
 class SwipeStateRepository {
-  final Dio _dio = Dio();
+  final CustomDio _dio = CustomDio.instance;
 
   Future<Map<String, List<UserSwipeDetails>>> fetchSwipeState() async {
-    final response = await _dio.get('$rootURL/swipeState');
+    final response = await _dio.get('/swipeState');
 
     // 한번에 Map<String, List<UserSwipeDetails>>로 캐스팅 불가능
-    final data = ResponseDTO.validation(response.data) as Map<String, dynamic>;
+    final data = response as Map<String, dynamic>;
 
     logger.d('data : ${data}');
 

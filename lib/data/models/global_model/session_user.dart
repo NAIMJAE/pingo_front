@@ -11,4 +11,10 @@ class SessionUser {
   String toString() {
     return 'SessionUser{userNo: $userNo, userName: $userRole, accessToken: $accessToken, isLogin: $isLogin}';
   }
+
+  void updateSessionUser(Map<String, dynamic> userData) {
+    userNo = userData['userNo'];
+    userRole = userData['userRole'];
+    isLogin = true;
+  }
 }
