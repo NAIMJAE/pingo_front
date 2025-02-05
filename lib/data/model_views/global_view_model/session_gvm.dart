@@ -16,6 +16,13 @@ class SessionGvm extends Notifier<SessionUser> {
     // 임시 로직
     // 나중에는 isLogin 여부에 따라 return 값 변경해야함
 
+    // 서버와의 통신으로 받아온 user data (임시)
+    Map<String, dynamic> userData = {
+      'userNo': 'US12345678',
+      'userName': '홍길동',
+    };
+    state.updateSessionUser(userData);
+
     return 0;
   }
 
