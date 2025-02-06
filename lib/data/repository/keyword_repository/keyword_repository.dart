@@ -4,12 +4,12 @@ import '../../models/keyword_model/keyword_group.dart';
 
 // 스프링 서버와 통신하는 repository
 class KeywordRepository {
-  final CustomDio _dio = CustomDio.instance;
+  final CustomDio _customDio = CustomDio.instance;
 
   // localhost:8080/pingo/keyword로 http 통신
   // 통신의 결과를 ResponseDTO.validation로 검증하고 알맞은 데이터 타입으로 매핑
   Future<Map<String, KeywordGroup>> fetchKeyword() async {
-    final response = await _dio.get('/keyword');
+    final response = await _customDio.get('/keyword');
 
     Map<String, KeywordGroup> keywordGroup = {};
 
@@ -20,7 +20,7 @@ class KeywordRepository {
   }
 
   Future<void> fetchSelectedKeyword(userNo, kwId) async {
-    final response = await _dio.get(
+    final response = await _customDio.get(
       '/recommend',
       query: {'userNo': userNo, 'sKwId': kwId},
     );

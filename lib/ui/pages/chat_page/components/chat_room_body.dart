@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/model_views/chat_view_model/chat_room_view_model.dart';
-import 'package:pingo_front/data/model_views/stomp_view_model.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
+import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 
 class ChatInputField extends StatefulWidget {
   final TextEditingController messageController;

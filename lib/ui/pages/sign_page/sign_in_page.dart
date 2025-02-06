@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/model_views/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/sign_up_page2.dart';
 import 'components/find_id_page.dart';
 import 'components/find_pw_page.dart';

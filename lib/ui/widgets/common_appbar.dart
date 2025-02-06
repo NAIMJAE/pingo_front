@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/model_views/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 
 AppBar CommonAppBar(context, WidgetRef ref) {
   return AppBar(
