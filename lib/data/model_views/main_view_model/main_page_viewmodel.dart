@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dio/dio.dart';
-import 'package:pingo_front/data/models/global_model/session_user.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/main-model/Profile.dart';
 import 'package:pingo_front/data/repository/main_repository/main_repository.dart';
 
@@ -28,12 +27,18 @@ class MainPageViewModel extends StateNotifier<int> {
     _updateHighlightedButton();
   }
 
-  void onPanEnd(Size size) {
+  // 스와이프 애니메이션이 끝날을 때
+  void onPanEnd(Size size, String userNo) {
+    if (userNo.isEmpty) {
+      logger.e("[오류] 사용자 번호가 없음. 스와이프 데이터를 보낼 수 없습니다.");
+      return;
+    }
+
     if (animationController.value.abs() > 0.4) {
       if (animationController.value > 0) {
-        animateAndSwitchCard(1.5, direction: 'PANG');
+        animateAndSwitchCard(1.5, userNo, direction: 'PANG');
       } else {
-        animateAndSwitchCard(-1.5, direction: 'PING');
+        animateAndSwitchCard(-1.5, userNo, direction: 'PING');
       }
     } else {
       resetPosition();
@@ -52,21 +57,22 @@ class MainPageViewModel extends StateNotifier<int> {
       highlightedButton = newHighlightedButton;
   }
 
-  void animateAndSwitchCard(double target, {String? direction}) {
+  void animateAndSwitchCard(double target, String userNo, {String? direction}) {
     animationController
         .animateTo(target, duration: const Duration(milliseconds: 300))
         .whenComplete(() {
       _moveToNextCard();
       if (direction != null) {
-        _sendSwipeData(direction); // ✅ 서버 요청은 애니메이션이 끝난 후 비동기 실행
+        _sendSwipeData(direction, userNo); // 서버 요청은 애니메이션이 끝난 후 비동기 실행
       }
     });
   }
 
-  Future<void> _sendSwipeData(String? direction) async {
+  // 스와이프 보내기
+  Future<void> _sendSwipeData(String? direction, String userNo) async {
     if (direction != null) {
       await repository.insertSwipe({
-        'fromUserNo': 'US12345678',
+        'fromUserNo': userNo,
         'toUserNo': profiles[state].userNo,
         'swipeType': direction,
         'swipeState': 'WAIT'

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/model_views/main_view_model/main_page_viewmodel.dart';
+import 'package:pingo_front/data/model_views/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/models/main-model/Profile.dart';
 import 'components/ProfileCard.dart';
 
@@ -17,6 +18,7 @@ class _MainPageState extends ConsumerState<MainPage>
 
   @override
   Widget build(BuildContext context) {
+    final sessionUser = ref.watch(sessionProvider);
     final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
     final currentIndex = ref.watch(mainPageViewModelProvider(this));
     final size = MediaQuery.of(context).size;
@@ -25,7 +27,7 @@ class _MainPageState extends ConsumerState<MainPage>
       backgroundColor: Colors.white,
       body: GestureDetector(
         onPanUpdate: viewModel.onPanUpdate,
-        onPanEnd: (_) => viewModel.onPanEnd(size),
+        onPanEnd: (_) => viewModel.onPanEnd(size, sessionUser?.userNo ?? ''),
         child: AnimatedBuilder(
           animation: viewModel.animationController,
           builder: (context, child) {
@@ -50,11 +52,11 @@ class _MainPageState extends ConsumerState<MainPage>
           },
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: _buildBottomNavigationBar(sessionUser?.userNo ?? ''),
     );
   }
 
-  Widget _buildBottomNavigationBar() {
+  Widget _buildBottomNavigationBar(String userNo) {
     final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
 
     return Container(
@@ -64,12 +66,24 @@ class _MainPageState extends ConsumerState<MainPage>
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildSwipeButton(Icons.replay, Colors.grey, -1, viewModel.undoSwipe),
-          _buildSwipeButton(Icons.close, Colors.pink, 0,
-              () => viewModel.animateAndSwitchCard(-1.5, direction: 'left')),
-          _buildSwipeButton(Icons.star, Colors.blue, 2,
-              () => viewModel.animateAndSwitchCard(-1.5, direction: 'up')),
-          _buildSwipeButton(Icons.favorite, Colors.green, 1,
-              () => viewModel.animateAndSwitchCard(1.5, direction: 'right')),
+          _buildSwipeButton(
+              Icons.close,
+              Colors.pink,
+              0,
+              () => viewModel.animateAndSwitchCard(-1.5, userNo,
+                  direction: 'left')),
+          _buildSwipeButton(
+              Icons.star,
+              Colors.blue,
+              2,
+              () => viewModel.animateAndSwitchCard(-1.5, userNo,
+                  direction: 'up')),
+          _buildSwipeButton(
+              Icons.favorite,
+              Colors.green,
+              1,
+              () => viewModel.animateAndSwitchCard(1.5, userNo,
+                  direction: 'right')),
         ],
       ),
     );

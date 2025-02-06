@@ -17,7 +17,6 @@ class LocationRepository {
     );
 
     bool result = ResponseDTO.validation(response);
-
     return result;
   }
 }
