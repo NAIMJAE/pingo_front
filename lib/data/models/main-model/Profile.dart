@@ -1,11 +1,13 @@
 class Profile {
-  final String name;
-  final String age;
-  final String status;
-  final String distance;
+  final String userNo; // 유저 번호
+  final String name; // 이름
+  final String age; // 나이
+  final String status; // 상태
+  final String distance; // 거리
   final List<String> images; // 🔥 여러 개의 이미지 리스트
 
   Profile({
+    required this.userNo,
     required this.name,
     required this.age,
     required this.status,
@@ -17,6 +19,7 @@ class Profile {
 // 샘플 데이터
 final List<Profile> profiles = [
   Profile(
+    userNo: 'US12341234',
     name: '박임제',
     age: '31',
     status: '접속 중',
@@ -28,6 +31,7 @@ final List<Profile> profiles = [
     ], // ✅ 여러 개의 이미지
   ),
   Profile(
+    userNo: 'US12341234',
     name: '하나',
     age: '28',
     status: '접속 중',
