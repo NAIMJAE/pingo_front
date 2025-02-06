@@ -37,26 +37,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 개발 단계 임시
-                  SizedBox(
-                    width: 200,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                      ),
-                      onPressed: () {},
-                      child: Text(
-                        '메인페이지로(임시)',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  //
                   Image.asset(
                     'assets/images/pingo1.png',
                     width: 200,

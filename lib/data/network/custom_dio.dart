@@ -37,8 +37,6 @@ class CustomDio {
         options: Options(headers: {'Content-Type': contentType}),
       );
 
-      logger.d(response.data);
-
       dynamic result = ResponseDTO.validation(response.data);
       return result;
     } on DioException catch (e) {
@@ -64,8 +62,6 @@ class CustomDio {
           headers: {'Content-Type': contentType},
         ),
       );
-
-      logger.d(response.data);
 
       dynamic result = ResponseDTO.validation(response.data);
       return result;
