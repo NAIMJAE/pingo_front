@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/model_views/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class StompViewModel extends Notifier<bool> {
