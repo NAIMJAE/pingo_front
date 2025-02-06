@@ -1,8 +1,4 @@
-import 'package:dio/dio.dart';
-import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
-import 'package:pingo_front/data/network/response_dto.dart';
-import 'package:pingo_front/data/repository/root_url.dart';
 
 import '../../models/keyword_model/keyword_group.dart';
 
@@ -21,5 +17,12 @@ class KeywordRepository {
       keywordGroup.addAll({key: KeywordGroup.fromJson(response[key])});
     }
     return keywordGroup;
+  }
+
+  Future<void> fetchSelectedKeyword(userNo, kwId) async {
+    final response = await _dio.get(
+      '/recommend',
+      query: {'userNo': userNo, 'sKwId': kwId},
+    );
   }
 }

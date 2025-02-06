@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/model_views/keyword_view_model/keyword_view_model.dart';
+import 'package:pingo_front/data/model_views/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/models/global_model/session_user.dart';
 
 import '../../../_core/utils/logger.dart';
 import '../../../data/models/keyword_model/keyword.dart';
@@ -14,16 +16,20 @@ class KeywordPage extends ConsumerStatefulWidget {
 }
 
 class _KeywordPageState extends ConsumerState<KeywordPage> {
+  late final KeywordViewModel kGNotifier;
+  late final String sessionUserNo;
+
   @override
   void initState() {
     super.initState();
-    ref.read(KeywordViewModelProvider.notifier).fetchKeywords();
+    kGNotifier = ref.read(KeywordViewModelProvider.notifier);
+    sessionUserNo = ref.read(sessionProvider).userNo!;
+    kGNotifier.fetchKeywords();
   }
 
   @override
   Widget build(BuildContext context) {
     final groupList = ref.watch(KeywordViewModelProvider);
-    final kGNotifier = ref.read(KeywordViewModelProvider.notifier);
 
     return Scaffold(
       body: ListView(
@@ -67,7 +73,7 @@ class _KeywordPageState extends ConsumerState<KeywordPage> {
   Widget _keywordCard(BuildContext buildContext, Keyword keyword) {
     return GestureDetector(
       onTap: () {
-        logger.d('${keyword.kwName} CLICK!');
+        kGNotifier.fetchSelectedKeyword(sessionUserNo, keyword.kwId);
       },
       child: Container(
         margin: EdgeInsets.only(left: 16.0, bottom: 8.0),

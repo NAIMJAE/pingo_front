@@ -12,8 +12,6 @@ class KeywordViewModel extends Notifier<Map<String, KeywordGroup>> {
     return {};
   }
 
-  // repository를 실행시키는 메서드
-  // 실행 결과로 반환받은 데이터를 state에 저장
   Future<void> fetchKeywords() async {
     try {
       final keywordMap = await _repository.fetchKeyword();
@@ -21,6 +19,14 @@ class KeywordViewModel extends Notifier<Map<String, KeywordGroup>> {
     } catch (e) {
       state = {};
       logger.e('Failed to fetch keywords: $e');
+    }
+  }
+
+  Future<void> fetchSelectedKeyword(userNo, kwId) async {
+    try {
+      await _repository.fetchSelectedKeyword(userNo, kwId);
+    } catch (e) {
+      logger.e('Failed to fetch Selected keywords: $e');
     }
   }
 }
