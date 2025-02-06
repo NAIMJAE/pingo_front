@@ -32,6 +32,9 @@ class SigninViewModel extends Notifier<SessionUser> {
     response = response['data'];
 
     if (response['message'] == '자동 로그인 성공') {
+      // sendLocation에서 CustomDio를 사용중이기 때문에 토큰 설정후 위치전송(자동로그인)
+      CustomDio.instance.setToken(accessToken);
+
       // 현재 위치 가져오기 (기존 위치 없으면 새로 요청)
       Position? currentPosition = LocationService.lastPosition;
       if (currentPosition == null) {
@@ -45,9 +48,6 @@ class SigninViewModel extends Notifier<SessionUser> {
         accessToken: accessToken,
         isLogin: true,
       );
-
-      // sendLocation에서 CustomDio를 사용중이기 때문에 토큰 설정후 위치전송(자동로그인)
-      CustomDio.instance.setToken(accessToken);
 
       // 현재 위치 서버로 전송
       await locationRepository.sendLocation({
