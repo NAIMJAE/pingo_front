@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
+import 'package:pingo_front/ui/pages/community_page/community_page.dart';
 
 import '../widgets/common_appbar.dart';
 import 'chat_page/chat_page.dart';
@@ -45,7 +46,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           children: [
             MainPage(),
             KeywordPage(),
-            SwipeStatePage(),
+            CommunityPage(),
             ChatPage(),
             UserPage(),
           ],
