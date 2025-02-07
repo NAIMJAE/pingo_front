@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/ui/widgets/naver_map.dart';
 
 class PlaceWritePage extends StatefulWidget {
   const PlaceWritePage({super.key});
@@ -18,7 +17,6 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
         child: Column(
           children: [
             Text('네이버맵'),
-            Expanded(child: NaverMapApp()),
           ],
         ),
       ),
