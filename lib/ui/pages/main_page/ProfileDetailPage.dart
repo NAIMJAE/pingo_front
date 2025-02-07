@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/data/models/main-model/Profile.dart';
-import 'package:pingo_front/data/models/main-model/ProfileDetail.dart';
+import 'package:pingo_front/data/models/main_model/Profile.dart';
+import 'package:pingo_front/data/models/main_model/ProfileDetail.dart';
 
 class ProfileDetailPage extends StatefulWidget {
   final Profile profile;
