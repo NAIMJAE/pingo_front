@@ -49,7 +49,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
 
   Widget _buildTabButton(String text, int index) {
     return SizedBox(
-      width: 200,
+      width: 180,
       child: TextButton(
         onPressed: () {
           setState(() {
