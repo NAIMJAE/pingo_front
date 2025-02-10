@@ -4,7 +4,7 @@ class Profile {
   final String age; // 나이
   final String status; // 상태
   final String distance; // 거리
-  final List<String> images; // 🔥 여러 개의 이미지 리스트
+  final List<String> ImageList; // 🔥 여러 개의 이미지 리스트
 
   Profile({
     required this.userNo,
@@ -12,7 +12,7 @@ class Profile {
     required this.age,
     required this.status,
     required this.distance,
-    required this.images, // ✅ 리스트로 변경
+    required this.ImageList, // ✅ 리스트로 변경
   });
 }
 
@@ -24,7 +24,7 @@ final List<Profile> profiles = [
     age: '31',
     status: '접속 중',
     distance: '1km 거리',
-    images: [
+    ImageList: [
       'assets/images/aa.png',
       'assets/images/pingo1.png',
       'assets/images/pingo2.png'
@@ -36,7 +36,7 @@ final List<Profile> profiles = [
     age: '28',
     status: '접속 중',
     distance: '2km 거리',
-    images: [
+    ImageList: [
       'assets/images/bb.png',
       'assets/images/bb0005.jpg',
       'assets/images/pingo3.png'

@@ -33,10 +33,10 @@ class LocationService {
   // 로그인 후 위치 추적 시작 (서버 요청 o)
   static void startLocationTracking(SessionUser sessionUser) {
     _sessionUser = sessionUser; // 로그인된 유저 저장
-    _logger.i("📍 위치 추적 시작 (UserNo: ${sessionUser.userNo})");
+    _logger.i(" 위치 추적 시작 (UserNo: ${sessionUser.userNo})");
 
     _locationTimer = Timer.periodic(Duration(minutes: 10), (timer) async {
-      _logger.i("⏳ 10분마다 위치 확인 중...");
+      _logger.i("⏳10분마다 위치 확인 중...");
       Position? position = await requestAndGetLocation();
       if (position != null) {
         _updateAndSendLocation(position);
