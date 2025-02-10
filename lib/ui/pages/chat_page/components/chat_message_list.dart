@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:pingo_front/data/models/chat_model/chat_model.dart';
 
 import '../chat_room_page.dart';
 
 class ChatMessageList extends StatefulWidget {
-  final String userNo;
-  const ChatMessageList({required this.userNo, super.key});
+  final List<Chat> chatList;
+  const ChatMessageList(this.chatList, {super.key});
 
   @override
   State<ChatMessageList> createState() => _ChatMessageListState();
 }
 
 class _ChatMessageListState extends State<ChatMessageList> {
+  /**
+   * List<Chat> chatList -> 반복 if(lastmsg == null)
+   *
+   */
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

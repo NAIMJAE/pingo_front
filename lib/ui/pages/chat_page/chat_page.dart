@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/models/global_model/session_user.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 
 import 'components/chat_match.dart';
@@ -15,20 +16,32 @@ class ChatPage extends ConsumerStatefulWidget {
 }
 
 class _ChatPageState extends ConsumerState<ChatPage> {
+  late String? userNo;
+
+  @override
+  void initState() {
+    super.initState();
+    final sessionUser = ref.watch(sessionProvider);
+    userNo = sessionUser.userNo;
+    // 여기서 chat 뷰모델의 초기 데이터 조회하는 로직 수행 (userNo)
+  }
+
   @override
   Widget build(BuildContext context) {
-    final sessionUser = ref.watch(sessionProvider);
+    final chatList = ref.watch(chatProvider);
 
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: [
-            ChatSearchHeader(userNo: sessionUser?.userNo ?? ''),
+            ChatSearchHeader(chatList),
             SizedBox(height: 12),
-            ChatMatch(userNo: sessionUser?.userNo ?? ''),
+            ChatMatch(
+              chatList: [],
+            ),
             SizedBox(height: 12),
-            ChatMessageList(userNo: sessionUser?.userNo ?? ''),
+            ChatMessageList(chatList),
           ],
         ),
       ),

@@ -1,8 +1,9 @@
-class ChatRoom {
-  final String? userNo;
+import 'package:pingo_front/data/models/user_model/user_image.dart';
+
+class Chat {
   final String? roomId;
   final String? lastMessage;
-  final String? imgProfile;
+  final List<UserImage>? otherUsers;
 
-  ChatRoom(this.userNo, this.roomId, this.lastMessage, this.imgProfile);
+  Chat(this.roomId, this.lastMessage, this.otherUsers);
 }

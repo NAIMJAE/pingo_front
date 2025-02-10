@@ -47,7 +47,7 @@ class StompViewModel extends Notifier<bool> {
   // 서버에서 메시지를 받아올 경로
   void _onConnect(StompFrame frame) {
     stompClient?.subscribe(
-      destination: '/sub/1',
+      destination: '/topic/msg/1',
       callback: (StompFrame frame) {
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
         final Message message = Message.fromJson(jsonData);
@@ -58,8 +58,31 @@ class StompViewModel extends Notifier<bool> {
     );
     logger.i('웹소냥이 연결완료');
   }
+
+  // 서버에서 받기
+  // 1. 메세지 받기
+  void receive(StompFrame frame, String roomId, String userNo) {
+    stompClient?.subscribe(
+      destination: '/topic/msg/$roomId',
+      callback: (StompFrame frame) {
+        final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
+        final Message message = Message.fromJson(jsonData);
+        // 이전 채팅 가져와야 하기 때문에
+        logger.i('이거이거이거 $message');
+        _addMessage(message);
+      },
+    );
+    // 2. 알림받기
+    stompClient?.subscribe(
+      destination: '/topic/one/$userNo',
+      callback: (StompFrame frame) {
+        print('알림받기');
+      },
+    );
+  }
   // 메시지 갯수
 
+  // 채팅 view model로 빼기
   // 서버로 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
   void sendMessage(Message message) {
     final messages = jsonEncode(message.toJson());
