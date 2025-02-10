@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:pingo_front/ui/pages/community_page/components/place_write_page.dart';
+import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class PlaceSuggestPage extends ConsumerStatefulWidget {
   const PlaceSuggestPage({super.key});
@@ -89,7 +91,11 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
       ),
       child: Row(
         children: [
-          Text('이미지'),
+          SizedBox(
+            width: 100,
+            height: 100,
+            child: CustomImage().token('/images/userImages/UI12345678.jpg'),
+          ),
           Column(
             children: [
               Text('상호'),

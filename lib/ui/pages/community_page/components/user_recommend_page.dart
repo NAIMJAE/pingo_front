@@ -15,26 +15,14 @@ class _UserRecommendPageState extends ConsumerState<UserRecommendPage>
 
   //
   List<List<String>> example = [
-    [
-      'bb0001.jpg',
-      'bb0002.jpg',
-      'bb0003.jpg',
-    ],
-    [
-      'bb0004.jpg',
-      'bb0005.jpg',
-      'bb0006.jpg',
-    ],
-    [
-      'bb0007.jpg',
-      'bb0008.jpg',
-      'bb0009.jpg',
-    ],
-    [
-      'bb0010.jpg',
-      'bb0011.jpg',
-      'bb0012.jpg',
-    ]
+    ['bb0001.jpg', 'bb0002.jpg', 'bb0003.jpg'],
+    ['bb0004.jpg', 'bb0005.jpg', 'bb0006.jpg'],
+    ['bb0007.jpg', 'bb0008.jpg', 'bb0009.jpg'],
+    ['bb0010.jpg', 'bb0011.jpg', 'bb0012.jpg'],
+    ['bb0001.jpg', 'bb0002.jpg', 'bb0003.jpg'],
+    ['bb0004.jpg', 'bb0005.jpg', 'bb0006.jpg'],
+    ['bb0007.jpg', 'bb0008.jpg', 'bb0009.jpg'],
+    ['bb0010.jpg', 'bb0011.jpg', 'bb0012.jpg'],
   ];
   //
 
