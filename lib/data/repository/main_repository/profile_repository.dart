@@ -14,7 +14,7 @@ class ProfileRepository {
         age: '31',
         status: '접속 중',
         distance: '1km 거리',
-        images: [
+        ImageList: [
           'assets/images/aa.png',
           'assets/images/pingo1.png',
           'assets/images/pingo2.png'
@@ -26,7 +26,7 @@ class ProfileRepository {
         age: '28',
         status: '접속 중',
         distance: '2km 거리',
-        images: [
+        ImageList: [
           'assets/images/bb.png',
           'assets/images/bb0005.jpg',
           'assets/images/pingo3.png'

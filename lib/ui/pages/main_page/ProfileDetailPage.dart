@@ -17,16 +17,16 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
   void _showNextImage() {
     setState(() {
       currentImageIndex =
-          (currentImageIndex + 1) % widget.profile.images.length;
+          (currentImageIndex + 1) % widget.profile.ImageList.length;
     });
   }
 
   void _showPreviousImage() {
     setState(() {
       currentImageIndex =
-          (currentImageIndex - 1) % widget.profile.images.length;
+          (currentImageIndex - 1) % widget.profile.ImageList.length;
       if (currentImageIndex < 0) {
-        currentImageIndex = widget.profile.images.length - 1;
+        currentImageIndex = widget.profile.ImageList.length - 1;
       }
     });
   }
@@ -89,7 +89,7 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
             width: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(widget.profile.images[currentImageIndex]),
+                image: AssetImage(widget.profile.ImageList[currentImageIndex]),
                 fit: BoxFit.cover,
               ),
             ),
@@ -98,7 +98,7 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
-              widget.profile.images.length,
+              widget.profile.ImageList.length,
               (index) => Container(
                 width: 20,
                 height: 5,
