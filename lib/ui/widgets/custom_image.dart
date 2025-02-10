@@ -20,6 +20,14 @@ class CustomImage {
     _token = token;
   }
 
+  /// DecorationImage에서 사용할 수 있도록 ImageProvider 반환 메서드 추가
+  ImageProvider getImageProvider(String url) {
+    return NetworkImage(
+      '$rootURL/uploads$url',
+      headers: {'Authorization': '$_token'},
+    );
+  }
+
   /// 토큰 인증 기반의 이미지 호출 메서드
   /// url : 이미지가 존재하는 서버의 주소
   Widget token(String url) {

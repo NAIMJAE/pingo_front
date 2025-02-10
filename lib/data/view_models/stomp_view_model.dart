@@ -58,8 +58,8 @@ class StompViewModel extends Notifier<bool> {
     );
     logger.i('웹소냥이 연결완료');
   }
-  // 메시지 갯수
 
+  // 메시지 갯수
   // 서버로 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
   void sendMessage(Message message) {
     final messages = jsonEncode(message.toJson());

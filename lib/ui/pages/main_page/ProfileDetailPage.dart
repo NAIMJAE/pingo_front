@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/models/main_model/ProfileDetail.dart';
 
+import '../../widgets/custom_image.dart';
+
 class ProfileDetailPage extends StatefulWidget {
   final Profile profile;
 
@@ -89,7 +91,8 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
             width: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(widget.profile.ImageList[currentImageIndex]),
+                image: CustomImage().getImageProvider(
+                    widget.profile.ImageList[currentImageIndex]),
                 fit: BoxFit.cover,
               ),
             ),
