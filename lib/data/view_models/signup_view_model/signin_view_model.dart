@@ -8,6 +8,7 @@ import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/repository/location_repository/location_repository.dart';
 import 'package:pingo_front/data/repository/sign_repository/user_signin_repository.dart';
 import 'package:pingo_front/main.dart';
+import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class SigninViewModel extends Notifier<SessionUser> {
   final mContext = navigatorkey.currentContext!;
@@ -59,6 +60,9 @@ class SigninViewModel extends Notifier<SessionUser> {
       // 로그인 시 위치 추적 시작
       LocationService.startLocationTracking(state);
 
+      // 커스텀 이미지 조회 위젯에 토큰 저장
+      CustomImage().setToken(accessToken);
+
       Navigator.popAndPushNamed(mContext, '/mainScreen');
     } else {
       throw Exception('로그인 실패');
@@ -98,6 +102,9 @@ class SigninViewModel extends Notifier<SessionUser> {
 
     // 로그인 시 위치 추적 시작
     LocationService.startLocationTracking(state);
+
+    // 커스텀 이미지 조회 위젯에 토큰 저장
+    CustomImage().setToken(userData['accessToken']);
 
     Navigator.popAndPushNamed(mContext, '/mainScreen');
   }
