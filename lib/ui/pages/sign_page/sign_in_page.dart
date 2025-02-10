@@ -143,56 +143,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     );
   }
 
-  Widget _buildSignInTextField(hintText, errorMsg, signInData) {
-    return TextFormField(
-      keyboardType: TextInputType.text,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        hintText: hintText,
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return errorMsg;
-        }
-        return null;
-      },
-      onSaved: (value) {
-        signInData = value!;
-      },
-    );
-  }
-
-  Widget _buildSignInButton(context, onPressed, backGroundColor, signText) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          // 텍스트 스타일
-          foregroundColor: Colors.white,
-          textStyle: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-          // 배경 스타일
-          backgroundColor: backGroundColor,
-          // 그림자 스타일
-          shadowColor: Colors.grey,
-          elevation: 10,
-
-          // 모서리 라운드
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        ),
-        onPressed: onPressed,
-        child: Text(signText),
-      ),
-    );
-  }
-
   Widget _buildFindUserInfo(context, link, findTitle) {
     return Align(
       alignment: Alignment.center,

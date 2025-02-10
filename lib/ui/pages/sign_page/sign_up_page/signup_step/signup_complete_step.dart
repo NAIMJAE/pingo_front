@@ -104,6 +104,7 @@ class _SignupCompleteStepState extends State<SignupCompleteStep> {
             ),
             onPressed: () {
               // 로그인 화면으로 이동
+              Navigator.pop(context);
             },
             child: Text(
               '로그인 화면으로 이동',
