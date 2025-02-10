@@ -1,5 +1,5 @@
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/models/main-model/Profile.dart';
+import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/network/response_dto.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
