@@ -42,27 +42,3 @@ final chatRoomProvider = NotifierProvider<chatRoomViewModel, List<Message>>(
     return chatRoomViewModel();
   },
 );
-
-// viewModel
-// final List<Message> messages = [
-//   Message(
-//     // messageNo: '1',
-//     chatNo: '1',
-//     messageContent: "받아주세용dddddddddddddddddddd",
-//     fromId: '1',
-//     messageTime: DateTime.now(),
-//     type: MessageType.text,
-//     readCount: 1,
-//     profileImageUrl: 'https://picsum.photos/250/250',
-//   ),
-//   Message(
-//     // messageNo: '1',
-//     chatNo: '1',
-//     messageContent: "받아주세용dddddddddddddddd",
-//     fromId: '2',
-//     messageTime: DateTime.now(),
-//     type: MessageType.text,
-//     readCount: 1,
-//     profileImageUrl: 'https://picsum.photos/250/250',
-//   ),
-// ];
