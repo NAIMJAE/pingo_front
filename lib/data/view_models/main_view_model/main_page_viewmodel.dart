@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/models/main-model/Profile.dart';
+import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/repository/main_repository/main_repository.dart';
 
 class MainPageViewModel extends StateNotifier<int> {

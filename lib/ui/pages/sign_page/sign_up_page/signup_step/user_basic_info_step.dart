@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:daum_postcode_search/daum_postcode_search.dart';
+import 'package:pingo_front/ui/widgets/post_code_search.dart';
 
 // step3 회원 기본 정보 입력
 class UserBasicInfoStep extends StatefulWidget {
@@ -119,7 +121,7 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
           const SizedBox(height: 20),
           _textInputBox('닉네임', '', false, _userNickController),
           const SizedBox(height: 20),
-          _textInputBox('주소', '', false, _userAddressController),
+          _addressBox('주소', '', false, _userAddressController),
           const SizedBox(height: 20),
           information.isNotEmpty
               ? Text(
@@ -181,6 +183,53 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
             filled: true,
             fillColor: Colors.white,
             hintText: textHint,
+            hintStyle: TextStyle(color: Colors.grey),
+          ),
+          obscureText: obscure,
+        ),
+      ],
+    );
+  }
+
+  Widget _addressBox(String title, String textHint, bool obscure,
+      TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 4.0),
+        TextField(
+          onTap: () async {
+            final selectedAddress = await Navigator.push<DataModel>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PostCodeSearchScreen(
+                  onSelected: (address) {
+                    Navigator.pop(context, address); // 선택된 주소 반환
+                  },
+                ),
+              ),
+            );
+
+            if (selectedAddress != null) {
+              controller.text = selectedAddress.roadAddress;
+            }
+          },
+          readOnly: true,
+          controller: controller,
+          decoration: const InputDecoration(
+            enabledBorder:
+                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            border:
+                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            filled: true,
+            fillColor: Colors.white,
+            hintText: "주소를 설정해주세요.",
             hintStyle: TextStyle(color: Colors.grey),
           ),
           obscureText: obscure,

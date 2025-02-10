@@ -2,8 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'profile_page/profile_page.dart';
 
-class MyinfoBox extends StatelessWidget {
+class MyinfoBox extends StatefulWidget {
   const MyinfoBox({super.key});
+
+  @override
+  _MyinfoBoxState createState() => _MyinfoBoxState();
+}
+
+class _MyinfoBoxState extends State<MyinfoBox> {
+  String profileImageUrl = 'https://picsum.photos/200/100';
+  String name = '이준석';
+  String nickname = '이시로';
+  String address = '부산광역시 연제구 토현로 10';
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +35,7 @@ class MyinfoBox extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileRow(context) {
+  Widget _buildProfileRow(BuildContext context) {
     return Row(
       children: [
         Stack(
@@ -36,7 +46,7 @@ class MyinfoBox extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(32.5),
                 child: Image.network(
-                  'https://picsum.photos/200/100',
+                  profileImageUrl,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -44,18 +54,27 @@ class MyinfoBox extends StatelessWidget {
             Positioned(
               bottom: 0,
               right: 0,
-              child: Container(
-                width: 25,
-                height: 25,
-                decoration: BoxDecoration(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    profileImageUrl =
+                        'https://picsum.photos/200/100?random=${DateTime.now().millisecondsSinceEpoch}';
+                  });
+                },
+                child: Container(
+                  width: 25,
+                  height: 25,
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15.0),
-                    color: Colors.grey[100]),
-                child: Icon(
-                  CupertinoIcons.camera,
-                  size: 15,
+                    color: Colors.grey[100],
+                  ),
+                  child: const Icon(
+                    CupertinoIcons.camera,
+                    size: 15,
+                  ),
                 ),
               ),
-            )
+            ),
           ],
         ),
         const SizedBox(width: 16),
@@ -64,35 +83,44 @@ class MyinfoBox extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text('이준석', style: Theme.of(context).textTheme.headlineLarge),
+                Text(name, style: Theme.of(context).textTheme.headlineLarge),
                 Text(' / ', style: Theme.of(context).textTheme.headlineLarge),
-                Text('이시로', style: Theme.of(context).textTheme.headlineLarge),
+                Text(nickname,
+                    style: Theme.of(context).textTheme.headlineLarge),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              '부산광역시 연제구 토현로 10',
+              address,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
-        )
+        ),
       ],
     );
-  } // end of _buildProfileRow
+  }
 
-  Widget _buildProfileButton(context) {
+  Widget _buildProfileButton(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        final result = await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ProfilePage()),
         );
+
+        if (result != null && result is Map<String, String>) {
+          setState(() {
+            name = result['name'] ?? name;
+            nickname = result['nickname'] ?? nickname;
+            address = result['address'] ?? address;
+          });
+        }
       },
       child: Container(
         height: 45,
         decoration: BoxDecoration(
           border: Border.all(
-            color: Color(0xFFD4D5DD),
+            color: const Color(0xFFD4D5DD),
             width: 1.0,
           ),
           borderRadius: BorderRadius.circular(6.0),

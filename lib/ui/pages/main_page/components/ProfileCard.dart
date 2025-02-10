@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/data/models/main-model/Profile.dart';
-import 'package:pingo_front/data/models/main-model/ProfileDetail.dart';
+import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/ui/pages/main_page/ProfileDetailPage.dart';
 
 class ProfileCard extends StatefulWidget {

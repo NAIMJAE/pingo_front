@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/models/main-model/Profile.dart';
+import 'package:pingo_front/data/models/main_model/Profile.dart';
 
 final profileRepositoryProvider = Provider((ref) => ProfileRepository());
 

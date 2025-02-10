@@ -50,6 +50,7 @@ dependencies:
   stomp_dart_client: ^2.1.1 #JJH
   json_annotation: ^4.8.0
   flutter_secure_storage: ^8.0.0 # 어플리케이션 Secure Storage를 쉽게 사용할 수 있도록 도와주는 라이브러리입니다.
+  daum_postcode_search: ^0.0.3
 
 dev_dependencies:
   flutter_test:

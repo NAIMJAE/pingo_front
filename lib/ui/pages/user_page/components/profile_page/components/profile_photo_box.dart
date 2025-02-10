@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'edit_page/profile_edit_page.dart';
+
 class ProfilePhotoBox extends StatelessWidget {
   const ProfilePhotoBox({super.key});
 
@@ -96,65 +98,17 @@ class ProfilePhotoBox extends StatelessWidget {
                     child: IconButton(
                       icon: Icon(Icons.add),
                       onPressed: () {
-                        // 사진 추가 로직
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileEditPage(),
+                          ),
+                        );
                       },
                     ),
                   ),
                 ),
         ),
-        if (hasImage)
-          Positioned(
-            top: 4,
-            right: 4,
-            child: Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                border: Border.all(color: Colors.grey, width: 1.0),
-              ),
-              child: Center(
-                // 아이콘을 중앙에 배치
-                child: IconButton(
-                  padding: EdgeInsets.zero, // 패딩을 없애서 중앙에 맞춤
-                  icon: Icon(
-                    Icons.settings,
-                    size: 20,
-                    color: Colors.grey,
-                  ), // 아이콘 크기 조정
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  // 대표 이미지로 지정 로직
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('대표이미지로 지정'),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  // 삭제 로직
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('삭제'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }

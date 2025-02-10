@@ -10,17 +10,18 @@ class UserInfo {
   String? userSmoking;
   String? userBloodType;
 
-  UserInfo(
-      {this.userNo,
-      this.userBirth,
-      this.userHeight,
-      this.userAddress,
-      this.user1stJob,
-      this.user2ndJob,
-      this.userReligion,
-      this.userDrinking,
-      this.userSmoking,
-      this.userBloodType});
+  UserInfo({
+    this.userNo,
+    this.userBirth,
+    this.userHeight,
+    this.userAddress,
+    this.user1stJob,
+    this.user2ndJob,
+    this.userReligion,
+    this.userDrinking,
+    this.userSmoking,
+    this.userBloodType,
+  });
 
   Map<String, dynamic> toJson() {
     return {
@@ -36,6 +37,18 @@ class UserInfo {
       "userBloodType": userBloodType,
     };
   }
+
+  UserInfo.fromJson(Map<String, dynamic> json)
+      : userNo = json['userNo'],
+        userBirth = json['userBirth'],
+        userHeight = json['userHeight'],
+        userAddress = json['userAddress'],
+        user1stJob = json['user1stJob'],
+        user2ndJob = json['user2ndJob'],
+        userReligion = json['userReligion'],
+        userDrinking = json['userDrinking'],
+        userSmoking = json['userSmoking'],
+        userBloodType = json['userBloodType'];
 
   @override
   String toString() {
