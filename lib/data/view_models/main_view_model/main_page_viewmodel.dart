@@ -4,20 +4,35 @@ import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/repository/main_repository/main_repository.dart';
 
-class MainPageViewModel extends StateNotifier<int> {
+class MainPageViewModel extends StateNotifier<List<Profile>> {
   late final AnimationController animationController;
   double posY = 0.0;
   int? highlightedButton;
   int? lastSwipedIndex;
   final MainRepository repository;
+  int currentProfileIndex = 0; // 유저 리스트 num 관리
+  bool noMoreUsers = false; // 인덱스가 끝
 
-  MainPageViewModel(TickerProvider vsync, this.repository) : super(0) {
+  MainPageViewModel(TickerProvider vsync, this.repository) : super([]) {
     animationController = AnimationController(
       vsync: vsync,
       duration: const Duration(milliseconds: 500),
       lowerBound: -1.5,
       upperBound: 1.5,
     );
+  }
+
+  // 주변 멤버 로드
+  Future<void> loadNearbyUsers(String userNo, int distanceKm) async {
+    logger
+        .i("🔍 loadNearbyUsers() 호출됨: userNo=$userNo, distanceKm=$distanceKm");
+
+    List<Profile> users = await repository.fetchNearbyUsers(userNo, distanceKm);
+    state = users;
+    currentProfileIndex = 0;
+    noMoreUsers = users.isEmpty;
+
+    logger.i("✅ 유저 목록 업데이트 완료: ${users.length}명");
   }
 
   void onPanUpdate(DragUpdateDetails details) {
@@ -73,7 +88,7 @@ class MainPageViewModel extends StateNotifier<int> {
     if (direction != null) {
       await repository.insertSwipe({
         'fromUserNo': userNo,
-        'toUserNo': profiles[state].userNo,
+        'toUserNo': state[currentProfileIndex].userNo,
         'swipeType': direction,
         'swipeState': 'WAIT'
       });
@@ -81,14 +96,17 @@ class MainPageViewModel extends StateNotifier<int> {
   }
 
   void _moveToNextCard() {
+    if (state.isNotEmpty && currentProfileIndex < state.length - 1) {
+      currentProfileIndex++;
+    } else {
+      noMoreUsers = true;
+    }
     animationController.value = 0.0;
     posY = 0.0;
-    state = (state + 1) % profiles.length;
   }
 
   void undoSwipe() {
     if (lastSwipedIndex != null) {
-      state = lastSwipedIndex!;
       lastSwipedIndex = null;
     }
   }
@@ -110,7 +128,11 @@ class MainPageViewModel extends StateNotifier<int> {
   }
 }
 
-final mainPageViewModelProvider =
-    StateNotifierProvider.family<MainPageViewModel, int, TickerProvider>(
-  (ref, vsync) => MainPageViewModel(vsync, MainRepository()),
+final mainRepositoryProvider = Provider<MainRepository>((ref) {
+  return MainRepository();
+});
+
+final mainPageViewModelProvider = StateNotifierProvider.family<
+    MainPageViewModel, List<Profile>, TickerProvider>(
+  (ref, vsync) => MainPageViewModel(vsync, ref.read(mainRepositoryProvider)),
 );

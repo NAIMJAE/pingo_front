@@ -18,16 +18,16 @@ class _ProfileCardState extends State<ProfileCard> {
   void _showNextImage() {
     setState(() {
       currentImageIndex =
-          (currentImageIndex + 1) % widget.profile.images.length;
+          (currentImageIndex + 1) % widget.profile.ImageList.length;
     });
   }
 
   void _showPreviousImage() {
     setState(() {
       currentImageIndex =
-          (currentImageIndex - 1) % widget.profile.images.length;
+          (currentImageIndex - 1) % widget.profile.ImageList.length;
       if (currentImageIndex < 0) {
-        currentImageIndex = widget.profile.images.length - 1;
+        currentImageIndex = widget.profile.ImageList.length - 1;
       }
     });
   }
@@ -56,8 +56,8 @@ class _ProfileCardState extends State<ProfileCard> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: Image.asset(
-                    widget.profile.images[currentImageIndex],
+                  child: Image.network(
+                    widget.profile.ImageList[currentImageIndex],
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -89,7 +89,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children:
-                        List.generate(widget.profile.images.length, (index) {
+                        List.generate(widget.profile.ImageList.length, (index) {
                       return Container(
                         width: 20,
                         height: 5,
