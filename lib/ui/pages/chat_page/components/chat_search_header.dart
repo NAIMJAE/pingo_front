@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ChatSearchHeader extends StatefulWidget {
-  const ChatSearchHeader({super.key});
+  final String userNo;
+  const ChatSearchHeader({required this.userNo, super.key});
 
   @override
   State<ChatSearchHeader> createState() => _ChatSearchHeaderState();

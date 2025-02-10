@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 
 class ChatMatch extends StatelessWidget {
-  const ChatMatch({Key? key}) : super(key: key);
+  final String userNo;
+  const ChatMatch({required this.userNo, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

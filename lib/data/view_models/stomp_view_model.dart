@@ -56,7 +56,7 @@ class StompViewModel extends Notifier<bool> {
         _addMessage(message);
       },
     );
-    logger.i('연결');
+    logger.i('웹소냥이 연결완료');
   }
   // 메시지 갯수
 
