@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/models/main_model/Profile.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/models/main-model/Profile.dart';
 import 'package:pingo_front/data/view_models/main_view_model/main_page_viewmodel.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'components/ProfileCard.dart';
@@ -16,42 +17,83 @@ class _MainPageState extends ConsumerState<MainPage>
     with SingleTickerProviderStateMixin {
   late MainPageViewModel viewModel;
 
+  // 멤버 로드
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final viewModel = ref.read(mainPageViewModelProvider(this).notifier);
+      final sessionUser = ref.read(sessionProvider);
+
+      print("🔍 sessionUser.userNo: ${sessionUser.userNo}");
+      logger.i("🔍 sessionUser.userNo: ${sessionUser.userNo}");
+
+      // ✅ sessionUser.userNo가 존재하면 바로 유저 데이터 로드
+      if (sessionUser.userNo != null) {
+        viewModel.loadNearbyUsers(sessionUser.userNo!, 10);
+        print("✅ loadNearbyUsers 실행됨: userNo=${sessionUser.userNo}");
+        logger.i("✅ loadNearbyUsers 실행됨: userNo=${sessionUser.userNo}");
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final sessionUser = ref.watch(sessionProvider);
     final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
-    final currentIndex = ref.watch(mainPageViewModelProvider(this));
+    final userList = ref.watch(mainPageViewModelProvider(this));
     final size = MediaQuery.of(context).size;
+
+    print("📌 현재 userList 길이: ${userList.length}");
+    logger.i("📌 현재 userList 길이: ${userList.length}");
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: GestureDetector(
-        onPanUpdate: viewModel.onPanUpdate,
-        onPanEnd: (_) => viewModel.onPanEnd(size, sessionUser?.userNo ?? ''),
-        child: AnimatedBuilder(
-          animation: viewModel.animationController,
-          builder: (context, child) {
-            final offset = Offset(
-              viewModel.animationController.value * size.width,
-              viewModel.posY * size.height,
-            );
+      body: userList.isEmpty
+          ? Center(child: CircularProgressIndicator()) // 로딩 표시 추가
+          : GestureDetector(
+              onPanUpdate: viewModel.onPanUpdate,
+              onPanEnd: (_) =>
+                  viewModel.onPanEnd(size, sessionUser?.userNo ?? ''),
+              child: AnimatedBuilder(
+                animation: viewModel.animationController,
+                builder: (context, child) {
+                  final offset = Offset(
+                    viewModel.animationController.value * size.width,
+                    viewModel.posY * size.height,
+                  );
 
-            return Stack(
-              children: [
-                ProfileCard(
-                    profile: profiles[(currentIndex + 1) % profiles.length]),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Transform.translate(
-                    offset: offset,
-                    child: ProfileCard(profile: profiles[currentIndex]),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      ),
+                  return Stack(
+                    children: [
+                      if (viewModel.noMoreUsers)
+                        Center(
+                          child: Text(
+                            "주변에 유저가 없습니다",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        )
+                      else if (userList.isNotEmpty) ...[
+                        ProfileCard(
+                            profile: userList[
+                                (viewModel.currentProfileIndex + 1) %
+                                    userList.length]),
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Transform.translate(
+                            offset: offset,
+                            child: ProfileCard(
+                                profile:
+                                    userList[viewModel.currentProfileIndex]),
+                          ),
+                        ),
+                      ]
+                    ],
+                  );
+                },
+              ),
+            ),
       bottomNavigationBar: _buildBottomNavigationBar(sessionUser?.userNo ?? ''),
     );
   }

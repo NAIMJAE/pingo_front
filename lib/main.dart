@@ -9,7 +9,7 @@ import 'ui/pages/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 초기화
-  LocationService.initializeLocation(); // ✅ 앱 실행 시 현재 위치만 저장 (서버 전송 X)
+  LocationService.initializeLocation(); // 앱 실행 시 현재 위치만 저장 (서버 전송 X)
   runApp(ProviderScope(child: PingoApp()));
 }
 
