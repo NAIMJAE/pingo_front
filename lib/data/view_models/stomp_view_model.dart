@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
@@ -10,6 +11,7 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 class StompViewModel extends Notifier<bool> {
   StompClient? stompClient;
 
+  // 웹소캣 값을 bool로 관리하기
   //build를 오버라이드 해줌, state값을 bool로 관리할 예정 / false면 웹소캣 연결 해제
   @override
   bool build() {
@@ -45,6 +47,7 @@ class StompViewModel extends Notifier<bool> {
 
   // 서버에서 메시지 받아오기 받은 메세지를 저장소(chatRoomProvider에 추가할예정)
   // 서버에서 메시지를 받아올 경로
+  // 연결되면 연결완료 logger띄우기
   void _onConnect(StompFrame frame) {
     stompClient?.subscribe(
       destination: '/topic/msg/1',
@@ -59,19 +62,30 @@ class StompViewModel extends Notifier<bool> {
     logger.i('웹소냥이 연결완료');
   }
 
-  // 서버에서 받기
-  // 1. 메세지 받기
-  void receive(StompFrame frame, String roomId, String userNo) {
+  // 서버에서 받기 메세지만!! 받기!!! 다른곳에서 상태관리를 하는게 나을 것 같다.
+  // chatMain에서 구독시작..?
+  // 1. 채팅방 들어갔을 때 메세지 받기
+  //구독이 설정되면, 새로운 메시지가 올 때마다 자동으로 callback() 실행됨
+  //서버에서 새로운 메시지가 발생하면, 해당 destination을 구독 중인 모든 클라이언트에게 자동 전송
+  //Completer는 단순히 Future를 제어할 수 있도록 돕는 비동기 컨트롤러임. 바로 반환 안됨.
+  // 웹소캣이라 메세지가 언제올지 모름 바로 return하면 null로 들어갈 수 있어서 메세지 올때까지 Future를 미리 만들어놓고
+  // 메세지가 들어오면 completer.complete(message)로 완료시키고 그다음에 future<Message>리턴때리기
+  Future<Message> receive(String roomId) {
+    final Completer<Message> completer = Completer<Message>();
     stompClient?.subscribe(
       destination: '/topic/msg/$roomId',
       callback: (StompFrame frame) {
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
-        final Message message = Message.fromJson(jsonData);
-        // 이전 채팅 가져와야 하기 때문에
+        Message message = Message.fromJson(jsonData);
         logger.i('이거이거이거 $message');
-        _addMessage(message);
+        completer.complete(message);
+        //_addMessage(message);
       },
     );
+    return completer.future;
+  }
+
+  void notification(StompFrame frame, String userNo) {
     // 2. 알림받기
     stompClient?.subscribe(
       destination: '/topic/one/$userNo',
@@ -80,6 +94,7 @@ class StompViewModel extends Notifier<bool> {
       },
     );
   }
+
   // 메시지 갯수
 
   // 채팅 view model로 빼기
@@ -87,7 +102,7 @@ class StompViewModel extends Notifier<bool> {
   void sendMessage(Message message) {
     final messages = jsonEncode(message.toJson());
     stompClient?.send(
-      destination: '/pub/1',
+      destination: '/pub/msg/1',
       body: messages, // 수정 예정 객체 -> JSON 문자열 변환
     );
     logger.i('머나와 $messages.toString()');

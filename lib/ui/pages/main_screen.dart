@@ -4,7 +4,7 @@ import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/community_page.dart';
 
 import '../widgets/common_appbar.dart';
-import 'chat_page/chat_page.dart';
+import 'chat_page/chat_room_page.dart';
 import 'keyword_page/keyword_page.dart';
 import 'main_page/main_page.dart';
 import 'swipe_state_page/swipe_state_page.dart';
@@ -47,7 +47,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             MainPage(),
             KeywordPage(),
             CommunityPage(),
-            ChatPage(),
+            ChatRoomPage(),
             UserPage(),
           ],
         ),

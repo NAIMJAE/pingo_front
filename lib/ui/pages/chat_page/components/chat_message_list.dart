@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pingo_front/data/models/chat_model/chat_model.dart';
 
-import '../chat_room_page.dart';
+import '../chat_msg_page.dart';
 
 class ChatMessageList extends StatefulWidget {
   final List<Chat> chatList;
@@ -64,7 +64,7 @@ Widget _chatList(
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChatRoomPage(chatRoomName: chatName),
+            builder: (context) => ChatMsgPage(chatRoomName: chatName),
           ),
         );
       });
