@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/repository/root_url.dart';
-import 'package:pingo_front/ui/pages/community_page/components/place_write_page.dart';
-import 'package:pingo_front/ui/widgets/custom_image.dart';
+import 'package:pingo_front/data/view_models/community_view_model/place_review_search_view_model.dart';
+import 'package:pingo_front/ui/pages/community_page/components/place_list.dart';
+import 'package:pingo_front/ui/pages/community_page/components/place_search.dart';
 
 class PlaceSuggestPage extends ConsumerStatefulWidget {
   const PlaceSuggestPage({super.key});
@@ -13,11 +15,60 @@ class PlaceSuggestPage extends ConsumerStatefulWidget {
 
 class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
     with AutomaticKeepAliveClientMixin<PlaceSuggestPage> {
-  int _sortIndex = 0;
+  int _placeIndex = 0;
 
-  void selectPlaceListWithSort(int sortIndex) {
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _debounceTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  // 입력 감지 함수 (1초 동안 입력이 없으면 실행)
+  void _onSearchChanged() async {
+    _debounceTimer?.cancel(); // 기존 타이머 취소
+
+    _debounceTimer = Timer(Duration(seconds: 1), () {
+      String query = _searchController.text.trim();
+
+      if (query.isNotEmpty) {
+        print("자동 검색 실행: $query");
+
+        ref
+            .read(placeReviewSearchViewModelProvider.notifier)
+            .kakaoPlaceSearchApi(query, 1);
+
+        // 🔥 API 호출이 완료된 후 setState 실행
+        setState(() {
+          _placeIndex = 1;
+        });
+      } else {
+        _onSearchCleared();
+      }
+    });
+  }
+
+  // 검색창이 비었을 때 실행할 함수
+  void _onSearchCleared() {
+    print("검색창이 비었습니다! 기본 화면으로 변경");
     setState(() {
-      _sortIndex = sortIndex;
+      _placeIndex = 0; // 기본 화면으로 돌아감
+    });
+  }
+
+  // place suggest 내의 index 변경 함수
+  void changePlaceIndex(int newIndex) {
+    setState(() {
+      _placeIndex = newIndex;
     });
   }
 
@@ -26,84 +77,61 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
 
   @override
   Widget build(BuildContext buildContext) {
+    final searchReviewState = ref.watch(placeReviewSearchViewModelProvider);
+    final searchReviewProvider =
+        ref.read(placeReviewSearchViewModelProvider.notifier);
+
     super.build(buildContext);
-    return Stack(
-      children: [
-        Padding(
+    return StreamBuilder<Object>(
+      stream: null,
+      builder: (context, snapshot) {
+        return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  _placeSortBtn(buildContext, '인기순', 0),
-                  _placeSortBtn(buildContext, '거리순', 1),
-                ],
-              ),
+              const SizedBox(height: 8),
+              // search
+              _placeSearchBox(),
               Expanded(
-                child: ListView(
+                child: IndexedStack(
+                  index: _placeIndex,
                   children: [
-                    _placeBox(),
+                    PlaceList(searchReviewState, searchReviewProvider),
+                    PlaceSearch(searchReviewState),
                   ],
                 ),
               ),
             ],
           ),
-        ),
-        Positioned(
-          bottom: 20,
-          right: 20,
-          child: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                buildContext,
-                MaterialPageRoute(
-                  builder: (context) => const PlaceWritePage(),
-                ),
-              );
-            },
-            backgroundColor: Colors.red,
-            child: const Icon(Icons.add, size: 30),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _placeSortBtn(buildContext, title, index) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-          backgroundColor: _sortIndex == index ? Colors.red : Colors.grey),
-      onPressed: () {
-        selectPlaceListWithSort(index);
+        );
       },
-      child: Text(title, style: Theme.of(buildContext).textTheme.headlineSmall),
     );
   }
 
-  Widget _placeBox() {
-    return Container(
-      padding: EdgeInsets.all(10),
-      width: 200,
-      height: 100,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadiusDirectional.circular(10),
-        border: Border.all(color: Colors.black),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 100,
-            height: 100,
-            child: CustomImage().token('/images/userImages/UI12345678.jpg'),
-          ),
-          Column(
-            children: [
-              Text('상호'),
-              Text('위치'),
-              Text('내용'),
-            ],
-          )
-        ],
+  Widget _placeSearchBox() {
+    return TextField(
+      controller: _searchController,
+      style: TextStyle(fontSize: 16),
+      decoration: InputDecoration(
+        hintText: "장소 검색",
+        hintStyle: TextStyle(color: Colors.grey),
+        prefixIcon: Icon(Icons.search, color: Colors.grey, size: 24),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(vertical: 6),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24.0),
+          borderSide: const BorderSide(color: Colors.white, width: 0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24.0),
+          borderSide: const BorderSide(color: Colors.white, width: 0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24.0),
+          borderSide: const BorderSide(color: Colors.white, width: 0),
+        ),
       ),
     );
   }

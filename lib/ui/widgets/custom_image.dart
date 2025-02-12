@@ -20,15 +20,24 @@ class CustomImage {
     _token = token;
   }
 
-  /// 토큰 인증 기반의 이미지 호출 메서드
+  /// 토큰 인증 기반의 일반 이미지 호출 메서드
   /// url : 이미지가 존재하는 서버의 주소
-  Widget token(String url) {
+  Image token(String url) {
     return Image(
       image: NetworkImage(
         '$rootURL/uploads$url',
         headers: {'Authorization': '$_token'},
       ),
       fit: BoxFit.cover,
+    );
+  }
+
+  /// 토큰 인증 기반의 Provider 이미지 호출 메서드
+  /// url : 이미지가 존재하는 서버의 주소
+  ImageProvider provider(String url) {
+    return NetworkImage(
+      '$rootURL/uploads$url',
+      headers: {'Authorization': '$_token'},
     );
   }
 }
