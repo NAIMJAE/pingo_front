@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_model.dart';
-import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
+import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 
 import 'components/chat_match.dart';
-import 'components/chat_message_list.dart';
+import 'components/chat_room_list.dart';
 import 'components/chat_search_header.dart';
 
 class ChatRoomPage extends ConsumerStatefulWidget {
@@ -35,19 +35,26 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
           await chatProviders.selectChat(userNo ?? 'userNo없다');
       logger.e("이거  chatList 머나와나 $chatList");
 
-      // 웹소캣 창고 가져오기
       final websocketProvider = ref.read(stompViewModelProvider.notifier);
-      // chatList의 List를 가져오고 반복문 돌려서 roomId를추출해서 각 방마다 웹소캣 연결시켜버리기
-      // chatList의 roomId를 추출해서 반복문 돌려서 웹소캣 각 방마다 연결시켜버리기
+
+      // 웹소캣 구독하고 receive 호출만 하면 stompview모델에서 알아서 view모델의 메서드로 message를 전달한다.
       for (var chat in chatList) {
-        Message message = await websocketProvider.receive(chat.roomId!);
-        // 연결후 message값을 받아서 message의 lastMessage만 추출 -> chatProvider에 updateLastMessage 사용해서 업데이트
-        // 이때 copyWith 사용함
-        ref
-            .read(chatProvider.notifier)
-            .updateLastMessage(chat.roomId!, message.messageContent!);
-        logger.i('받은 메시지: $message');
+        websocketProvider.receive(chat.roomId!);
       }
+
+      // // 웹소캣 창고 가져오기
+      // final websocketProvider = ref.read(stompViewModelProvider.notifier);
+      // // chatList의 List를 가져오고 반복문 돌려서 roomId를추출해서 각 방마다 웹소캣 연결시켜버리기
+      // // chatList의 roomId를 추출해서 반복문 돌려서 웹소캣 각 방마다 연결시켜버리기
+      // for (var chat in chatList) {
+      //   Message message = await websocketProvider.receive(chat.roomId!);
+      //   // 연결후 message값을 받아서 message의 lastMessage만 추출 -> chatProvider에 updateLastMessage 사용해서 업데이트
+      //   // 이때 copyWith 사용함
+      //   ref
+      //       .read(chatProvider.notifier)
+      //       .updateLastMessage(chat.roomId!, message.messageContent!);
+      //   logger.i('받은 메시지: $message');
+      // }
     }
 
     _fetchChatList();
@@ -82,7 +89,7 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
               chatList: matchChat,
             ),
             SizedBox(height: 12),
-            ChatMessageList(ListChat),
+            ChatRoomList(ListChat),
           ],
         ),
       ),

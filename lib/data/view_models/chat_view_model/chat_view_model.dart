@@ -12,6 +12,7 @@ class ChatViewModel extends Notifier<List<Chat>> {
     return [];
   }
 
+  ///////////////////채팅목록//////////////////////
   //state는 List<Chat> 인 상태!
   // 메서드 추가
   Future<List<Chat>> selectChat(String userNo) async {
@@ -41,6 +42,9 @@ class ChatViewModel extends Notifier<List<Chat>> {
       return chat;
     }).toList();
   }
+
+
+  /////////////////////추후 알람처리///////////////////////////
 }
 
 //창고 관리자 생성하기

@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
+import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
-import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_msg_view_model.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class StompViewModel extends Notifier<bool> {
@@ -70,19 +71,29 @@ class StompViewModel extends Notifier<bool> {
   //Completer는 단순히 Future를 제어할 수 있도록 돕는 비동기 컨트롤러임. 바로 반환 안됨.
   // 웹소캣이라 메세지가 언제올지 모름 바로 return하면 null로 들어갈 수 있어서 메세지 올때까지 Future를 미리 만들어놓고
   // 메세지가 들어오면 completer.complete(message)로 완료시키고 그다음에 future<Message>리턴때리기
-  Future<Message> receive(String roomId) {
-    final Completer<Message> completer = Completer<Message>();
+
+  // 비효율적이라 수정 --> return을 하지않고 그대로 message를 필요한 viewModel의 메서드로 전달시켰다.
+  void receive(String roomId) {
+    // final Completer<Message> completer = Completer<Message>();
     stompClient?.subscribe(
       destination: '/topic/msg/$roomId',
       callback: (StompFrame frame) {
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
         Message message = Message.fromJson(jsonData);
         logger.i('이거이거이거 $message');
-        completer.complete(message);
-        //_addMessage(message);
+        // 채팅방 목록 뷰모델을 구독하고 바로 필요한 정보만 전달해버리기!! 로 수정!!!
+        // 1. 채팅방목록 뷰모델에 전달!
+        ref
+            .read(chatProvider.notifier)
+            .updateLastMessage(roomId, message.msgContent!);
+        // 2. 채팅메세지 뷰모델에 전달!
+        ref.read(chatMsgProvider.notifier).addMessage(message);
+
+        // completer.complete(message);
+        // _addMessage(message);
       },
     );
-    return completer.future;
+    // return completer.future;
   }
 
   void notification(StompFrame frame, String userNo) {
@@ -95,10 +106,7 @@ class StompViewModel extends Notifier<bool> {
     );
   }
 
-  // 메시지 갯수
-
-  // 채팅 view model로 빼기
-  // 서버로 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
+  // 서버로 채팅 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
   void sendMessage(Message message) {
     final messages = jsonEncode(message.toJson());
     stompClient?.send(
@@ -116,7 +124,7 @@ class StompViewModel extends Notifier<bool> {
   }
 
   void _addMessage(Message message) {
-    final messageNotifier = ref.read(chatRoomProvider.notifier);
+    final messageNotifier = ref.read(chatMsgProvider.notifier);
     messageNotifier.addMessage(message);
     logger.i(messageNotifier);
   }

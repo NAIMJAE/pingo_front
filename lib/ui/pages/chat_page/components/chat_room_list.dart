@@ -3,20 +3,15 @@ import 'package:pingo_front/data/models/chat_model/chat_model.dart';
 
 import '../chat_msg_page.dart';
 
-class ChatMessageList extends StatefulWidget {
+class ChatRoomList extends StatefulWidget {
   final List<Chat> chatList;
-  const ChatMessageList(this.chatList, {super.key});
+  const ChatRoomList(this.chatList, {super.key});
 
   @override
-  State<ChatMessageList> createState() => _ChatMessageListState();
+  State<ChatRoomList> createState() => _ChatMessageListState();
 }
 
-class _ChatMessageListState extends State<ChatMessageList> {
-  /**
-   * List<Chat> chatList -> 반복 if(lastmsg == null)
-   *
-   */
-
+class _ChatMessageListState extends State<ChatRoomList> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -40,9 +35,10 @@ class _ChatMessageListState extends State<ChatMessageList> {
             return _chatList(
               context,
               chat.imageUrl ?? '',
-              chat.userNo ?? '',
+              chat.userName ?? '',
               chat.lastMessage ?? '',
               chat.roomId ?? '',
+              chat.userNo ?? '',
             );
           }),
         ],
@@ -52,7 +48,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
 }
 
 Widget _chatList(BuildContext context, String imgUrl, String chatName,
-    String chatMsg, String roomId) {
+    String chatMsg, String roomId, String userNo) {
   return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 4.0),
       leading: CircleAvatar(
@@ -66,8 +62,8 @@ Widget _chatList(BuildContext context, String imgUrl, String chatName,
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ChatMsgPage(chatRoomName: chatName, roomId: roomId),
+            builder: (context) => ChatMsgPage(
+                chatRoomName: chatName, roomId: roomId, userNo: userNo),
           ),
         );
       });
