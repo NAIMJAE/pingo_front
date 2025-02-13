@@ -1,20 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'profile_page/profile_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/data/models/user_model/user_image.dart';
+import 'package:pingo_front/data/models/user_model/user_mypage_info.dart';
+import 'package:pingo_front/ui/widgets/custom_image.dart';
 
-class MyinfoBox extends StatefulWidget {
-  const MyinfoBox({super.key});
+class MyinfoBox extends ConsumerStatefulWidget {
+  UserMypageInfo userMypageInfo;
+  MyinfoBox(this.userMypageInfo, {super.key});
 
   @override
-  _MyinfoBoxState createState() => _MyinfoBoxState();
+  ConsumerState<MyinfoBox> createState() => _MyinfoBoxState();
 }
 
-class _MyinfoBoxState extends State<MyinfoBox> {
-  String profileImageUrl = 'https://picsum.photos/200/100';
-  String name = '이준석';
-  String nickname = '이시로';
-  String address = '부산광역시 연제구 토현로 10';
-
+class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -25,57 +24,34 @@ class _MyinfoBoxState extends State<MyinfoBox> {
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         child: Column(
           children: [
-            _buildProfileRow(context),
-            const SizedBox(height: 30),
-            _buildProfileButton(context),
-            const SizedBox(height: 30),
+            _buildProfileRow(context, widget.userMypageInfo),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileRow(BuildContext context) {
+  Widget _buildProfileRow(BuildContext context, userMypageInfo) {
+    List<UserImage> userImages = widget.userMypageInfo.userImageList ?? [];
+
+    UserImage? mainImage;
+
+    for (var userImage in userImages) {
+      if (userImage.imageProfile == 'T') {
+        mainImage = userImage;
+      }
+    }
+
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Stack(
-          children: [
-            SizedBox(
-              width: 65,
-              height: 65,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(32.5),
-                child: Image.network(
-                  profileImageUrl,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    profileImageUrl =
-                        'https://picsum.photos/200/100?random=${DateTime.now().millisecondsSinceEpoch}';
-                  });
-                },
-                child: Container(
-                  width: 25,
-                  height: 25,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    color: Colors.grey[100],
-                  ),
-                  child: const Icon(
-                    CupertinoIcons.camera,
-                    size: 15,
-                  ),
-                ),
-              ),
-            ),
-          ],
+        SizedBox(
+          width: 150,
+          height: 150,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(90),
+            child: CustomImage().token(mainImage?.imageUrl ?? ''),
+          ),
         ),
         const SizedBox(width: 16),
         Column(
@@ -83,16 +59,61 @@ class _MyinfoBoxState extends State<MyinfoBox> {
           children: [
             Row(
               children: [
-                Text(name, style: Theme.of(context).textTheme.headlineLarge),
-                Text(' / ', style: Theme.of(context).textTheme.headlineLarge),
-                Text(nickname,
+                Text(userMypageInfo.users.userName,
+                    style: Theme.of(context).textTheme.headlineLarge),
+                Text(
+                  ' | ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineLarge
+                      ?.copyWith(color: Colors.grey),
+                ),
+                Text(userMypageInfo.users.userNick,
                     style: Theme.of(context).textTheme.headlineLarge),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              address,
+              userMypageInfo.userInfo.userAddress,
               style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 2),
+            Row(
+              children: [
+                Text(userMypageInfo.userInfo.user1stJob,
+                    style: Theme.of(context).textTheme.bodyLarge),
+                Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
+                Text(userMypageInfo.userInfo.user2ndJob,
+                    style: Theme.of(context).textTheme.bodyLarge),
+              ],
+            ),
+            const SizedBox(height: 2),
+            Text(
+              userMypageInfo.userInfo.userBirth.toString().split(' ')[0],
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 2),
+            Row(
+              children: [
+                Text(
+                    userMypageInfo.userInfo.userHeight.toString() +
+                        'cm', // 정수형을 문자열로 변환하여 출력
+                    style: Theme.of(context).textTheme.bodyLarge),
+                Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
+                Text(userMypageInfo.userInfo.userReligion,
+                    style: Theme.of(context).textTheme.bodyLarge),
+                Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
+                Text(userMypageInfo.userInfo.userBloodType + '형',
+                    style: Theme.of(context).textTheme.bodyLarge),
+              ],
+            ),
+            const SizedBox(height: 2),
+            Row(
+              children: [
+                _buildUserDrinkingParse(userMypageInfo.userInfo.userDrinking),
+                Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
+                _buildUserSmokingParse(userMypageInfo.userInfo.userSmoking),
+              ],
             ),
           ],
         ),
@@ -100,38 +121,27 @@ class _MyinfoBoxState extends State<MyinfoBox> {
     );
   }
 
-  Widget _buildProfileButton(BuildContext context) {
-    return InkWell(
-      onTap: () async {
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ProfilePage()),
-        );
+  Widget _buildUserDrinkingParse(drinking) {
+    switch (drinking) {
+      case 'N':
+        return Text('비음주', style: Theme.of(context).textTheme.bodyLarge);
+      case 'O':
+        return Text('가끔 음주', style: Theme.of(context).textTheme.bodyLarge);
+      case 'F':
+        return Text('잦은 음주', style: Theme.of(context).textTheme.bodyLarge);
+      default:
+        return Text('', style: Theme.of(context).textTheme.bodyLarge);
+    }
+  }
 
-        if (result != null && result is Map<String, String>) {
-          setState(() {
-            name = result['name'] ?? name;
-            nickname = result['nickname'] ?? nickname;
-            address = result['address'] ?? address;
-          });
-        }
-      },
-      child: Container(
-        height: 45,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: const Color(0xFFD4D5DD),
-            width: 1.0,
-          ),
-          borderRadius: BorderRadius.circular(6.0),
-        ),
-        child: Center(
-          child: Text(
-            '프로필',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ),
-      ),
-    );
+  Widget _buildUserSmokingParse(smoking) {
+    switch (smoking) {
+      case 'F':
+        return Text('비흡연', style: Theme.of(context).textTheme.bodyLarge);
+      case 'T':
+        return Text('흡연', style: Theme.of(context).textTheme.bodyLarge);
+      default:
+        return Text('', style: Theme.of(context).textTheme.bodyLarge);
+    }
   }
 }
