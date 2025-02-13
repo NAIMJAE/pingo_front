@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'components/profile_appbar.dart';
 import 'components/profile_personal_information_box.dart';
-import 'components/profile_photo_box.dart';
 import 'components/profile_self_introduction_box.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -15,8 +14,6 @@ class ProfilePage extends StatelessWidget {
         appBar: ProfileAppBar(context),
         body: ListView(
           children: [
-            const SizedBox(height: 4.0),
-            ProfilePhotoBox(),
             const SizedBox(height: 8.0),
             ProfilePersonalInformationBox(),
             const SizedBox(height: 8.0),
