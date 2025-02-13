@@ -11,6 +11,9 @@ class PlaceReview {
   double? longitude;
   int? heart;
 
+  String? userNick;
+  String? imageUrl;
+
   PlaceReview(
       this.prNo,
       this.placeName,
@@ -22,7 +25,9 @@ class PlaceReview {
       this.category,
       this.latitude,
       this.longitude,
-      this.heart);
+      this.heart,
+      this.userNick,
+      this.imageUrl);
 
   PlaceReview.fromJson(Map<String, dynamic> json)
       : prNo = json['prNo'],
@@ -35,5 +40,12 @@ class PlaceReview {
         category = json['category'],
         latitude = json['latitude'],
         longitude = json['longitude'],
-        heart = json['heart'];
+        heart = json['heart'],
+        userNick = json['userNick'],
+        imageUrl = json['imageUrl'];
+
+  @override
+  String toString() {
+    return 'PlaceReview{prNo: $prNo, placeName: $placeName, thumb: $thumb, addressName: $addressName, roadAddressName: $roadAddressName, userNo: $userNo, contents: $contents, category: $category, latitude: $latitude, longitude: $longitude, heart: $heart, userName: $userNick, imageUrl: $imageUrl}';
+  }
 }

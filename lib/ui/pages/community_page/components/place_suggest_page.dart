@@ -47,7 +47,7 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
             .read(placeReviewSearchViewModelProvider.notifier)
             .kakaoPlaceSearchApi(query, 1);
 
-        // 🔥 API 호출이 완료된 후 setState 실행
+        // API 호출이 완료된 후 setState 실행
         setState(() {
           _placeIndex = 1;
         });
@@ -59,9 +59,9 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
 
   // 검색창이 비었을 때 실행할 함수
   void _onSearchCleared() {
-    print("검색창이 비었습니다! 기본 화면으로 변경");
     setState(() {
-      _placeIndex = 0; // 기본 화면으로 돌아감
+      _placeIndex = 0;
+      // 마지막 검색 로직 저장해두고 불러오기 + 키보드 내리기
     });
   }
 
@@ -98,7 +98,8 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
                   index: _placeIndex,
                   children: [
                     PlaceList(searchReviewState, searchReviewProvider),
-                    PlaceSearch(searchReviewState),
+                    PlaceSearch(searchReviewState, searchReviewProvider,
+                        _onSearchCleared),
                   ],
                 ),
               ),

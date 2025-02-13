@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/models/community_model/kakao_search.dart';
 import 'package:pingo_front/data/models/community_model/place_review_search.dart';
+import 'package:pingo_front/data/view_models/community_view_model/place_review_search_view_model.dart';
 
 class PlaceSearch extends ConsumerStatefulWidget {
   final PlaceReviewSearch searchReviewState;
-  const PlaceSearch(this.searchReviewState, {super.key});
+  final PlaceReviewSearchViewModel searchReviewProvider;
+  final Function _onSearchCleared;
+  PlaceSearch(
+      this.searchReviewState, this.searchReviewProvider, this._onSearchCleared,
+      {super.key});
 
   @override
   ConsumerState<PlaceSearch> createState() => _PlaceSearchState();
@@ -30,30 +35,38 @@ class _PlaceSearchState extends ConsumerState<PlaceSearch> {
   }
 
   Widget resultBox(resultList) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 4.0),
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.black),
+    return GestureDetector(
+      onTap: () async {
+        print(resultList.addressName);
+        await widget.searchReviewProvider.searchPlaceReviewWithKeyword(
+            resultList.placeName, resultList.addressName);
+        widget._onSearchCleared();
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 4.0),
+        padding: EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          parsePlaceIcon(resultList.category),
-          const SizedBox(width: 16.0),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(resultList.placeName,
-                  style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: 4.0),
-              Text(resultList.addressName),
-              Text(resultList.roadAddressName),
-            ],
-          )
-        ],
+        child: Row(
+          children: [
+            parsePlaceIcon(resultList.category),
+            const SizedBox(width: 16.0),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(resultList.placeName,
+                    style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: 4.0),
+                Text(resultList.addressName),
+                Text(resultList.roadAddressName),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

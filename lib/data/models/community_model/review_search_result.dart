@@ -1,8 +1,8 @@
 import 'package:pingo_front/data/models/community_model/place_review.dart';
 
 class ReviewSearchResult {
-  String searchSort = 'popular';
-  String cateSort = '음식점';
+  String? searchSort = 'popular';
+  String? cateSort = '음식점';
   List<PlaceReview> placeReviewList;
 
   ReviewSearchResult(this.placeReviewList);
@@ -19,12 +19,12 @@ class ReviewSearchResult {
   }
 
   // SROT 변경
-  void changeSearchSort(String newSort) {
+  void changeSearchSort(String? newSort) {
     searchSort = newSort;
   }
 
   // SROT 변경
-  void changeCateSort(String newSort) {
+  void changeCateSort(String? newSort) {
     cateSort = newSort;
   }
 }

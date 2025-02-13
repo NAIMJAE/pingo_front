@@ -1,39 +1,76 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/community_model/kakao_search.dart';
 import 'package:pingo_front/data/models/community_model/kakao_search_result.dart';
+import 'package:pingo_front/data/models/community_model/place_review.dart';
 import 'package:pingo_front/data/models/community_model/place_review_search.dart';
 import 'package:pingo_front/data/models/community_model/review_search_result.dart';
 import 'package:pingo_front/data/repository/community_repository/place_review_search_repository.dart';
 
 class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
   final PlaceReviewSearchRepository _repository;
+  Map<String, String> lastSearch = {};
   PlaceReviewSearchViewModel(this._repository);
 
   @override
   PlaceReviewSearch build() {
-    state = PlaceReviewSearch(KakaoSearchResult([]), ReviewSearchResult([]));
+    PlaceReviewSearch(KakaoSearchResult([]), ReviewSearchResult([]));
     placeReviewInit();
     return state;
   }
 
   // init
-  Future<ReviewSearchResult> placeReviewInit() async {
-    ReviewSearchResult initData = ReviewSearchResult([]);
+  Future<void> placeReviewInit() async {
+    PlaceReviewSearch initData =
+        PlaceReviewSearch(KakaoSearchResult([]), ReviewSearchResult([]));
 
-    dynamic response = await _repository.fetchSearchPlaceReview();
+    dynamic response = await _repository.fetchSearchPlaceReview(
+        cateSort: initData.reviewSearchResult.cateSort,
+        searchSort: initData.reviewSearchResult.searchSort);
 
     // 이 response는 PlaceReviewSearch의 reviewSearchResult의 List<PlaceReview>
-    initData.changePlaceReviewList(response);
-    return initData;
+    initData.reviewSearchResult.changePlaceReviewList(response);
+    state = initData;
   }
 
-  // sort 변경
-  void changeSearchSort(newSort) {
+  // 검색 정렬 기준 변경
+  Future<void> changeSearchSort(newSort) async {
     state.reviewSearchResult.changeSearchSort(newSort);
+
+    List<PlaceReview> response = await _repository.fetchSearchPlaceReview(
+        cateSort: state.reviewSearchResult.cateSort, searchSort: newSort);
+
+    state.reviewSearchResult.changePlaceReviewList(response);
   }
 
-  void changeCateSort(newSort) {
+  // 검색 카테고리 기준 변경
+  Future<void> changeCateSort(newSort) async {
     state.reviewSearchResult.changeCateSort(newSort);
+
+    List<PlaceReview> response = await _repository.fetchSearchPlaceReview(
+        cateSort: newSort, searchSort: state.reviewSearchResult.searchSort);
+
+    state.reviewSearchResult.changePlaceReviewList(response);
+  }
+
+  // 검색으로 리뷰 조회
+  Future<void> searchPlaceReviewWithKeyword(
+      String placeName, String keyword) async {
+    List<PlaceReview> response = await _repository.fetchSearchPlaceReview(
+        cateSort: state.reviewSearchResult.cateSort,
+        searchSort: state.reviewSearchResult.searchSort,
+        keyword: keyword);
+
+    logger.i('★★★★★★★★ $response');
+
+    if (response.isEmpty) {
+      lastSearch.clear();
+      lastSearch.addAll({placeName: keyword});
+    }
+
+    state.reviewSearchResult.changeSearchSort(null);
+    state.reviewSearchResult.changeCateSort(null);
+    state.reviewSearchResult.changePlaceReviewList(response);
   }
 
   // kakao search - 카카오 API 주소 검색

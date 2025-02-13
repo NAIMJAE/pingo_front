@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/models/community_model/place_review.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 
 class PlaceReviewSearchRepository {
@@ -9,8 +10,17 @@ class PlaceReviewSearchRepository {
   final String _apiKey = "KakaoAK 1e94dca04a49847a5688820f39327f7e";
 
   // 서버에서 장소 리뷰 조회
-  Future<dynamic> fetchSearchPlaceReview() async {
-    _customDio.get('path');
+  Future<List<PlaceReview>> fetchSearchPlaceReview(
+      {required String? cateSort,
+      required String? searchSort,
+      String? keyword}) async {
+    List<dynamic> response = await _customDio.get('/community/place', query: {
+      'cateSort': cateSort,
+      'searchSort': searchSort,
+      'keyword': keyword
+    });
+
+    return response.map((json) => PlaceReview.fromJson(json)).toList();
   }
 
   // 카카오 API 검색
