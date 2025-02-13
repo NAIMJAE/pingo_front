@@ -3,11 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_model.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
-import 'package:pingo_front/data/models/global_model/session_user.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
-import 'package:stomp_dart_client/src/stomp_frame.dart';
 
 import 'components/chat_match.dart';
 import 'components/chat_message_list.dart';
@@ -55,10 +53,17 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
     _fetchChatList();
   }
 
+  // chatList는 현재 List<Chat>의 형태
   @override
   Widget build(BuildContext context) {
     final chatList = ref.watch(chatProvider); // 상태를 한번 읽어오기
     logger.i('먀먀 chatList : ${chatList}');
+    final List<Chat> matchChat =
+        chatList.where((chat) => chat.lastMessage == null).toList();
+    final List<Chat> ListChat =
+        chatList.where((chat) => chat.lastMessage != null).toList();
+    logger.i('매치로 보낼 챗 : $matchChat');
+    logger.i('리스트로 보낼 챗 : $ListChat');
 
     // DB에서 chatList를 먼저 불러온다 (몽고도 사용해서 마지막메세지를 가져옴)
     // 그 후 웹소캣을 구독해서 새로운 메세지가 온다면
@@ -74,10 +79,10 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
             ChatSearchHeader(chatList),
             SizedBox(height: 12),
             ChatMatch(
-              chatList: [],
+              chatList: matchChat,
             ),
             SizedBox(height: 12),
-            ChatMessageList(chatList),
+            ChatMessageList(ListChat),
           ],
         ),
       ),

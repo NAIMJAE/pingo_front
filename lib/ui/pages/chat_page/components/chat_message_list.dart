@@ -35,12 +35,14 @@ class _ChatMessageListState extends State<ChatMessageList> {
             ),
           ),
           SizedBox(height: 10),
-          ...List.generate(20, (index) {
+          ...List.generate(widget.chatList.length, (index) {
+            final chat = widget.chatList[index];
             return _chatList(
               context,
-              'https://picsum.photos/250/250',
-              'User $index',
-              'Message $index',
+              chat.imageUrl ?? '',
+              chat.userNo ?? '',
+              chat.lastMessage ?? '',
+              chat.roomId ?? '',
             );
           }),
         ],
@@ -49,8 +51,8 @@ class _ChatMessageListState extends State<ChatMessageList> {
   }
 }
 
-Widget _chatList(
-    BuildContext context, String imgUrl, String chatName, String chatMsg) {
+Widget _chatList(BuildContext context, String imgUrl, String chatName,
+    String chatMsg, String roomId) {
   return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 4.0),
       leading: CircleAvatar(
@@ -64,7 +66,8 @@ Widget _chatList(
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChatMsgPage(chatRoomName: chatName),
+            builder: (context) =>
+                ChatMsgPage(chatRoomName: chatName, roomId: roomId),
           ),
         );
       });

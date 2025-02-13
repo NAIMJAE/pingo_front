@@ -22,7 +22,7 @@ class ChatViewModel extends Notifier<List<Chat>> {
         return [];
       }
       state = chatting;
-      logger.i("dddd $chatting");
+      logger.i("List<Chat> : $chatting");
       return chatting;
     } catch (e, traceTrack) {
       state = [];

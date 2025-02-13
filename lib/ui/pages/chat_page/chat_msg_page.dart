@@ -4,7 +4,10 @@ import 'components/chat_room_body.dart';
 
 class ChatMsgPage extends StatelessWidget {
   final String chatRoomName;
-  const ChatMsgPage({required this.chatRoomName, Key? key}) : super(key: key);
+  final String roomId;
+  const ChatMsgPage(
+      {required this.chatRoomName, Key? key, required this.roomId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

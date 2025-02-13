@@ -5,6 +5,7 @@ class Chat {
   final String roomId;
   final String? imageUrl;
   final String? lastMessage;
+
   Chat({
     required this.userNo,
     required this.roomId,
