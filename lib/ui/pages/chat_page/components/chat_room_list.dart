@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:pingo_front/data/models/chat_model/chat_model.dart';
 
-import '../chat_room_page.dart';
+import '../chat_msg_page.dart';
 
-class ChatMessageList extends StatefulWidget {
-  final String userNo;
-  const ChatMessageList({required this.userNo, super.key});
+class ChatRoomList extends StatefulWidget {
+  final List<Chat> chatList;
+  const ChatRoomList(this.chatList, {super.key});
 
   @override
-  State<ChatMessageList> createState() => _ChatMessageListState();
+  State<ChatRoomList> createState() => _ChatMessageListState();
 }
 
-class _ChatMessageListState extends State<ChatMessageList> {
+class _ChatMessageListState extends State<ChatRoomList> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -29,12 +30,15 @@ class _ChatMessageListState extends State<ChatMessageList> {
             ),
           ),
           SizedBox(height: 10),
-          ...List.generate(20, (index) {
+          ...List.generate(widget.chatList.length, (index) {
+            final chat = widget.chatList[index];
             return _chatList(
               context,
-              'https://picsum.photos/250/250',
-              'User $index',
-              'Message $index',
+              chat.imageUrl ?? '',
+              chat.userName ?? '',
+              chat.lastMessage ?? '',
+              chat.roomId ?? '',
+              chat.userNo ?? '',
             );
           }),
         ],
@@ -43,8 +47,8 @@ class _ChatMessageListState extends State<ChatMessageList> {
   }
 }
 
-Widget _chatList(
-    BuildContext context, String imgUrl, String chatName, String chatMsg) {
+Widget _chatList(BuildContext context, String imgUrl, String chatName,
+    String chatMsg, String roomId, String userNo) {
   return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 4.0),
       leading: CircleAvatar(
@@ -58,7 +62,8 @@ Widget _chatList(
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChatRoomPage(chatRoomName: chatName),
+            builder: (context) => ChatMsgPage(
+                chatRoomName: chatName, roomId: roomId, userNo: userNo),
           ),
         );
       });

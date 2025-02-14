@@ -1,9 +1,11 @@
 // chat_match.dart
 import 'package:flutter/material.dart';
+import 'package:pingo_front/data/models/chat_model/chat_model.dart';
 
 class ChatMatch extends StatelessWidget {
-  final String userNo;
-  const ChatMatch({required this.userNo, Key? key}) : super(key: key);
+  final List<Chat> chatList;
+  // Constructor
+  ChatMatch({required this.chatList, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

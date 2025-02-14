@@ -1,15 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/models/chat_model/chat_room_model.dart';
+import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
-import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_msg_view_model.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class StompViewModel extends Notifier<bool> {
   StompClient? stompClient;
 
+  // 웹소캣 값을 bool로 관리하기
   //build를 오버라이드 해줌, state값을 bool로 관리할 예정 / false면 웹소캣 연결 해제
   @override
   bool build() {
@@ -45,9 +48,10 @@ class StompViewModel extends Notifier<bool> {
 
   // 서버에서 메시지 받아오기 받은 메세지를 저장소(chatRoomProvider에 추가할예정)
   // 서버에서 메시지를 받아올 경로
+  // 연결되면 연결완료 logger띄우기
   void _onConnect(StompFrame frame) {
     stompClient?.subscribe(
-      destination: '/sub/1',
+      destination: '/topic/msg/1',
       callback: (StompFrame frame) {
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
         final Message message = Message.fromJson(jsonData);
@@ -59,12 +63,54 @@ class StompViewModel extends Notifier<bool> {
     logger.i('웹소냥이 연결완료');
   }
 
-  // 메시지 갯수
-  // 서버로 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
+  // 서버에서 받기 메세지만!! 받기!!! 다른곳에서 상태관리를 하는게 나을 것 같다.
+  // chatMain에서 구독시작..?
+  // 1. 채팅방 들어갔을 때 메세지 받기
+  //구독이 설정되면, 새로운 메시지가 올 때마다 자동으로 callback() 실행됨
+  //서버에서 새로운 메시지가 발생하면, 해당 destination을 구독 중인 모든 클라이언트에게 자동 전송
+  //Completer는 단순히 Future를 제어할 수 있도록 돕는 비동기 컨트롤러임. 바로 반환 안됨.
+  // 웹소캣이라 메세지가 언제올지 모름 바로 return하면 null로 들어갈 수 있어서 메세지 올때까지 Future를 미리 만들어놓고
+  // 메세지가 들어오면 completer.complete(message)로 완료시키고 그다음에 future<Message>리턴때리기
+
+  // 비효율적이라 수정 --> return을 하지않고 그대로 message를 필요한 viewModel의 메서드로 전달시켰다.
+  void receive(String roomId) {
+    // final Completer<Message> completer = Completer<Message>();
+    stompClient?.subscribe(
+      destination: '/topic/msg/$roomId',
+      callback: (StompFrame frame) {
+        final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
+        Message message = Message.fromJson(jsonData);
+        logger.i('이거이거이거 $message');
+        // 채팅방 목록 뷰모델을 구독하고 바로 필요한 정보만 전달해버리기!! 로 수정!!!
+        // 1. 채팅방목록 뷰모델에 전달!
+        ref
+            .read(chatProvider.notifier)
+            .updateLastMessage(roomId, message.msgContent!);
+        // 2. 채팅메세지 뷰모델에 전달!
+        ref.read(chatMsgProvider.notifier).addMessage(message);
+
+        // completer.complete(message);
+        // _addMessage(message);
+      },
+    );
+    // return completer.future;
+  }
+
+  void notification(StompFrame frame, String userNo) {
+    // 2. 알림받기
+    stompClient?.subscribe(
+      destination: '/topic/one/$userNo',
+      callback: (StompFrame frame) {
+        print('알림받기');
+      },
+    );
+  }
+
+  // 서버로 채팅 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
   void sendMessage(Message message) {
     final messages = jsonEncode(message.toJson());
     stompClient?.send(
-      destination: '/pub/1',
+      destination: '/pub/msg/1',
       body: messages, // 수정 예정 객체 -> JSON 문자열 변환
     );
     logger.i('머나와 $messages.toString()');
@@ -78,7 +124,7 @@ class StompViewModel extends Notifier<bool> {
   }
 
   void _addMessage(Message message) {
-    final messageNotifier = ref.read(chatRoomProvider.notifier);
+    final messageNotifier = ref.read(chatMsgProvider.notifier);
     messageNotifier.addMessage(message);
     logger.i(messageNotifier);
   }
