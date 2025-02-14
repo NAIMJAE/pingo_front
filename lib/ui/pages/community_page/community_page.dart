@@ -21,15 +21,17 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
   @override
   Widget build(BuildContext buildContext) {
     return Scaffold(
+      backgroundColor: Colors.black12,
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 2),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildTabButton("장소추천?", 0),
-                _buildTabButton("돋보기?", 1),
+                _buildTabButton(buildContext, "장소추천", 0),
+                _buildTabButton(buildContext, "가이드", 1),
               ],
             ),
           ),
@@ -47,16 +49,26 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
     );
   }
 
-  Widget _buildTabButton(String text, int index) {
+  Widget _buildTabButton(buildContext, String text, int index) {
+    double width = MediaQuery.of(buildContext).size.width;
     return SizedBox(
-      width: 180,
-      child: TextButton(
-        onPressed: () {
+      width: width / 2 - 6,
+      child: GestureDetector(
+        onTap: () {
           setState(() {
             _currentIndex = index;
           });
         },
-        child: Text(text),
+        child: Container(
+          padding: EdgeInsets.all(8),
+          child: Text(
+            text,
+            style: Theme.of(buildContext).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: _currentIndex == index ? Colors.red : Colors.black),
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
     );
   }
