@@ -20,15 +20,12 @@ class MainRepository {
 
     List<Profile> users = usersData
         .map((user) => Profile(
-              userNo: user['userNo'],
-              name: user['userName'],
-              age: user['age'],
-              status: user['status'],
-              distance: user['distance'],
-              ImageList: List<String>.from(user['imageList'] ?? [])
-                  .map((img) => "${rootURL}/uploads$img")
-                  .toList(),
-            ))
+            userNo: user['userNo'],
+            name: user['userName'],
+            age: user['age'],
+            status: user['status'],
+            distance: user['distance'],
+            ImageList: List<String>.from(user['imageList'] ?? [])))
         .toList();
 
     logger.e("✅ 주변 유저 불러오기 성공: ${users.length}명");

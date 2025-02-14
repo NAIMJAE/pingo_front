@@ -26,6 +26,20 @@ class UserImage {
         imageProfile = json['imageProfile'],
         userNo = json['userNo'];
 
+  UserImage copyWith({
+    String? imageNo,
+    String? imageUrl,
+    String? imageProfile,
+    String? userNo,
+  }) {
+    return UserImage(
+      imageNo: imageNo ?? this.imageNo,
+      imageUrl: imageUrl ?? this.imageUrl,
+      imageProfile: imageProfile ?? this.imageProfile,
+      userNo: userNo ?? this.userNo,
+    );
+  }
+
   @override
   String toString() {
     return 'UserImage{imageNo: $imageNo, imageUrl: $imageUrl, imageProfile: $imageProfile, userNo: $userNo}';

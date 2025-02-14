@@ -22,9 +22,14 @@ class UserMypageInfo {
   }
 
   UserMypageInfo.fromJson(Map<String, dynamic> json)
-      : users = json['users'],
-        userInfo = json['userInfo'],
+      : users = Users.fromJson(json['users']),
+        userInfo = UserInfo.fromJson(json['userInfo']),
         userImageList = (json['userImageList'] as List<dynamic>?)
             ?.map((child) => UserImage.fromJson(child as Map<String, dynamic>))
             .toList();
+
+  @override
+  String toString() {
+    return 'UserMypageInfo{users: $users, userInfo: $userInfo, userImageList: $userImageList}';
+  }
 }

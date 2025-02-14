@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/ui/pages/main_page/ProfileDetailPage.dart';
+import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class ProfileCard extends StatefulWidget {
   final Profile profile;
@@ -56,10 +57,8 @@ class _ProfileCardState extends State<ProfileCard> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: Image.network(
-                    widget.profile.ImageList[currentImageIndex],
-                    fit: BoxFit.cover,
-                  ),
+                  child: CustomImage()
+                      .token(widget.profile.ImageList[currentImageIndex]),
                 ),
 
                 // 📌 하단 반투명 → 검정색 그라디언트 효과 추가
