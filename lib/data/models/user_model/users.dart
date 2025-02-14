@@ -40,7 +40,9 @@ class Users {
         userNick = json['userNick'],
         userGender = json['userGender'],
         userState = json['userState'],
-        userrDate = json['userrDate'];
+        userrDate = json['userrDate'] != null
+            ? DateTime.parse(json['userrDate'])
+            : null;
 
   @override
   String toString() {

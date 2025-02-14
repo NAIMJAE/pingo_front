@@ -40,7 +40,9 @@ class UserInfo {
 
   UserInfo.fromJson(Map<String, dynamic> json)
       : userNo = json['userNo'],
-        userBirth = json['userBirth'],
+        userBirth = json['userBirth'] != null
+            ? DateTime.parse(json['userBirth'])
+            : null,
         userHeight = json['userHeight'],
         userAddress = json['userAddress'],
         user1stJob = json['user1stJob'],
