@@ -36,7 +36,6 @@ class _ProfileCardState extends State<ProfileCard> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     return Stack(
       children: [
         // 📌 프로필 이미지 (좌우 터치로 넘기기)

@@ -20,6 +20,8 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
       lowerBound: -1.5,
       upperBound: 1.5,
     );
+    // ✅ 애니메이션 초기 값을 강제로 0.0으로 설정
+    animationController.value = 0.0;
   }
 
   // 주변 멤버 로드
@@ -42,15 +44,21 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     _updateHighlightedButton();
   }
 
-  // 스와이프 애니메이션이 끝날을 때
+  // 스와이프 애니메이션이 끝날을 때 방향을 담아 서버 전송 로직 호출
   void onPanEnd(Size size, String userNo) {
     if (userNo.isEmpty) {
       logger.e("[오류] 사용자 번호가 없음. 스와이프 데이터를 보낼 수 없습니다.");
       return;
     }
 
-    if (animationController.value.abs() > 0.4) {
-      if (animationController.value > 0) {
+    double horizontalSwipe = animationController.value;
+    double verticalSwipe = posY; // 수직 이동 값 사용
+
+    if (verticalSwipe < -0.4) {
+      // 🔼 위로 스와이프 시 SUPERPING 적용
+      animateAndSwitchCard(-1.5, userNo, direction: 'SUPERPING');
+    } else if (horizontalSwipe.abs() > 0.4) {
+      if (horizontalSwipe > 0) {
         animateAndSwitchCard(1.5, userNo, direction: 'PANG');
       } else {
         animateAndSwitchCard(-1.5, userNo, direction: 'PING');
@@ -58,6 +66,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     } else {
       resetPosition();
     }
+
     highlightedButton = null;
   }
 
@@ -90,7 +99,6 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
         'fromUserNo': userNo,
         'toUserNo': state[currentProfileIndex].userNo,
         'swipeType': direction,
-        'swipeState': 'WAIT'
       });
     }
   }
