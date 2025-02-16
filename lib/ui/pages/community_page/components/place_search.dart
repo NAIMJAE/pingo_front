@@ -38,8 +38,8 @@ class _PlaceSearchState extends ConsumerState<PlaceSearch> {
     return GestureDetector(
       onTap: () async {
         print(resultList.addressName);
-        await widget.searchReviewProvider.searchPlaceReviewWithKeyword(
-            resultList.placeName, resultList.addressName);
+        await widget.searchReviewProvider
+            .searchPlaceReviewWithKeyword(resultList);
         widget._onSearchCleared();
       },
       child: Container(

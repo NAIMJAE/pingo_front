@@ -6,7 +6,7 @@ import 'package:pingo_front/data/models/community_model/review_search_result.dar
 import 'package:pingo_front/data/view_models/community_view_model/place_review_search_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/components/place_box.dart';
 import 'package:pingo_front/ui/pages/community_page/components/place_write_page.dart';
-import 'package:pingo_front/ui/widgets/custom_image.dart';
+import 'package:pingo_front/ui/widgets/kakao_map_screen.dart';
 
 class PlaceList extends ConsumerStatefulWidget {
   final PlaceReviewSearch searchReviewState;
@@ -63,13 +63,20 @@ class _PlaceListState extends ConsumerState<PlaceList> {
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    SizedBox(
+                      height: 200,
+                      child: KakaoMapScreen(
+                          widget.searchReviewProvider.lastSearch),
+                    ),
+                    const SizedBox(height: 16),
                     Center(
                       child: Text(
-                        '${widget.searchReviewProvider.lastSearch.keys.toString()}에 대한 리뷰가 없습니다.',
+                        '${widget.searchReviewProvider.lastSearch.placeName}에 대한 리뷰가 없습니다.',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
+                    const SizedBox(height: 16),
                     SizedBox(
                       width: 130,
                       height: 50,

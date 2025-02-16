@@ -9,7 +9,7 @@ import 'package:pingo_front/data/repository/community_repository/place_review_se
 
 class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
   final PlaceReviewSearchRepository _repository;
-  Map<String, String> lastSearch = {};
+  late KakaoSearch lastSearch;
   PlaceReviewSearchViewModel(this._repository);
 
   @override
@@ -54,18 +54,14 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
   }
 
   // 검색으로 리뷰 조회
-  Future<void> searchPlaceReviewWithKeyword(
-      String placeName, String keyword) async {
+  Future<void> searchPlaceReviewWithKeyword(KakaoSearch kakaoSearch) async {
     List<PlaceReview> response = await _repository.fetchSearchPlaceReview(
         cateSort: state.reviewSearchResult.cateSort,
         searchSort: state.reviewSearchResult.searchSort,
-        keyword: keyword);
-
-    logger.i('★★★★★★★★ $response');
+        keyword: kakaoSearch.addressName);
 
     if (response.isEmpty) {
-      lastSearch.clear();
-      lastSearch.addAll({placeName: keyword});
+      lastSearch = kakaoSearch;
     }
 
     state.reviewSearchResult.changeSearchSort(null);
