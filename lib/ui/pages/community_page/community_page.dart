@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/ui/pages/community_page/components/dating_guide_page.dart';
 import 'package:pingo_front/ui/pages/community_page/components/place_suggest_page.dart';
 import 'package:pingo_front/ui/pages/community_page/components/user_recommend_page.dart';
 
@@ -40,7 +41,7 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
               index: _currentIndex,
               children: const [
                 PlaceSuggestPage(),
-                UserRecommendPage(),
+                DatingGuidePage(),
               ],
             ),
           ),

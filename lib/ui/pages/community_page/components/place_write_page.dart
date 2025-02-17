@@ -86,59 +86,69 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
       appBar: AppBar(title: const Text("추천 장소 등록")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildProfileBox(cntWidth),
-            Text(
-              kakaoSearch.placeName ?? '이름 없음',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              kakaoSearch.addressName ?? '주소 없음',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              width: cntWidth * 2 / 3,
-              child: TextField(
-                controller: _textController,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: '한 줄평 작성',
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
+        child: Center(
+          child: Column(
+            children: [
+              Text(
+                '다른 사용자를 위해 장소를 추천해보세요!',
+                style: Theme.of(context).textTheme.headlineLarge,
               ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: cntWidth * 2 / 3,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      _placeImage == null || _textController.text.trim() == ''
-                          ? Colors.grey
-                          : Colors.redAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4.0),
+              const SizedBox(height: 16),
+              _buildProfileBox(cntWidth),
+              const SizedBox(height: 16),
+              Text(
+                kakaoSearch.placeName ?? '이름 없음',
+                style: Theme.of(context).textTheme.displaySmall,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                kakaoSearch.addressName ?? '주소 없음',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: cntWidth * 2 / 3,
+                child: TextField(
+                  controller: _textController,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: '한 줄평 작성',
+                    hintStyle: TextStyle(color: Colors.grey),
                   ),
                 ),
-                // onPressed: _placeImage == null ? null : checkValidation,
-                onPressed: () => checkValidation(),
-                child: Text(
-                  '작성',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                ),
               ),
-            )
-          ],
+              const SizedBox(height: 16),
+              SizedBox(
+                width: cntWidth * 2 / 3,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        _placeImage == null || _textController.text.trim() == ''
+                            ? Colors.grey
+                            : Colors.redAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                  ),
+                  // onPressed: _placeImage == null ? null : checkValidation,
+                  onPressed: () => checkValidation(),
+                  child: Text(
+                    '작성',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
