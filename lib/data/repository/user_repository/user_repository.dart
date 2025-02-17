@@ -53,11 +53,13 @@ class UserRepository {
         ),
       });
 
-      final response = await _customDio.dio.post("/user/image", data: formData);
+      final response = await _customDio.post(
+        "/user/image",
+        data: formData,
+        contentType: 'multipart/form-data',
+      );
 
-      logger.d("이미지 업로드 응답: ${response.data}");
-
-      return response.data['success'] == true; // 서버 응답 확인
+      return response == true; // 서버 응답 확인
     } catch (e) {
       logger.e("이미지 업로드 실패: $e");
       return false;

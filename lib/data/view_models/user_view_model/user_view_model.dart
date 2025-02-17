@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 
 class UserViewModel extends Notifier<UserMypageInfo> {
   final UserRepository _repository;
+
   UserViewModel(this._repository);
 
   @override
@@ -83,41 +84,13 @@ class UserViewModel extends Notifier<UserMypageInfo> {
     }
   }
 
-  Future<void> addUserImage(BuildContext context) async {
-    final String? userNo = state.userInfo?.userNo; // 현재 상태에서 유저 번호 가져오기
+  Future<void> uploadUserImage(BuildContext context, File imageFile) async {
+    final String? userNo = state.userInfo?.userNo;
 
-    if (userNo == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text("유저 정보를 불러올 수 없습니다."), backgroundColor: Colors.red),
-      );
-      return;
-    }
+    bool result = await _repository.uploadUserImage(userNo!, imageFile);
 
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile == null) {
-      return;
-    }
-
-    File imageFile = File(pickedFile.path);
-    bool success = await _repository.uploadUserImage(userNo, imageFile);
-
-    if (success) {
-      // 상태 업데이트
-      state = UserMypageInfo(
-        users: state.users,
-        userInfo: state.userInfo,
-        userImageList: [
-          ...?state.userImageList,
-          UserImage(imageUrl: pickedFile.path, userNo: userNo),
-        ],
-      );
-
-      logger.d("새로운 state: $state");
-
+    if (result) {
+      fetchMyPageInfo(userNo);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('이미지가 추가되었습니다.'), backgroundColor: Colors.green),
       );
