@@ -9,13 +9,11 @@ class MainRepository {
 
   // 메인 렌더링 - 주변 유저 불러오기
   Future<List<Profile>> fetchNearbyUsers(String userNo, int distanceKm) async {
-    logger.i("🔍 주변 유저 조회 요청: userNo=$userNo, distanceKm=$distanceKm");
-
     final response = await _customDio.get(
       '/user/nearby',
       query: {'userNo': userNo, 'distanceKm': distanceKm},
     );
-    logger.e('아아앙: ${response}');
+
     List<dynamic> usersData = response;
 
     List<Profile> users = usersData
@@ -28,7 +26,7 @@ class MainRepository {
             ImageList: List<String>.from(user['imageList'] ?? [])))
         .toList();
 
-    logger.e("✅ 주변 유저 불러오기 성공: ${users.length}명");
+    logger.i("✅ fetchNearbyUsers 주변 유저 불러오기 성공: ${users.length}명");
     return users;
   }
 

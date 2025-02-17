@@ -19,24 +19,20 @@ class LocationService {
   static Future<void> initializeLocation() async {
     Position? position = await requestAndGetLocation();
     if (position != null) {
-      _logger.i("초기 위치 저장: ${position.latitude}, ${position.longitude}");
       _lastPosition = position; // 위치 저장만 수행 (서버 요청 x)
     }
   }
 
   // 위치 강제 업데이트 (외부에서 호출 가능)
   static void updateLastPosition(Position position) {
-    _logger.i("🔄 위치 강제 업데이트: ${position.latitude}, ${position.longitude}");
     _lastPosition = position;
   }
 
   // 로그인 후 위치 추적 시작 (서버 요청 o)
   static void startLocationTracking(SessionUser sessionUser) {
     _sessionUser = sessionUser; // 로그인된 유저 저장
-    _logger.i(" 위치 추적 시작 (UserNo: ${sessionUser.userNo})");
 
     _locationTimer = Timer.periodic(Duration(minutes: 10), (timer) async {
-      _logger.i("⏳10분마다 위치 확인 중...");
       Position? position = await requestAndGetLocation();
       if (position != null) {
         _updateAndSendLocation(position);

@@ -25,13 +25,9 @@ class _MainPageState extends ConsumerState<MainPage>
       final viewModel = ref.read(mainPageViewModelProvider(this).notifier);
       final sessionUser = ref.read(sessionProvider);
 
-      print("🔍 sessionUser.userNo: ${sessionUser.userNo}");
-      logger.i("🔍 sessionUser.userNo: ${sessionUser.userNo}");
-
       // ✅ sessionUser.userNo가 존재하면 바로 유저 데이터 로드
       if (sessionUser.userNo != null) {
         viewModel.loadNearbyUsers(sessionUser.userNo!, 10);
-        print("✅ loadNearbyUsers 실행됨: userNo=${sessionUser.userNo}");
         logger.i("✅ loadNearbyUsers 실행됨: userNo=${sessionUser.userNo}");
       }
     });
@@ -44,10 +40,7 @@ class _MainPageState extends ConsumerState<MainPage>
     final userList = ref.watch(mainPageViewModelProvider(this));
     final size = MediaQuery.of(context).size;
 
-    print("📌 현재 userList 길이: ${userList.length}");
-    logger.i("📌 현재 userList 길이: ${userList.length}");
-    print(
-        "🔥 AnimationController Value: ${viewModel.animationController.value}");
+    logger.i("📌 [메인페이지] 현재 userList 길이: ${userList.length}");
 
     return Scaffold(
       backgroundColor: Colors.white,

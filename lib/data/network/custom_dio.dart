@@ -113,7 +113,7 @@ class CustomDio {
   // 토큰 추가
   Future<void> setToken(String token) async {
     dio.options.headers['Authorization'] = token;
-    logger.i("토큰이 CustomDio에 추가됨: $token");
+    logger.i("토큰 추가 성공");
 
     await Future.delayed(Duration(milliseconds: 100));
   }
