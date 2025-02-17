@@ -26,15 +26,12 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
 
   // 주변 멤버 로드
   Future<void> loadNearbyUsers(String userNo, int distanceKm) async {
-    logger
-        .i("🔍 loadNearbyUsers() 호출됨: userNo=$userNo, distanceKm=$distanceKm");
+    logger.i("🔍 [메인페이지] 주변 사용자 호출 : userNo=$userNo, distanceKm=$distanceKm");
 
     List<Profile> users = await repository.fetchNearbyUsers(userNo, distanceKm);
     state = users;
     currentProfileIndex = 0;
     noMoreUsers = users.isEmpty;
-
-    logger.i("✅ 유저 목록 업데이트 완료: ${users.length}명");
   }
 
   void onPanUpdate(DragUpdateDetails details) {

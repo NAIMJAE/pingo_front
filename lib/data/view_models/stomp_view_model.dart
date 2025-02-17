@@ -56,12 +56,10 @@ class StompViewModel extends Notifier<bool> {
       callback: (StompFrame frame) {
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
         final Message message = Message.fromJson(jsonData);
-        // 이전 채팅 가져와야 하기 때문에
-        logger.i('이거이거이거 $message');
         _addMessage(message);
       },
     );
-    logger.i('웹소냥이 연결완료');
+    logger.i('웹소켓 연결 완료');
   }
 
   // 서버에서 받기 메세지만!! 받기!!! 다른곳에서 상태관리를 하는게 나을 것 같다.

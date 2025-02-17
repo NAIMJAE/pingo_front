@@ -69,7 +69,8 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
   @override
   Widget build(BuildContext context) {
     final chatList = ref.watch(chatProvider); // 상태를 한번 읽어오기
-    logger.i('먀먀 chatList : ${chatList}');
+
+    logger.i('[채팅페이지] chatList : ${chatList}');
     // fromEntiries : 필터링 된 데이터를 다시 Map 형태로 변환
     // entires 펼쳐서 키, 벨류로 펼침
     final matchChat = Map.fromEntries(
