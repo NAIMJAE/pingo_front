@@ -46,6 +46,8 @@ class _MainPageState extends ConsumerState<MainPage>
 
     print("📌 현재 userList 길이: ${userList.length}");
     logger.i("📌 현재 userList 길이: ${userList.length}");
+    print(
+        "🔥 AnimationController Value: ${viewModel.animationController.value}");
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -74,17 +76,26 @@ class _MainPageState extends ConsumerState<MainPage>
                           ),
                         )
                       else if (userList.isNotEmpty) ...[
-                        ProfileCard(
-                            profile: userList[
-                                (viewModel.currentProfileIndex + 1) %
-                                    userList.length]),
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: Transform.translate(
-                            offset: offset,
-                            child: ProfileCard(
-                                profile:
-                                    userList[viewModel.currentProfileIndex]),
+                        if (userList.length > 1)
+                          Positioned.fill(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: ProfileCard(
+                                profile: userList[
+                                    (viewModel.currentProfileIndex + 1) %
+                                        userList.length],
+                              ),
+                            ),
+                          ),
+                        Positioned.fill(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Transform.translate(
+                              offset: offset,
+                              child: ProfileCard(
+                                  profile:
+                                      userList[viewModel.currentProfileIndex]),
+                            ),
                           ),
                         ),
                       ]

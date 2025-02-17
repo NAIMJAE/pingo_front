@@ -36,7 +36,6 @@ class _ProfileCardState extends State<ProfileCard> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     return Stack(
       children: [
         // 📌 프로필 이미지 (좌우 터치로 넘기기)
@@ -161,6 +160,7 @@ class _ProfileCardState extends State<ProfileCard> {
                 ),
 
                 // 📌 상세 보기 버튼 (⬆️ 버튼)
+// 📌 상세 보기 버튼 (⬆️ 버튼)
                 Positioned(
                   bottom: 50,
                   right: 16,
@@ -168,16 +168,46 @@ class _ProfileCardState extends State<ProfileCard> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ProfileDetailPage(profile: widget.profile),
+                        PageRouteBuilder(
+                          transitionDuration:
+                              Duration(milliseconds: 500), // 애니메이션 속도
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  ProfileDetailPage(profile: widget.profile),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            var begin = Offset(0.0, 1.0); // 아래에서 올라오는 효과
+                            var end = Offset.zero;
+                            var curve = Curves.easeInOut;
+
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
+                            var fadeTween =
+                                Tween(begin: 0.0, end: 1.0); // 페이드 효과 추가
+
+                            return FadeTransition(
+                              opacity: animation.drive(fadeTween),
+                              child: SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 20,
-                      child: Icon(Icons.keyboard_arrow_up, color: Colors.black),
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 300), // 부드러운 애니메이션 효과
+                      curve: Curves.easeOut,
+                      child: ScaleTransition(
+                        scale: AlwaysStoppedAnimation(1.1), // 버튼 클릭 시 살짝 커지는 효과
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 22, // 기존보다 살짝 키움
+                          child: Icon(Icons.keyboard_arrow_up,
+                              color: Colors.black, size: 28), // 아이콘 크기 조정
+                        ),
+                      ),
                     ),
                   ),
                 ),
