@@ -52,7 +52,7 @@ dependencies:
   flutter_secure_storage: ^8.0.0 # 어플리케이션 Secure Storage를 쉽게 사용할 수 있도록 도와주는 라이브러리입니다.
   daum_postcode_search: ^0.0.3
   flutter_dotenv: ^5.1.0
-  kakao_map_plugin: ^0.3.5 #hex_color 오류 수정해야함
+  kakao_map_plugin: ^0.3.0
 
 dev_dependencies:
   flutter_test:

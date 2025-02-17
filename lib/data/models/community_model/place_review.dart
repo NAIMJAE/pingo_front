@@ -44,6 +44,24 @@ class PlaceReview {
         userNick = json['userNick'],
         imageUrl = json['imageUrl'];
 
+  Map<String, dynamic> toJson() {
+    return {
+      "prNo": prNo,
+      "placeName": placeName,
+      "thumb": thumb,
+      "addressName": addressName,
+      "roadAddressName": roadAddressName,
+      "userNo": userNo,
+      "contents": contents,
+      "category": category,
+      "latitude": latitude,
+      "longitude": longitude,
+      "heart": heart,
+      "userNick": userNick,
+      "imageUrl": imageUrl,
+    };
+  }
+
   @override
   String toString() {
     return 'PlaceReview{prNo: $prNo, placeName: $placeName, thumb: $thumb, addressName: $addressName, roadAddressName: $roadAddressName, userNo: $userNo, contents: $contents, category: $category, latitude: $latitude, longitude: $longitude, heart: $heart, userName: $userNick, imageUrl: $imageUrl}';

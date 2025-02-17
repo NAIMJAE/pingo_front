@@ -13,47 +13,48 @@ class KakaoMapScreen extends StatefulWidget {
 
 class _KakaoMapScreenState extends State<KakaoMapScreen> {
   KakaoMapController? mapController;
+  late final LatLng _latLng;
+  Set<Marker> markers = {};
 
   @override
-  Widget build(BuildContext context) {
-    // ✅ KakaoMap 위젯에서 직접 위도/경도 설정
-    LatLng latlng = LatLng(
+  void initState() {
+    super.initState();
+
+    // 초기 위도/경도 설정
+    _latLng = LatLng(
       widget.kakaoSearch.latitude ?? 37.5665,
       widget.kakaoSearch.longitude ?? 126.9780,
     );
 
-    // ✅ KakaoMap 위젯에서 직접 마커 설정
-    Set<Marker> markers = {
+    logger.i(
+        '초기 위도: ${widget.kakaoSearch.latitude}, 초기 경도: ${widget.kakaoSearch.longitude}');
+
+    markers = {
       Marker(
         markerId: 'search_marker',
-        latLng: latlng,
+        latLng: _latLng,
       ),
     };
+  }
 
-    // 랜더링 시점의 문제 같음
+  // 지도의 초기 화면을 위해 center 속성을 부모 위젯에서 받아온 위도 경도 값으로
+  // 동적으로 할당했을때 위도, 경도가 KakaoMap에 전달되지 않는 이슈
+  // onMapCreated 안에서 setCenter 메서드를 이용해 동적으로 위도 경도를 넣거나
+  // center 속성에 동적으로 위도 경도를 넣었을 때 둘 모두 값이 들어가지 않고
+  // kakaoMap의 기본 위도 경도인 이상한 값으로 계속 남음
+  // 랜더링 시점의 문제인지 확인도 딜레이를 걸어 확인해 봤지만 아닌듯
+  // 어디가 문제인지 모르겠어서 일단 보류하고 나중에 에러 잡기
+  // https://github.com/johyunchol/kakao_map_plugin  -> 카카오맵플러그인 깃허브
 
-    return Scaffold(
-      body: KakaoMap(
-        onMapCreated: (controller) async {
-          mapController = controller;
-          logger.i("✅ 지도 컨트롤러 생성됨");
-
-          // 🛠 KakaoMap이 완전히 로드될 때까지 대기
-          await Future.delayed(Duration(seconds: 1));
-
-          // 🛠 지도의 중심을 부모 위젯에서 받은 값으로 설정
-          await mapController!.setCenter(latlng);
-          logger.i("✅ 지도의 중심이 ${latlng.latitude}, ${latlng.longitude}로 설정됨");
-
-          // 🛠 현재 지도 중심이 잘 반영되었는지 확인
-          LatLng center = await mapController!.getCenter();
-          logger
-              .i("📌 getCenter() 결과: ${center.latitude}, ${center.longitude}");
-        },
-        markers: markers.toList(),
-        center: latlng, // ✅ KakaoMap에서 직접 `latlng`을 적용
-        currentLevel: 3, // 줌 기능 제거하고 기본 레벨 설정
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return KakaoMap(
+      center: LatLng(37.5665, 126.9780),
+      onMapCreated: (controller) async {
+        mapController = controller;
+      },
+      markers: markers.toList(),
+      currentLevel: 3,
     );
   }
 }

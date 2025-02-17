@@ -61,6 +61,9 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
   void _onSearchCleared() {
     setState(() {
       _placeIndex = 0;
+      ref
+          .read(placeReviewSearchViewModelProvider.notifier)
+          .searchLastPlaceReview();
       // 마지막 검색 로직 저장해두고 불러오기 + 키보드 내리기
     });
   }
