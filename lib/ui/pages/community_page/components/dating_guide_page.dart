@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/components/dating_guide_write_page.dart';
 
 class DatingGuidePage extends ConsumerStatefulWidget {
@@ -9,17 +10,20 @@ class DatingGuidePage extends ConsumerStatefulWidget {
   ConsumerState<DatingGuidePage> createState() => _DatingGuidePageState();
 }
 
-// Map<String, List<DatingGuide>>
-// dgNo, title, contents, userNo, heart, thumb, regDate
-
 class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
+  late final String sessionUserNo;
+
+  @override
+  void initState() {
+    super.initState();
+    sessionUserNo = ref.read(sessionProvider).userNo!;
+  }
+
   @override
   Widget build(BuildContext context) {
     double cntWidth = MediaQuery.of(context).size.width;
-
     return Stack(
       children: [
-        // 스크롤 가능한 컨텐츠
         SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,17 +43,15 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
             ],
           ),
         ),
-
-        // 우하단 고정 버튼
         Positioned(
-          bottom: 20, // 하단 여백
-          right: 20, // 우측 여백
+          bottom: 20,
+          right: 20,
           child: FloatingActionButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DatingGuideWritePage(),
+                  builder: (context) => DatingGuideWritePage(sessionUserNo),
                 ),
               );
             },
