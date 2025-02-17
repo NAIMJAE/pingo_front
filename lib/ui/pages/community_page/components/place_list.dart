@@ -4,9 +4,10 @@ import 'package:pingo_front/data/models/community_model/place_review.dart';
 import 'package:pingo_front/data/models/community_model/place_review_search.dart';
 import 'package:pingo_front/data/models/community_model/review_search_result.dart';
 import 'package:pingo_front/data/view_models/community_view_model/place_review_search_view_model.dart';
+import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/components/place_box.dart';
 import 'package:pingo_front/ui/pages/community_page/components/place_write_page.dart';
-import 'package:pingo_front/ui/widgets/custom_image.dart';
+import 'package:pingo_front/ui/widgets/kakao_map_screen.dart';
 
 class PlaceList extends ConsumerStatefulWidget {
   final PlaceReviewSearch searchReviewState;
@@ -27,67 +28,85 @@ class _PlaceListState extends ConsumerState<PlaceList> {
     List<PlaceReview> searchList =
         widget.searchReviewState.reviewSearchResult.placeReviewList;
 
+    final userNo = ref.read(sessionProvider).userNo;
+
     return Column(
       children: [
-        SizedBox(
-          height: 90,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              ...List.generate(
-                kakaoCategory.length,
-                (index) {
-                  var key = kakaoCategory.keys.toList()[index];
-                  var value = kakaoCategory[key];
+        // cate
+        if (!searchList.isEmpty)
+          SizedBox(
+            height: 90,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                ...List.generate(
+                  kakaoCategory.length,
+                  (index) {
+                    var key = kakaoCategory.keys.toList()[index];
+                    var value = kakaoCategory[key];
 
-                  return _placeCateBox(
-                      buildContext, key, value, searchResult.cateSort);
-                },
-              )
+                    return _placeCateBox(
+                        buildContext, key, value, searchResult.cateSort);
+                  },
+                )
+              ],
+            ),
+          ),
+        // sort
+        if (!searchList.isEmpty)
+          Row(
+            children: [
+              _placeSortBtn(
+                  buildContext, '인기순', 'popular', searchResult.searchSort),
+              _placeSortBtn(
+                  buildContext, '최신순', 'newest', searchResult.searchSort),
+              _placeSortBtn(
+                  buildContext, '거리순', 'location', searchResult.searchSort),
             ],
           ),
-        ),
-        // sort
-        Row(
-          children: [
-            _placeSortBtn(
-                buildContext, '인기순', 'popular', searchResult.searchSort),
-            _placeSortBtn(
-                buildContext, '최신순', 'newest', searchResult.searchSort),
-            _placeSortBtn(
-                buildContext, '거리순', 'location', searchResult.searchSort),
-          ],
-        ),
         Expanded(
           child: searchList.isEmpty
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+              ? ListView(
                   children: [
-                    Center(
-                      child: Text(
-                        '${widget.searchReviewProvider.lastSearch.keys.toString()}에 대한 리뷰가 없습니다.',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 130,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PlaceWritePage()),
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Icon(Icons.add),
-                            Text('리뷰 작성'),
-                          ],
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          height: 200,
+                          child: KakaoMapScreen(
+                              widget.searchReviewProvider.lastSearch),
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                        Center(
+                          child: Text(
+                            '${widget.searchReviewProvider.lastSearch.placeName}에 대한 리뷰가 없습니다.',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: 130,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PlaceWritePage(
+                                        widget.searchReviewProvider, userNo!)),
+                              );
+                            },
+                            child: Row(
+                              children: [
+                                Icon(Icons.add),
+                                Text('리뷰 작성'),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
                     )
                   ],
                 )

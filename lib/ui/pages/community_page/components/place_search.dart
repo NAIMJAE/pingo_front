@@ -23,13 +23,11 @@ class _PlaceSearchState extends ConsumerState<PlaceSearch> {
         widget.searchReviewState.kakaoSearchResult.kakaoSearchList;
 
     return searchList.isNotEmpty
-        ? Expanded(
-            child: ListView.builder(
-              itemCount: searchList.length,
-              itemBuilder: (context, index) {
-                return resultBox(searchList[index]);
-              },
-            ),
+        ? ListView.builder(
+            itemCount: searchList.length,
+            itemBuilder: (context, index) {
+              return resultBox(searchList[index]);
+            },
           )
         : const Center(child: Text('결과 없음', style: TextStyle(fontSize: 18)));
   }
@@ -38,8 +36,8 @@ class _PlaceSearchState extends ConsumerState<PlaceSearch> {
     return GestureDetector(
       onTap: () async {
         print(resultList.addressName);
-        await widget.searchReviewProvider.searchPlaceReviewWithKeyword(
-            resultList.placeName, resultList.addressName);
+        await widget.searchReviewProvider
+            .searchPlaceReviewWithKeyword(resultList);
         widget._onSearchCleared();
       },
       child: Container(

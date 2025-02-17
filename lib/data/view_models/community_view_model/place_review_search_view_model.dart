@@ -9,7 +9,7 @@ import 'package:pingo_front/data/repository/community_repository/place_review_se
 
 class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
   final PlaceReviewSearchRepository _repository;
-  Map<String, String> lastSearch = {};
+  late KakaoSearch lastSearch;
   PlaceReviewSearchViewModel(this._repository);
 
   @override
@@ -53,26 +53,35 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
     state.reviewSearchResult.changePlaceReviewList(response);
   }
 
-  // 검색으로 리뷰 조회
-  Future<void> searchPlaceReviewWithKeyword(
-      String placeName, String keyword) async {
+  // 검색창이 비었을 때 마지막 검색 기록으로 돌리기
+  void searchLastPlaceReview() async {
     List<PlaceReview> response = await _repository.fetchSearchPlaceReview(
         cateSort: state.reviewSearchResult.cateSort,
-        searchSort: state.reviewSearchResult.searchSort,
-        keyword: keyword);
+        searchSort: state.reviewSearchResult.searchSort);
 
-    logger.i('★★★★★★★★ $response');
-
-    if (response.isEmpty) {
-      lastSearch.clear();
-      lastSearch.addAll({placeName: keyword});
-    }
-
-    state.reviewSearchResult.changeSearchSort(null);
-    state.reviewSearchResult.changeCateSort(null);
     state.reviewSearchResult.changePlaceReviewList(response);
   }
 
+  // 검색으로 리뷰 조회
+  Future<void> searchPlaceReviewWithKeyword(KakaoSearch kakaoSearch) async {
+    List<PlaceReview> response = await _repository.fetchSearchPlaceReview(
+        cateSort: state.reviewSearchResult.cateSort,
+        searchSort: state.reviewSearchResult.searchSort,
+        keyword: kakaoSearch.addressName);
+
+    if (response.isEmpty) {
+      lastSearch = kakaoSearch;
+    }
+
+    state.reviewSearchResult.changePlaceReviewList(response);
+  }
+
+  // placeReview 작성
+  Future<bool> insertPlaceReview(Map<String, dynamic> data) async {
+    return await _repository.fetchInsertPlaceReview(data);
+  }
+
+  /// 검색 ///
   // kakao search - 카카오 API 주소 검색
   Future<void> kakaoPlaceSearchApi(String keyword, int page) async {
     Map<String, dynamic> result =
@@ -90,6 +99,11 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
     state =
         PlaceReviewSearch(KakaoSearchResult(newList), state.reviewSearchResult);
   }
+
+  // // 검색창 비었을 때 마지막 검색으로 갱신
+  // void renewalSearchResult() {
+  //   state.reviewSearchResult.changePlaceReviewList(lastSearch);
+  // }
 }
 
 final placeReviewSearchViewModelProvider =

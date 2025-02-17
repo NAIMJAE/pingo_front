@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:pingo_front/_core/utils/location.dart';
 
 import 'package:pingo_front/ui/pages/sign_page/sign_in_page.dart';
@@ -10,6 +12,13 @@ import 'ui/pages/main_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 초기화
   LocationService.initializeLocation(); // 앱 실행 시 현재 위치만 저장 (서버 전송 X)
+
+  // 카카오 맵
+  await dotenv.load(fileName: 'assets/env/.env');
+  AuthRepository.initialize(
+      appKey: dotenv.env['APP_KEY'] ?? '',
+      baseUrl: dotenv.env['BASE_URL'] ?? '');
+
   runApp(ProviderScope(child: PingoApp()));
 }
 

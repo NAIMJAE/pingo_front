@@ -1,13 +1,41 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/community_model/place_review.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
+import 'package:mime/mime.dart';
 
 class PlaceReviewSearchRepository {
   final Dio _dio = Dio();
   final CustomDio _customDio = CustomDio.instance;
   final String _baseUrl = "https://dapi.kakao.com/v2/local/search/keyword.json";
   final String _apiKey = "KakaoAK 1e94dca04a49847a5688820f39327f7e";
+
+  // placeReview 작성
+  Future<bool> fetchInsertPlaceReview(Map<String, dynamic> data) async {
+    String? mimeType = lookupMimeType(data['placeImage'].path) ?? 'image/jpeg';
+
+    FormData formData = FormData.fromMap({
+      "placeReview": MultipartFile.fromString(
+        jsonEncode(data['placeReview'].toJson()),
+        contentType: DioMediaType("application", "json"),
+      ),
+      "placeImage": await MultipartFile.fromFile(
+        data['placeImage'].path,
+        filename: "placeImage.jpg",
+        contentType: DioMediaType.parse(mimeType),
+      )
+    });
+
+    final response = await _customDio.post(
+      '/community/place',
+      data: formData,
+      contentType: 'multipart/form-data',
+    );
+
+    return response;
+  }
 
   // 서버에서 장소 리뷰 조회
   Future<List<PlaceReview>> fetchSearchPlaceReview(
