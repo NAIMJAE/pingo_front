@@ -5,6 +5,7 @@ import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
 import 'package:pingo_front/data/models/global_model/session_user.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_msg_view_model.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
@@ -112,14 +113,14 @@ class _ChatRoomBodyState extends ConsumerState<ChatMsgBody> {
         ref.watch(chatMsgProvider); // 상태값 꺼내오기(state = List<Message> 꺼내오는거임)
     final chatList = ref.watch(chatProvider);
 
-    final otherUserNo = messages
-        .where((msg) => msg.userNo != myUserNo)
-        .map((msg) => msg.userNo)
-        .toSet();
-    final otherUser = chatList
-        .where((chat) => otherUserNo.contains(chat.userNo))
-        .map((chat) => {'userNo': chat.userNo, 'imageUrl': chat.imageUrl})
-        .toList();
+    // final otherUserNo = messages
+    //     .where((msg) => msg.userNo != myUserNo)
+    //     .map((msg) => msg.userNo)
+    //     .toSet();
+    // final otherUser = chatList
+    //     .where((chat) => otherUserNo.contains(chat.userNo))
+    //     .map((chat) => {'userNo': chat.userNo, 'imageUrl': chat.imageUrl})
+    //     .toList();
 
     return Column(
       children: [

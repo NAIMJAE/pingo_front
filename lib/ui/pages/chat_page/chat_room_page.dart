@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/models/chat_model/chat_model.dart';
+import 'package:pingo_front/data/models/chat_model/chat_room.dart';
+import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
@@ -31,15 +33,18 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
     // 여기서 chat 뷰모델의 초기 데이터 조회하는 로직 수행 (userNo)
     Future<void> _fetchChatList() async {
       final chatProviders = ref.read(chatProvider.notifier);
-      List<Chat> chatList =
-          await chatProviders.selectChat(userNo ?? 'userNo없다');
+      Map<String, ChatRoom> chatList =
+          await chatProviders.selectChatRoom(userNo ?? '로그인한 userNo가 없음');
       logger.e("이거  chatList 머나와나 $chatList");
+      // 키 RoomId를 가져온다.
+      List<String> roomIds = chatList.keys.toList();
 
       final websocketProvider = ref.read(stompViewModelProvider.notifier);
 
-      // 웹소캣 구독하고 receive 호출만 하면 stompview모델에서 알아서 view모델의 메서드로 message를 전달한다.
-      for (var chat in chatList) {
-        websocketProvider.receive(chat.roomId!);
+      // 키를 전달한다.
+      // 각각의 키로 웹소캣을 구독하고 receive 호출만 하면 stompview모델에서 알아서 view모델의 메서드로 message를 전달한다.
+      for (var roomId in roomIds) {
+        websocketProvider.receive(roomId, isChatMsg: false);
       }
 
       // // 웹소캣 창고 가져오기
@@ -60,17 +65,19 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
     _fetchChatList();
   }
 
-  // chatList는 현재 List<Chat>의 형태
+  // chatList는 Map<String,ChatRoom>의 형태를 지닌다.
   @override
   Widget build(BuildContext context) {
     final chatList = ref.watch(chatProvider); // 상태를 한번 읽어오기
     logger.i('먀먀 chatList : ${chatList}');
-    final List<Chat> matchChat =
-        chatList.where((chat) => chat.lastMessage == null).toList();
-    final List<Chat> ListChat =
-        chatList.where((chat) => chat.lastMessage != null).toList();
-    logger.i('매치로 보낼 챗 : $matchChat');
-    logger.i('리스트로 보낼 챗 : $ListChat');
+    // fromEntiries : 필터링 된 데이터를 다시 Map 형태로 변환
+    // entires 펼쳐서 키, 벨류로 펼침
+    final matchChat = Map.fromEntries(
+      chatList.entries.where((e) => (e.value.lastMessage == '0')),
+    );
+    final listChat = Map.fromEntries(
+      chatList.entries.where((e) => (e.value.lastMessage != '0')),
+    );
 
     // DB에서 chatList를 먼저 불러온다 (몽고도 사용해서 마지막메세지를 가져옴)
     // 그 후 웹소캣을 구독해서 새로운 메세지가 온다면
@@ -89,7 +96,7 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
               chatList: matchChat,
             ),
             SizedBox(height: 12),
-            ChatRoomList(ListChat),
+            ChatRoomList(listChat),
           ],
         ),
       ),

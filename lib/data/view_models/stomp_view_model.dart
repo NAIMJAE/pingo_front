@@ -6,6 +6,7 @@ import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_msg_view_model.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
@@ -73,7 +74,7 @@ class StompViewModel extends Notifier<bool> {
   // 메세지가 들어오면 completer.complete(message)로 완료시키고 그다음에 future<Message>리턴때리기
 
   // 비효율적이라 수정 --> return을 하지않고 그대로 message를 필요한 viewModel의 메서드로 전달시켰다.
-  void receive(String roomId) {
+  void receive(String roomId, {bool isChatMsg = false}) {
     // final Completer<Message> completer = Completer<Message>();
     stompClient?.subscribe(
       destination: '/topic/msg/$roomId',
@@ -82,13 +83,15 @@ class StompViewModel extends Notifier<bool> {
         Message message = Message.fromJson(jsonData);
         logger.i('이거이거이거 $message');
         // 채팅방 목록 뷰모델을 구독하고 바로 필요한 정보만 전달해버리기!! 로 수정!!!
-        // 1. 채팅방목록 뷰모델에 전달!
-        ref
-            .read(chatProvider.notifier)
-            .updateLastMessage(roomId, message.msgContent!);
-        // 2. 채팅메세지 뷰모델에 전달!
-        ref.read(chatMsgProvider.notifier).addMessage(message);
-
+        // 채팅방 메세지 받는 페이지가 아니면!
+        if (isChatMsg) {
+          // 1. 채팅방목록 뷰모델에 전달!
+          ref.read(chatProvider.notifier);
+        } else {
+          // .updateLastMessage(roomId, message.msgContent!);
+          // 2. 채팅메세지 뷰모델에 전달!
+          ref.read(chatMsgProvider.notifier).addMessage(message);
+        }
         // completer.complete(message);
         // _addMessage(message);
       },
