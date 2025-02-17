@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/data/models/chat_model/chat_model.dart';
+import 'package:pingo_front/data/models/chat_model/chat_room.dart';
+import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 
 class ChatSearchHeader extends StatefulWidget {
-  final List<Chat> chatList;
+  final Map<String,ChatRoom> chatList;
   const ChatSearchHeader(this.chatList, {super.key});
 
   @override

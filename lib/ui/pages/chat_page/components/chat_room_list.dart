@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/data/models/chat_model/chat_model.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/models/chat_model/chat_room.dart';
+import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 
 import '../chat_msg_page.dart';
 
 class ChatRoomList extends StatefulWidget {
-  final List<Chat> chatList;
+  final Map<String, ChatRoom> chatList;
   const ChatRoomList(this.chatList, {super.key});
 
   @override
@@ -30,17 +32,21 @@ class _ChatMessageListState extends State<ChatRoomList> {
             ),
           ),
           SizedBox(height: 10),
-          ...List.generate(widget.chatList.length, (index) {
-            final chat = widget.chatList[index];
-            return _chatList(
-              context,
-              chat.imageUrl ?? '',
-              chat.userName ?? '',
-              chat.lastMessage ?? '',
-              chat.roomId ?? '',
-              chat.userNo ?? '',
-            );
-          }),
+          // Map 이라서 펼치기
+          // expend : 리스트 안의 요소를 하나의 리스트로 펼쳐줌
+          ...widget.chatList.entries.expand((entry) {
+            final chat = entry.value; // chatRoom 객체를 가져오기
+            final roomId = entry.key; // roomId 가져오기
+
+            return chat.chatUser.map((user) => _chatList(
+                  context,
+                  user.imageUrl ?? '',
+                  user.userName ?? '',
+                  chat.lastMessage ?? '',
+                  roomId,
+                  user.userNo ?? '',
+                ));
+          }).toList(),
         ],
       ),
     );

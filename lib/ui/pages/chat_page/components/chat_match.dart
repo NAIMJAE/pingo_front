@@ -1,9 +1,11 @@
 // chat_match.dart
 import 'package:flutter/material.dart';
-import 'package:pingo_front/data/models/chat_model/chat_model.dart';
+import 'package:pingo_front/data/models/chat_model/chat_room.dart';
+import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 
 class ChatMatch extends StatelessWidget {
-  final List<Chat> chatList;
+  // final List<Chat> chatList;
+  final Map<String, ChatRoom> chatList;
   // Constructor
   ChatMatch({required this.chatList, Key? key}) : super(key: key);
 
@@ -54,7 +56,7 @@ class ChatMatch extends StatelessWidget {
 class NewMatchItem extends StatelessWidget {
   final String imageUrl;
   final String name;
-  final bool connection;
+  final bool connection; // 접속중 여부
   final VoidCallback onTap;
 
   const NewMatchItem({
