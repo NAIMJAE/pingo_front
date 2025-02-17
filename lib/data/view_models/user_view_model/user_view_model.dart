@@ -10,7 +10,6 @@ import 'package:image_picker/image_picker.dart';
 
 class UserViewModel extends Notifier<UserMypageInfo> {
   final UserRepository _repository;
-
   UserViewModel(this._repository);
 
   @override
@@ -84,6 +83,7 @@ class UserViewModel extends Notifier<UserMypageInfo> {
     }
   }
 
+  // 유저 이미지 추가
   Future<void> uploadUserImage(BuildContext context, File imageFile) async {
     final String? userNo = state.userInfo?.userNo;
 
@@ -92,11 +92,42 @@ class UserViewModel extends Notifier<UserMypageInfo> {
     if (result) {
       fetchMyPageInfo(userNo);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('이미지가 추가되었습니다.'), backgroundColor: Colors.green),
+        SnackBar(
+          content: Text('이미지가 추가되었습니다.'),
+          backgroundColor: Colors.green,
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('이미지 추가에 실패했습니다.'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('이미지 추가를 실패했습니다.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  // 유저 이미지 삭제
+  Future<void> deleteUserImage(
+      BuildContext context, String ImageNoForDelete) async {
+    final String? userNo = state.userInfo?.userNo;
+
+    bool result = await _repository.deleteUserImage(ImageNoForDelete);
+
+    if (result) {
+      fetchMyPageInfo(userNo!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('이미지가 삭제되었습니다.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('이미지 삭제를 실패했습니다.'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }

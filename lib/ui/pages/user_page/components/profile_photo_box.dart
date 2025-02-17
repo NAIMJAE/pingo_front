@@ -181,14 +181,21 @@ class _ProfilePhotoBoxState extends ConsumerState<ProfilePhotoBox> {
                                 child: Text('대표이미지로 지정'),
                               ),
                               TextButton(
-                                onPressed: () {
-                                  ref
-                                      .read(userViewModelProvider.notifier)
-                                      .fetchMyPageInfo(ref
-                                              .read(userViewModelProvider)
-                                              .userInfo
-                                              ?.userNo ??
-                                          '');
+                                onPressed: () async {
+                                  if (userImage != null) {
+                                    final userViewModel = ref
+                                        .read(userViewModelProvider.notifier);
+
+                                    String? ImageNoForDelete =
+                                        userImage.imageNo;
+
+                                    if (ImageNoForDelete != null) {
+                                      await userViewModel.deleteUserImage(
+                                        context,
+                                        ImageNoForDelete,
+                                      );
+                                    }
+                                  }
                                   Navigator.of(context).pop();
                                 },
                                 child: Text('삭제'),
