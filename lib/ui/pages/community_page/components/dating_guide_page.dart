@@ -1,7 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/data/models/community_model/dating_guide.dart';
+import 'package:pingo_front/data/models/community_model/dating_guide_search.dart';
+import 'package:pingo_front/data/view_models/community_view_model/dating_guide_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/components/dating_guide_write_page.dart';
+import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class DatingGuidePage extends ConsumerStatefulWidget {
   const DatingGuidePage({super.key});
@@ -12,15 +17,26 @@ class DatingGuidePage extends ConsumerStatefulWidget {
 
 class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
   late final String sessionUserNo;
+  late final DatingGuideViewModel datingGuideViewModel;
 
   @override
   void initState() {
     super.initState();
     sessionUserNo = ref.read(sessionProvider).userNo!;
+    datingGuideViewModel = ref.read(datingGuideViewModelProvider.notifier);
+  }
+
+  void changeSearchSort(String newSort, String category) async {
+    await datingGuideViewModel.changeSearchSort(newSort, category);
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    Map<String, DatingGuideSearch> dgsMap =
+        ref.watch(datingGuideViewModelProvider);
+
     double cntWidth = MediaQuery.of(context).size.width;
     return Stack(
       children: [
@@ -28,17 +44,13 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 282,
-                child: guideGroup(cntWidth),
-              ),
-              SizedBox(
-                height: 282,
-                child: guideGroup(cntWidth),
-              ),
-              SizedBox(
-                height: 282,
-                child: guideGroup(cntWidth),
+              ...dgsMap.entries.map(
+                (entry) {
+                  return SizedBox(
+                    height: 270,
+                    child: guideGroup(cntWidth, entry.value),
+                  );
+                },
               ),
             ],
           ),
@@ -62,7 +74,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
     );
   }
 
-  Widget guideGroup(double cntWidth) {
+  Widget guideGroup(double cntWidth, DatingGuideSearch guideGroup) {
     return Column(
       children: [
         Padding(
@@ -72,7 +84,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '연락 가이드?',
+                guideGroup.category ?? '',
                 style: Theme.of(context)
                     .textTheme
                     .headlineLarge
@@ -82,7 +94,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      print('인기');
+                      changeSearchSort('popular', guideGroup.cateNo!);
                     },
                     child: Text(
                       '인기순',
@@ -92,7 +104,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
                   const SizedBox(width: 12),
                   GestureDetector(
                     onTap: () {
-                      print('인기');
+                      changeSearchSort('newest', guideGroup.cateNo!);
                     },
                     child: Text('최신순'),
                   ),
@@ -105,10 +117,12 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              guideBox(cntWidth),
-              guideBox(cntWidth),
-              guideBox(cntWidth),
-              guideBox(cntWidth),
+              ...List.generate(
+                guideGroup.datingGuideList!.length,
+                (index) {
+                  return guideBox(cntWidth, guideGroup.datingGuideList![index]);
+                },
+              ),
             ],
           ),
         ),
@@ -116,7 +130,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
     );
   }
 
-  Widget guideBox(double cntWidth) {
+  Widget guideBox(double cntWidth, DatingGuide datingGuide) {
     return GestureDetector(
       onTap: () {},
       child: Container(
@@ -134,26 +148,24 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              SizedBox(
-                width: cntWidth * 6 / 10,
-                height: 140,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    'assets/images/sample/bb0003.jpg',
-                    fit: BoxFit.cover,
-                  ),
-                ),
+        child: Column(
+          children: [
+            SizedBox(
+              width: cntWidth * 6 / 10,
+              height: 140,
+              child: ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                child: CustomImage().token(datingGuide.thumb ?? ''),
               ),
-              const SizedBox(height: 8),
-              Column(
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('먼저 연락하는 방법',
+                  Text(datingGuide.title ?? '',
                       style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 8),
                   Row(
@@ -167,22 +179,34 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               image: DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/sample/bb0003.jpg')),
+                                  image: CustomImage()
+                                      .provider(datingGuide.userProfile ?? ''),
+                                  fit: BoxFit.cover),
                             ),
                           ),
                           const SizedBox(width: 4),
-                          Text('맹구',
+                          Text(datingGuide.userName ?? '',
                               style: Theme.of(context).textTheme.headlineSmall),
                         ],
                       ),
-                      Icon(Icons.recommend_outlined),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.thumb_up_outlined,
+                            size: 20,
+                            color: Colors.redAccent,
+                          ),
+                          const SizedBox(width: 4),
+                          Text('${datingGuide.heart}'),
+                        ],
+                      )
                     ],
                   )
                 ],
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );
