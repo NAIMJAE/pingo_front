@@ -2,9 +2,15 @@ import 'package:pingo_front/data/models/community_model/dating_guide.dart';
 
 class DatingGuideSearch {
   String? category;
-  String? cateNo;
-  int? sort;
+  int? cateNo;
+  String? sort;
   List<DatingGuide>? datingGuideList;
+
+  void changeDatingGuideListBySort(List<DatingGuide> newList, String newSort) {
+    sort = newSort;
+    datingGuideList?.clear();
+    datingGuideList?.addAll(newList);
+  }
 
   @override
   String toString() {

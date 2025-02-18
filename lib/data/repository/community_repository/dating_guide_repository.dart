@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:mime/mime.dart';
 import 'package:dio/dio.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/models/community_model/dating_guide.dart';
 import 'package:pingo_front/data/models/community_model/dating_guide_search.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 
@@ -14,7 +15,6 @@ class DatingGuideRepository {
     final response = await _customDio.get('/community/guide/init');
 
     Map<String, DatingGuideSearch> resultMap = {};
-
     for (var key in response.keys) {
       resultMap.addAll({key: DatingGuideSearch.formJson(response[key])});
     }
@@ -22,24 +22,25 @@ class DatingGuideRepository {
     return resultMap;
   }
 
-  //
-  Future<void> fetchSelectDatingGuideWithSort(
-      String newSort, String category) async {
-    logger.i('$newSort , $category');
-
-    final response = await _customDio.get('/community/guide/sort',
+  // 정렬로 게시글 조회
+  Future<List<DatingGuide>> fetchSelectDatingGuideWithSort(
+      String newSort, int category) async {
+    List<dynamic> response = await _customDio.get('/community/guide/sort',
         query: {'cate': category, 'sort': newSort});
 
-    logger.i(response);
+    List<DatingGuide> result =
+        response.map((json) => DatingGuide.fromJson(json)).toList();
+
+    return result;
   }
 
   // 게시글 작성
-  Future<void> fetchInsertDatingGuide(
+  Future<bool> fetchInsertDatingGuide(
       Map<String, dynamic> data, File guideImage) async {
     String? mimeType = lookupMimeType(guideImage.path) ?? 'image/jpeg';
 
     FormData formData = FormData.fromMap({
-      "DatingGuide": MultipartFile.fromString(
+      "datingGuide": MultipartFile.fromString(
         jsonEncode(data),
         contentType: DioMediaType("application", "json"),
       ),
@@ -53,9 +54,8 @@ class DatingGuideRepository {
     final response = await _customDio.post(
       '/community/guide',
       data: formData,
-      contentType: 'multipart/form-data',
     );
 
-    logger.i(response);
+    return response;
   }
 }

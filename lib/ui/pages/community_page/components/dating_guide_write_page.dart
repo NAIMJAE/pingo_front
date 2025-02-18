@@ -1,24 +1,32 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pingo_front/data/models/community_model/dating_guide.dart';
+import 'package:pingo_front/data/view_models/community_view_model/dating_guide_view_model.dart';
 
-class DatingGuideWritePage extends StatefulWidget {
+class DatingGuideWritePage extends ConsumerStatefulWidget {
   String userNo;
   DatingGuideWritePage(this.userNo, {super.key});
 
   @override
-  State<DatingGuideWritePage> createState() => _DatingGuideWritePageState();
+  ConsumerState<DatingGuideWritePage> createState() =>
+      _DatingGuideWritePageState();
 }
 
-class _DatingGuideWritePageState extends State<DatingGuideWritePage> {
+class _DatingGuideWritePageState extends ConsumerState<DatingGuideWritePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentsController = TextEditingController();
-  String selectedCate = '카테1';
+  int selectedCate = 1;
+  late Map<String, int> cateMap;
   File? _guideImage;
   late final String sessionUserNo;
 
-  // 임시
-  List<String> btnList = ['카테1', '카테2', '카테3'];
+  @override
+  void initState() {
+    super.initState();
+    cateMap = datingGuideCate;
+  }
 
   // picker 라이브러리를 이용한 이미지 파일 처리 함수
   Future<void> _pickProfileImage() async {
@@ -32,7 +40,8 @@ class _DatingGuideWritePageState extends State<DatingGuideWritePage> {
     }
   }
 
-  void _submitGuide() {
+  // 게시글 작성 전송 버튼
+  void _submitGuide() async {
     if (_guideImage == null ||
         _titleController.text.trim().isEmpty ||
         _contentsController.text.trim().isEmpty) {
@@ -48,10 +57,24 @@ class _DatingGuideWritePageState extends State<DatingGuideWritePage> {
     Map<String, dynamic> data = {
       'title': _titleController.text.trim(),
       'contents': _contentsController.text.trim(),
-      'category': widget.userNo,
-      'userNo': selectedCate,
+      'category': selectedCate,
+      'userNo': widget.userNo,
     };
-    /////////////////////////
+
+    DatingGuideViewModel dgViewModel =
+        ref.read(datingGuideViewModelProvider.notifier);
+    bool result = await dgViewModel.insertDatingGuide(data, _guideImage!);
+
+    if (result) {
+      Navigator.pop(context, true);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("게시글 작성에 실패했습니다."),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
@@ -70,15 +93,13 @@ class _DatingGuideWritePageState extends State<DatingGuideWritePage> {
               children: [
                 _buildProfileBox(cntWidth),
                 const SizedBox(height: 24),
-                // controller 2개 만들어서 제목, 내용 작성
                 _textInputBox('제목', '제목을 입력하세요', _titleController,
                     isTitle: true),
                 const SizedBox(height: 24),
                 _categorySelectBox('카테고리'),
                 const SizedBox(height: 24),
                 _textInputBox('내용', '내용을 입력하세요', _contentsController),
-                SizedBox(
-                    height: MediaQuery.of(context).viewInsets.bottom / 10), //
+                SizedBox(height: MediaQuery.of(context).viewInsets.bottom / 10),
               ],
             ),
           ),
@@ -185,10 +206,9 @@ class _DatingGuideWritePageState extends State<DatingGuideWritePage> {
         ),
         Row(
           children: [
-            ...List.generate(
-              btnList.length,
-              (index) {
-                return _categoryBtn(btnList[index]);
+            ...cateMap.entries.map(
+              (entry) {
+                return _categoryBtn(entry.key, entry.value);
               },
             ),
           ],
@@ -197,20 +217,20 @@ class _DatingGuideWritePageState extends State<DatingGuideWritePage> {
     );
   }
 
-  Widget _categoryBtn(String title) {
+  Widget _categoryBtn(String cateName, int cateNo) {
     return Container(
       margin: EdgeInsets.only(right: 8),
       child: OutlinedButton(
         onPressed: () {
           setState(() {
-            selectedCate = title;
+            selectedCate = cateNo;
           });
         },
         style: OutlinedButton.styleFrom(
           backgroundColor:
-              selectedCate == title ? Colors.redAccent : Colors.white,
+              selectedCate == cateNo ? Colors.redAccent : Colors.white,
           side: BorderSide(
-              color: selectedCate == title ? Colors.redAccent : Colors.grey,
+              color: selectedCate == cateNo ? Colors.redAccent : Colors.grey,
               width: 1),
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           shape: RoundedRectangleBorder(
@@ -218,10 +238,10 @@ class _DatingGuideWritePageState extends State<DatingGuideWritePage> {
           ),
         ),
         child: Text(
-          title,
+          cateName,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: selectedCate == title ? Colors.white : Colors.black,
+                color: selectedCate == cateNo ? Colors.white : Colors.black,
               ),
         ),
       ),

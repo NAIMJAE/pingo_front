@@ -28,3 +28,9 @@ class DatingGuide {
         userName = json['userName'],
         userProfile = json['imageUrl'];
 }
+
+const Map<String, int> datingGuideCate = {
+  '연애 준비': 1,
+  '연애 첫걸음': 2,
+  '오래가는 연애': 3,
+};

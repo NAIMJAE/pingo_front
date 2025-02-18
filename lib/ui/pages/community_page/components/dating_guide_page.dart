@@ -5,6 +5,7 @@ import 'package:pingo_front/data/models/community_model/dating_guide.dart';
 import 'package:pingo_front/data/models/community_model/dating_guide_search.dart';
 import 'package:pingo_front/data/view_models/community_view_model/dating_guide_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/ui/pages/community_page/components/dating_guide_view_page.dart';
 import 'package:pingo_front/ui/pages/community_page/components/dating_guide_write_page.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
 
@@ -14,6 +15,11 @@ class DatingGuidePage extends ConsumerStatefulWidget {
   @override
   ConsumerState<DatingGuidePage> createState() => _DatingGuidePageState();
 }
+
+// view 페이지 디자인 디테일 마무리
+// 좋아요 기능
+// 카테고리 소개 기능
+// 리스트 페이지 정렬 버튼 디자인 추가
 
 class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
   late final String sessionUserNo;
@@ -26,10 +32,29 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
     datingGuideViewModel = ref.read(datingGuideViewModelProvider.notifier);
   }
 
-  void changeSearchSort(String newSort, String category) async {
-    await datingGuideViewModel.changeSearchSort(newSort, category);
+  void changeSearchSort(String newSort, int category, String cateName) async {
+    await datingGuideViewModel.changeSearchSort(newSort, category, cateName);
 
     setState(() {});
+  }
+
+  void moveToWritePage(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DatingGuideWritePage(sessionUserNo),
+      ),
+    );
+
+    // 게시글 작성 성공 시 스낵바 표시
+    if (result == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("게시글이 성공적으로 작성되었습니다."),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
@@ -59,14 +84,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
           bottom: 20,
           right: 20,
           child: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DatingGuideWritePage(sessionUserNo),
-                ),
-              );
-            },
+            onPressed: () => moveToWritePage(context),
             child: Icon(Icons.add),
           ),
         ),
@@ -94,19 +112,36 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      changeSearchSort('popular', guideGroup.cateNo!);
+                      changeSearchSort(
+                          'popular', guideGroup.cateNo!, guideGroup.category!);
                     },
                     child: Text(
                       '인기순',
-                      style: TextStyle(color: Colors.redAccent),
+                      style: TextStyle(
+                          color: guideGroup.sort == 'popular'
+                              ? Colors.redAccent
+                              : Colors.black,
+                          fontWeight: guideGroup.sort == 'popular'
+                              ? FontWeight.bold
+                              : FontWeight.normal),
                     ),
                   ),
                   const SizedBox(width: 12),
                   GestureDetector(
                     onTap: () {
-                      changeSearchSort('newest', guideGroup.cateNo!);
+                      changeSearchSort(
+                          'newest', guideGroup.cateNo!, guideGroup.category!);
                     },
-                    child: Text('최신순'),
+                    child: Text(
+                      '최신순',
+                      style: TextStyle(
+                          color: guideGroup.sort == 'newest'
+                              ? Colors.redAccent
+                              : Colors.black,
+                          fontWeight: guideGroup.sort == 'newest'
+                              ? FontWeight.bold
+                              : FontWeight.normal),
+                    ),
                   ),
                 ],
               )
@@ -132,7 +167,15 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
 
   Widget guideBox(double cntWidth, DatingGuide datingGuide) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        // DatingGuideViewPage
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DatingGuideViewPage(datingGuide),
+          ),
+        );
+      },
       child: Container(
         width: cntWidth * 6 / 10,
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),

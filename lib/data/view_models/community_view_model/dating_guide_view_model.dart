@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/models/community_model/dating_guide.dart';
 import 'package:pingo_front/data/models/community_model/dating_guide_search.dart';
 import 'package:pingo_front/data/repository/community_repository/dating_guide_repository.dart';
 
@@ -22,14 +24,18 @@ class DatingGuideViewModel extends Notifier<Map<String, DatingGuideSearch>> {
   }
 
   // sort - 각 게시글 카테고리별로 정렬 변경시 조회
-  Future<void> changeSearchSort(String newSort, String category) async {
-    await _repository.fetchSelectDatingGuideWithSort(newSort, category);
+  Future<void> changeSearchSort(
+      String newSort, int category, String cateName) async {
+    List<DatingGuide> response =
+        await _repository.fetchSelectDatingGuideWithSort(newSort, category);
+
+    state[cateName]?.changeDatingGuideListBySort(response, newSort);
   }
 
   // 게시글 작성
-  Future<void> insertDatingGuide(
+  Future<bool> insertDatingGuide(
       Map<String, dynamic> data, File guideImage) async {
-    await _repository.fetchInsertDatingGuide(data, guideImage);
+    return await _repository.fetchInsertDatingGuide(data, guideImage);
   }
 }
 
