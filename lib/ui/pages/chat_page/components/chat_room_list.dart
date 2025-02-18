@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room.dart';
-import 'package:pingo_front/data/models/chat_model/chat_user.dart';
-
-import '../chat_msg_page.dart';
+import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
+import 'package:pingo_front/ui/pages/chat_page/chat_msg2_page.dart';
 
 class ChatRoomList extends StatefulWidget {
   final Map<String, ChatRoom> chatList;
-  const ChatRoomList(this.chatList, {super.key});
+  final ChatRoomViewModel chatRoomViewModel;
+
+  const ChatRoomList(this.chatList, this.chatRoomViewModel, {super.key});
 
   @override
   State<ChatRoomList> createState() => _ChatMessageListState();
@@ -51,28 +51,32 @@ class _ChatMessageListState extends State<ChatRoomList> {
       ),
     );
   }
-}
 
-Widget _chatList(BuildContext context, String imgUrl, String chatName,
-    String chatMsg, String roomId, String userNo) {
-  return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 4.0),
-      leading: CircleAvatar(
-        backgroundImage: NetworkImage(imgUrl),
-        radius: 28, // 기본 크기 설정
-      ),
-      title: Text(chatName),
-      subtitle: Text(chatMsg),
-      trailing: Icon(Icons.play_arrow),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatMsgPage(
-                chatRoomName: chatName, roomId: roomId, userNo: userNo),
-          ),
-        );
-      });
+  Widget _chatList(BuildContext context, String imgUrl, String chatName,
+      String chatMsg, String roomId, String userNo) {
+    return ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 4.0),
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(imgUrl),
+          radius: 28, // 기본 크기 설정
+        ),
+        title: Text(chatName),
+        subtitle: Text(chatMsg),
+        trailing: Icon(Icons.play_arrow),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatMsg2Page(
+                  chatRoomName: chatName,
+                  roomId: roomId,
+                  userNo: userNo,
+                  chatList: widget.chatList[roomId]!,
+                  chatRoomViewModel: widget.chatRoomViewModel),
+            ),
+          );
+        });
+  }
 }
 
 // 모델

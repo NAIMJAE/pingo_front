@@ -21,7 +21,12 @@ class ChatUser {
         imageUrl = json['imageUrl'],
         userName = json['userName'];
 
-  // //fromJson
+  @override
+  String toString() {
+    return 'ChatUser{userNo: $userNo, roomId: $roomId, imageUrl: $imageUrl, userName: $userName}';
+  }
+
+// //fromJson
   // Chat.fromJson(Map<String, dynamic> json)
   //     : roomId = json['roomId'],
   //       lastMessage = json['lastMessage'],

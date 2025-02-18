@@ -43,9 +43,9 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
 
       // 키를 전달한다.
       // 각각의 키로 웹소캣을 구독하고 receive 호출만 하면 stompview모델에서 알아서 view모델의 메서드로 message를 전달한다.
-      for (var roomId in roomIds) {
-        websocketProvider.receive(roomId, isChatMsg: false);
-      }
+      // for (var roomId in roomIds) {
+      //   websocketProvider.receive(roomId);
+      // }
 
       // // 웹소캣 창고 가져오기
       // final websocketProvider = ref.read(stompViewModelProvider.notifier);
@@ -69,6 +69,7 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
   @override
   Widget build(BuildContext context) {
     final chatList = ref.watch(chatProvider); // 상태를 한번 읽어오기
+    ChatRoomViewModel chatRoomViewModel = ref.read(chatProvider.notifier);
 
     logger.i('[채팅페이지] chatList : ${chatList}');
     // fromEntiries : 필터링 된 데이터를 다시 Map 형태로 변환
@@ -97,7 +98,7 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
               chatList: matchChat,
             ),
             SizedBox(height: 12),
-            ChatRoomList(listChat),
+            ChatRoomList(listChat, chatRoomViewModel),
           ],
         ),
       ),
