@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ProfileSelfIntroductionBox extends StatelessWidget {
-  const ProfileSelfIntroductionBox({super.key});
+class EditSelfIntroductionBox extends StatelessWidget {
+  const EditSelfIntroductionBox({super.key});
 
   @override
   Widget build(BuildContext context) {

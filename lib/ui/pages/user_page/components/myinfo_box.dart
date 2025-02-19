@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/models/user_model/user_image.dart';
-import 'package:pingo_front/data/models/user_model/user_mypage_info.dart';
-import 'package:pingo_front/ui/widgets/custom_image.dart';
+
+import '../../../../data/models/user_model/user_image.dart';
+import '../../../../data/models/user_model/user_mypage_info.dart';
+import '../../../widgets/custom_image.dart';
+import 'edit_profile_page/edit_profile_page.dart';
 
 class MyinfoBox extends ConsumerStatefulWidget {
   UserMypageInfo userMypageInfo;
@@ -42,80 +44,95 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
       }
     }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+    return Stack(
       children: [
-        SizedBox(
-          width: 150,
-          height: 150,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(90),
-            child: CustomImage().token(mainImage?.imageUrl ?? ''),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
           children: [
-            Row(
+            SizedBox(
+              width: 150,
+              height: 150,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(90),
+                child: CustomImage().token(mainImage?.imageUrl ?? ''),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(userMypageInfo.users.userName,
-                    style: Theme.of(context).textTheme.headlineLarge),
-                Text(
-                  ' | ',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineLarge
-                      ?.copyWith(color: Colors.grey),
+                Row(
+                  children: [
+                    Text(userMypageInfo.users.userName,
+                        style: Theme.of(context).textTheme.headlineLarge),
+                    Text(
+                      ' | ',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineLarge
+                          ?.copyWith(color: Colors.grey),
+                    ),
+                    Text(userMypageInfo.users.userNick,
+                        style: Theme.of(context).textTheme.headlineLarge),
+                  ],
                 ),
-                Text(userMypageInfo.users.userNick,
-                    style: Theme.of(context).textTheme.headlineLarge),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              userMypageInfo.userInfo.userAddress,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 2),
-            Row(
-              children: [
-                Text(userMypageInfo.userInfo.user1stJob,
-                    style: Theme.of(context).textTheme.bodyLarge),
-                Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
-                Text(userMypageInfo.userInfo.user2ndJob,
-                    style: Theme.of(context).textTheme.bodyLarge),
-              ],
-            ),
-            const SizedBox(height: 2),
-            Text(
-              userMypageInfo.userInfo.userBirth.toString().split(' ')[0],
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 2),
-            Row(
-              children: [
+                const SizedBox(height: 8),
                 Text(
-                    userMypageInfo.userInfo.userHeight.toString() +
-                        'cm', // 정수형을 문자열로 변환하여 출력
-                    style: Theme.of(context).textTheme.bodyLarge),
-                Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
-                Text(userMypageInfo.userInfo.userReligion,
-                    style: Theme.of(context).textTheme.bodyLarge),
-                Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
-                Text(userMypageInfo.userInfo.userBloodType + '형',
-                    style: Theme.of(context).textTheme.bodyLarge),
-              ],
-            ),
-            const SizedBox(height: 2),
-            Row(
-              children: [
-                _buildUserDrinkingParse(userMypageInfo.userInfo.userDrinking),
-                Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
-                _buildUserSmokingParse(userMypageInfo.userInfo.userSmoking),
+                  userMypageInfo.userInfo.userAddress,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Text(userMypageInfo.userInfo.user1stJob,
+                        style: Theme.of(context).textTheme.bodyLarge),
+                    Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
+                    Text(userMypageInfo.userInfo.user2ndJob,
+                        style: Theme.of(context).textTheme.bodyLarge),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  userMypageInfo.userInfo.userBirth.toString().split(' ')[0],
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Text(userMypageInfo.userInfo.userHeight.toString() + 'cm',
+                        style: Theme.of(context).textTheme.bodyLarge),
+                    Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
+                    Text(userMypageInfo.userInfo.userReligion,
+                        style: Theme.of(context).textTheme.bodyLarge),
+                    Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
+                    Text(userMypageInfo.userInfo.userBloodType + '형',
+                        style: Theme.of(context).textTheme.bodyLarge),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    _buildUserDrinkingParse(
+                        userMypageInfo.userInfo.userDrinking),
+                    Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
+                    _buildUserSmokingParse(userMypageInfo.userInfo.userSmoking),
+                  ],
+                ),
               ],
             ),
           ],
+        ),
+        Positioned(
+          top: 0,
+          right: 0,
+          child: IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EditProfilePage()),
+              );
+            },
+            icon: Icon(CupertinoIcons.pen),
+          ),
         ),
       ],
     );

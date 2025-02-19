@@ -56,4 +56,20 @@ class UserInfo {
   String toString() {
     return 'UserInfo{userNo: $userNo, userBirth: $userBirth, userHeight: $userHeight, userAddress: $userAddress, user1stJob: $user1stJob, user2ndJob: $user2ndJob, userReligion: $userReligion, userDrinking: $userDrinking, userSmoking: $userSmoking, userBloodType: $userBloodType}';
   }
+
+  // .copywith 메서드 생성( 깊은 복사로 복사본 만드는 함수 )
+  UserInfo copyWith(UserInfo? oldInfo) {
+    return UserInfo(
+      userNo: oldInfo?.userNo ?? this.userNo,
+      userBirth: oldInfo?.userBirth ?? this.userBirth,
+      userHeight: oldInfo?.userHeight ?? this.userHeight,
+      userAddress: oldInfo?.userAddress ?? this.userAddress,
+      user1stJob: oldInfo?.user1stJob ?? this.user1stJob,
+      user2ndJob: oldInfo?.user2ndJob ?? this.user2ndJob,
+      userReligion: oldInfo?.userReligion ?? this.userReligion,
+      userDrinking: oldInfo?.userDrinking ?? this.userDrinking,
+      userSmoking: oldInfo?.userSmoking ?? this.userSmoking,
+      userBloodType: oldInfo?.userBloodType ?? this.userBloodType,
+    );
+  }
 }
