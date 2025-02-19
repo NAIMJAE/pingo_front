@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/view_models/main_view_model/main_page_viewmodel.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/ui/widgets/appbar/main_appbar.dart';
 import 'components/ProfileCard.dart';
 
 class MainPage extends ConsumerStatefulWidget {
@@ -43,6 +44,7 @@ class _MainPageState extends ConsumerState<MainPage>
     logger.i("📌 [메인페이지] 현재 userList 길이: ${userList.length}");
 
     return Scaffold(
+      appBar: mainAppbar(context),
       backgroundColor: Colors.white,
       body: userList.isEmpty
           ? Center(child: CircularProgressIndicator()) // 로딩 표시 추가

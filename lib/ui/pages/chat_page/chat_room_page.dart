@@ -8,6 +8,7 @@ import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_mode
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
+import 'package:pingo_front/ui/widgets/appbar/chat_appbar.dart';
 
 import 'components/chat_match.dart';
 import 'components/chat_room_list.dart';
@@ -101,19 +102,19 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
     // ChatMessageList의 내용을 바꿔주기..
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: [
-            ChatSearchHeader(chatList),
-            SizedBox(height: 12),
-            ChatMatch(
-              chatList: matchChat,
-            ),
-            SizedBox(height: 12),
-            ChatRoomList(listChat, chatRoomViewModel),
-          ],
-        ),
+      appBar: chatAppbar(context),
+      backgroundColor: Colors.black12,
+      body: ListView(
+        children: [
+          const SizedBox(height: 8),
+          ChatSearchHeader(chatList),
+          const SizedBox(height: 8),
+          ChatMatch(
+            chatList: matchChat,
+          ),
+          const SizedBox(height: 8),
+          ChatRoomList(listChat, chatRoomViewModel),
+        ],
       ),
     );
   }

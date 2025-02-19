@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/community_page.dart';
-
-import '../widgets/common_appbar.dart';
 import 'chat_page/chat_room_page.dart';
 import 'keyword_page/keyword_page.dart';
 import 'main_page/main_page.dart';
-import 'swipe_state_page/swipe_state_page.dart';
 import 'user_page/user_page.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
@@ -19,6 +16,9 @@ class MainScreen extends ConsumerStatefulWidget {
 
 class _MainScreenState extends ConsumerState<MainScreen> {
   int _selectedIndex = 0; // 기본적으로 메인 페이지로 설정
+  // Map<int, AppBar> indexTitle = {
+  //   0: mainAppbar(context, ref),
+  // };
 
   @override
   void initState() {
@@ -39,10 +39,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: CommonAppBar(context, ref),
-        body: IndexedStack(
+    return Scaffold(
+      // appBar: CommonAppBar(context, ref),
+      body: SafeArea(
+        child: IndexedStack(
           index: _selectedIndex,
           children: [
             MainPage(),
@@ -52,8 +52,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             UserPage(),
           ],
         ),
-        bottomNavigationBar: _bottomNavigatorBar(),
       ),
+      bottomNavigationBar: _bottomNavigatorBar(),
     );
   }
 

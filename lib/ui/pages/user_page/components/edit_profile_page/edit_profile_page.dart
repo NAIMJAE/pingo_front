@@ -38,18 +38,20 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     // 유저 상세 정보 깊은 복사 메서드
     copyUserInfo = UserInfo().copyWith(userMypageInfo.userInfo);
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.grey[100],
-        appBar: EditProfileAppBar(context),
-        body: ListView(
-          children: [
-            const SizedBox(height: 8.0),
-            EditPersonalInformationBox(copyUserInfo),
-            const SizedBox(height: 8.0),
-            EditSelfIntroductionBox(),
-            const SizedBox(height: 8.0),
-          ],
+    return Scaffold(
+      body: SafeArea(
+        child: Scaffold(
+          appBar: EditProfileAppBar(context),
+          backgroundColor: Colors.black12,
+          body: ListView(
+            children: [
+              const SizedBox(height: 8.0),
+              EditPersonalInformationBox(copyUserInfo),
+              const SizedBox(height: 8.0),
+              EditSelfIntroductionBox(),
+              const SizedBox(height: 8.0),
+            ],
+          ),
         ),
       ),
     );

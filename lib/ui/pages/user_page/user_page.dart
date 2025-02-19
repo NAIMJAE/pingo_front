@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/user_view_model/user_view_model.dart';
+import 'package:pingo_front/ui/widgets/appbar/user_appbar.dart';
 import '../../../data/models/user_model/mypage_menu.dart';
 import 'components/myinfo_box.dart';
 import 'components/mypage_box.dart';
@@ -33,26 +34,45 @@ class _UserPageState extends ConsumerState<UserPage> {
         ref.watch(userViewModelProvider); // 계속해서 감시 (즉, 추적 관리, 구독)
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      appBar: userAppbar(context),
+      backgroundColor: Colors.black12,
       body: ListView(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              '마이페이지',
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
-          ),
-          const SizedBox(height: 4.0),
+          const SizedBox(height: 8.0),
           MyinfoBox(userMypageInfo),
           const SizedBox(height: 8.0),
           ProfilePhotoBox(userMypageInfo, userViewModelNotifier),
           const SizedBox(height: 8.0),
-          MypageBox(myPageMenuList: MypageMenu1),
+          Card(
+            elevation: 0.5,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0.0)),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  _logoutMenu(),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 8.0),
-          MypageBox(myPageMenuList: MypageMenu2),
-          const SizedBox(height: 8.0),
-          MypageBox(myPageMenuList: MypageMenu3),
+        ],
+      ),
+    );
+  }
+
+  Widget _logoutMenu() {
+    return InkWell(
+      onTap: () {
+        ref.read(sessionProvider.notifier).logout();
+      },
+      child: Row(
+        children: [
+          Icon(Icons.logout),
+          const SizedBox(width: 20),
+          Text('로그아웃', style: Theme.of(context).textTheme.headlineMedium),
         ],
       ),
     );
