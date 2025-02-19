@@ -24,12 +24,12 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
   Widget build(BuildContext buildContext) {
     return Scaffold(
       appBar: communityAppbar(context),
-      backgroundColor: Colors.black12,
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Container(
             color: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 2),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -64,6 +64,14 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
         },
         child: Container(
           padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            border: BorderDirectional(
+              bottom: BorderSide(
+                  width: 2,
+                  color:
+                      _currentIndex == index ? Colors.redAccent : Colors.white),
+            ),
+          ),
           child: Text(
             text,
             style: Theme.of(buildContext).textTheme.headlineSmall?.copyWith(

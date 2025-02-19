@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signup_view_model.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/signup_complete_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_basic_info_step.dart';
@@ -49,7 +48,6 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
       currentStep++;
       _controller.reset();
       _controller.forward();
-      logger.d(currentStep);
     });
   }
 
@@ -59,7 +57,14 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
       currentStep--;
       _controller.reset();
       _controller.forward();
-      logger.d(currentStep);
+    });
+  }
+
+  void _rollbackStep() {
+    setState(() {
+      currentStep = 0;
+      _controller.reset();
+      _controller.forward();
     });
   }
 
@@ -94,11 +99,11 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
               ],
             ),
           ),
-          // 임시 개발용 버튼
-          floatingActionButton: FloatingActionButton(
-            onPressed: _nextStep,
-            child: Icon(Icons.arrow_forward),
-          ),
+          // // 임시 개발용 버튼
+          // floatingActionButton: FloatingActionButton(
+          //   onPressed: _nextStep,
+          //   child: Icon(Icons.arrow_forward),
+          // ),
         ),
       ),
     );
@@ -122,7 +127,8 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
       case 6:
         return UserFavoriteKeywordStep(_nextStep, userData, signupNotifier);
       default:
-        return SignupCompleteStep(_nextStep, userData, signupNotifier);
+        return SignupCompleteStep(
+            _nextStep, _rollbackStep, userData, signupNotifier);
     }
   }
 

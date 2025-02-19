@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/view_models/community_view_model/place_review_search_view_model.dart';
@@ -122,19 +121,19 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
         hintStyle: TextStyle(color: Colors.grey),
         prefixIcon: Icon(Icons.search, color: Colors.grey, size: 24),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Colors.black12,
         contentPadding: const EdgeInsets.symmetric(vertical: 6),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24.0),
-          borderSide: const BorderSide(color: Colors.white, width: 0),
+          borderSide: const BorderSide(color: Colors.black12, width: 0),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24.0),
-          borderSide: const BorderSide(color: Colors.white, width: 0),
+          borderSide: const BorderSide(color: Colors.black12, width: 0),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24.0),
-          borderSide: const BorderSide(color: Colors.white, width: 0),
+          borderSide: const BorderSide(color: Colors.black12, width: 0),
         ),
       ),
     );

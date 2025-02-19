@@ -32,11 +32,27 @@ class _KeywordPageState extends ConsumerState<KeywordPage> {
     return Scaffold(
       appBar: keywordAppbar(context),
       body: ListView(
-        children: groupList.entries.map((entry) {
-          final key = entry.key;
-          final keywordGroup = entry.value;
-          return _keywordBox(context, keywordGroup);
-        }).toList(),
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Row(
+              children: [
+                Icon(Icons.key_outlined),
+                const SizedBox(width: 12),
+                Text(
+                  '키워드를 통해 매칭이 이루어집니다. \n 내가 만나고 싶은 사람의 키워드를 선택해 보세요.',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ],
+            ),
+          ),
+          ...groupList.entries.map((entry) {
+            final key = entry.key;
+            final keywordGroup = entry.value;
+            return _keywordBox(context, keywordGroup);
+          }).toList()
+        ],
       ),
     );
   }
@@ -49,12 +65,12 @@ class _KeywordPageState extends ConsumerState<KeywordPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Text(keywordGroup.kwName!,
-              style: Theme.of(buildContext).textTheme.displaySmall),
+              style: Theme.of(buildContext).textTheme.headlineLarge),
         ),
         SizedBox(
-          height: 200,
+          height: 180,
           child: ListView.builder(
             cacheExtent: 2500,
             scrollDirection: Axis.horizontal,
@@ -83,6 +99,14 @@ class _KeywordPageState extends ConsumerState<KeywordPage> {
               image:
                   AssetImage('assets/images/keyword_page/${keyword.kwId}.jpg'),
               fit: BoxFit.cover),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              offset: Offset(0, 2),
+              blurRadius: 4,
+              spreadRadius: 0,
+            ),
+          ],
         ),
         child: Container(
           padding: EdgeInsets.all(16.0),
@@ -94,7 +118,7 @@ class _KeywordPageState extends ConsumerState<KeywordPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(keyword.kwName!,
+              Text('#${keyword.kwName!}',
                   style: Theme.of(buildContext)
                       .textTheme
                       .displaySmall!

@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 // 마지막 완료 페이지
 class SignupCompleteStep extends StatefulWidget {
   final Function nextStep;
+  final Function rollbackStep;
   final dynamic userData;
   final dynamic signupNotifier;
 
-  const SignupCompleteStep(this.nextStep, this.userData, this.signupNotifier,
+  const SignupCompleteStep(
+      this.nextStep, this.rollbackStep, this.userData, this.signupNotifier,
       {super.key});
 
   @override
@@ -157,6 +159,7 @@ class _SignupCompleteStepState extends State<SignupCompleteStep> {
             onPressed: () {
               setState(() {
                 // 회원가입 첫 페이지로
+                widget.rollbackStep();
               });
             },
             child: Text(

@@ -35,7 +35,7 @@ class _UserPageState extends ConsumerState<UserPage> {
 
     return Scaffold(
       appBar: userAppbar(context),
-      backgroundColor: Colors.black12,
+      backgroundColor: Colors.white,
       body: ListView(
         children: [
           const SizedBox(height: 8.0),
@@ -43,19 +43,22 @@ class _UserPageState extends ConsumerState<UserPage> {
           const SizedBox(height: 8.0),
           ProfilePhotoBox(userMypageInfo, userViewModelNotifier),
           const SizedBox(height: 8.0),
-          Card(
-            elevation: 0.5,
-            margin: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(0.0)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  _logoutMenu(),
-                ],
+          Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.symmetric(
+                    horizontal: BorderSide(color: Colors.black12, width: 1),
+                  ),
+                ),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    _logoutMenu(),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
           const SizedBox(height: 8.0),
         ],

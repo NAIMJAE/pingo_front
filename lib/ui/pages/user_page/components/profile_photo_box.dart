@@ -51,10 +51,8 @@ class _ProfilePhotoBoxState extends ConsumerState<ProfilePhotoBox> {
       }
     }
 
-    return Card(
-      elevation: 0.5,
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
+    return Container(
+      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: Wrap(

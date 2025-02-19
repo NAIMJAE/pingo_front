@@ -50,14 +50,23 @@ class UserSignupRepository {
     // 그래도 이 함수에서 전송할 UserSignup 객체에 null이 있는지 확인하는 작업 추가 필요함
     // 이미지 이름도 profile.jpg가 아니라 임의의 사진이름 필요 (백엔드에서 구분 가능하기만 하면 됨)
     FormData formData = FormData.fromMap({
-      "userSignUp": jsonEncode(signupData.toJson()),
+      "userSignUp": MultipartFile.fromString(
+        jsonEncode(signupData.toJson()),
+        contentType: DioMediaType("application", "json"),
+      ),
       "image": await MultipartFile.fromFile(
         profileImage.path,
         filename: "profile.jpg",
         contentType: DioMediaType.parse(mimeType),
       ),
-      "latitude": currentPosition?.latitude,
-      "longitude": currentPosition?.longitude,
+      "latitude": MultipartFile.fromString(
+        jsonEncode(currentPosition?.latitude),
+        contentType: DioMediaType("application", "json"),
+      ),
+      "longitude": MultipartFile.fromString(
+        jsonEncode(currentPosition?.longitude),
+        contentType: DioMediaType("application", "json"),
+      ),
     });
 
     logger.d(formData);
