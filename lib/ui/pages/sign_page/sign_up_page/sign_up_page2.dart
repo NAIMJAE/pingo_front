@@ -68,35 +68,37 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
     final userData = ref.watch(signupViewModelProvider);
     final signupNotifier = ref.read(signupViewModelProvider.notifier);
 
-    return SafeArea(
-      child: Scaffold(
-        appBar: signupAppBar(context, currentStep, _prevStep),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-              _signupNavigation(currentStep),
-              const SizedBox(height: 40),
-              IntrinsicHeight(
-                child: Center(
-                  child: SlideTransition(
-                    position: _slideAnimation,
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child:
-                          _buildStepWidget(context, userData, signupNotifier),
+    return Scaffold(
+      body: SafeArea(
+        child: Scaffold(
+          appBar: signupAppBar(context, currentStep, _prevStep),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                _signupNavigation(currentStep),
+                const SizedBox(height: 40),
+                IntrinsicHeight(
+                  child: Center(
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: FadeTransition(
+                        opacity: _fadeAnimation,
+                        child:
+                            _buildStepWidget(context, userData, signupNotifier),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: MediaQuery.of(context).viewInsets.bottom / 10),
-            ],
+                SizedBox(height: MediaQuery.of(context).viewInsets.bottom / 10),
+              ],
+            ),
           ),
-        ),
-        // 임시 개발용 버튼
-        floatingActionButton: FloatingActionButton(
-          onPressed: _nextStep,
-          child: Icon(Icons.arrow_forward),
+          // 임시 개발용 버튼
+          floatingActionButton: FloatingActionButton(
+            onPressed: _nextStep,
+            child: Icon(Icons.arrow_forward),
+          ),
         ),
       ),
     );

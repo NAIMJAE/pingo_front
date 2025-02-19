@@ -18,38 +18,46 @@ class ChatRoomList extends StatefulWidget {
 class _ChatMessageListState extends State<ChatRoomList> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      // 전체 페이지 스크롤 가능
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(4.0), // 페이지 좌우 여백
-            child: Text(
-              '나의 채팅',
-              style: TextStyle(
-                fontSize: 12, // 크기 수정
-                fontWeight: FontWeight.bold,
+    return Container(
+      width: double.infinity,
+      height: 500, // ♬ 나중에 더미 넣고 높이 수정
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SingleChildScrollView(
+          // 전체 페이지 스크롤 가능
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(4.0), // 페이지 좌우 여백
+                child: Text(
+                  '나의 채팅',
+                  style: TextStyle(
+                    fontSize: 12, // 크기 수정
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
-          ),
-          SizedBox(height: 10),
-          // Map 이라서 펼치기
-          // expend : 리스트 안의 요소를 하나의 리스트로 펼쳐줌
-          ...widget.chatList.entries.expand((entry) {
-            final chat = entry.value; // chatRoom 객체를 가져오기
-            final roomId = entry.key; // roomId 가져오기
+              SizedBox(height: 10),
+              // Map 이라서 펼치기
+              // expend : 리스트 안의 요소를 하나의 리스트로 펼쳐줌
+              ...widget.chatList.entries.expand((entry) {
+                final chat = entry.value; // chatRoom 객체를 가져오기
+                final roomId = entry.key; // roomId 가져오기
 
-            return chat.chatUser.map((user) => _chatList(
-                  context,
-                  user.imageUrl ?? '',
-                  user.userName ?? '',
-                  chat.lastMessage ?? '',
-                  roomId,
-                  user.userNo ?? '',
-                ));
-          }).toList(),
-        ],
+                return chat.chatUser.map((user) => _chatList(
+                      context,
+                      user.imageUrl ?? '',
+                      user.userName ?? '',
+                      chat.lastMessage ?? '',
+                      roomId,
+                      user.userNo ?? '',
+                    ));
+              }).toList(),
+            ],
+          ),
+        ),
       ),
     );
   }

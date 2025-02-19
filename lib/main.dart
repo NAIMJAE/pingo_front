@@ -3,7 +3,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:pingo_front/_core/utils/location.dart';
-
 import 'package:pingo_front/ui/pages/sign_page/sign_in_page.dart';
 import 'package:pingo_front/ui/pages/splash_page.dart';
 import '_core/theme/theme.dart';

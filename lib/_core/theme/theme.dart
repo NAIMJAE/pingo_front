@@ -44,8 +44,6 @@ AppBarTheme appBarTheme() {
     color: Colors.white,
     elevation: 0.0,
     iconTheme: IconThemeData(color: Colors.black),
-    titleTextStyle: GoogleFonts.dongle(
-        fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
   );
 }
 

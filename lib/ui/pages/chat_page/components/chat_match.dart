@@ -12,36 +12,43 @@ class ChatMatch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4.0),
-          child: Text(
-            '새 매치',
-            style: TextStyle(
-              fontSize: 12, // 크기 수정해야됨
-              fontWeight: FontWeight.bold,
+    return Container(
+      width: double.infinity,
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: Text(
+                '새 매치',
+                style: TextStyle(
+                  fontSize: 12, // 크기 수정해야됨
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-          ),
-        ),
-        SizedBox(height: 8),
-        SizedBox(
-          height: 150,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                ...chatList.entries.map(
-                  (each) {
-                    return _newMatchChatItem(chatList[each.key]!);
-                  },
-                )
-              ],
+            SizedBox(height: 8),
+            SizedBox(
+              height: 150,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    ...chatList.entries.map(
+                      (each) {
+                        return _newMatchChatItem(chatList[each.key]!);
+                      },
+                    )
+                  ],
+                ),
+              ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 

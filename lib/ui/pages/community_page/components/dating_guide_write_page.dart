@@ -81,32 +81,35 @@ class _DatingGuideWritePageState extends ConsumerState<DatingGuideWritePage> {
   Widget build(BuildContext context) {
     double cntWidth = MediaQuery.of(context).size.width;
 
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('데이팅 가이드 작성'),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                _buildProfileBox(cntWidth),
-                const SizedBox(height: 24),
-                _textInputBox('제목', '제목을 입력하세요', _titleController,
-                    isTitle: true),
-                const SizedBox(height: 24),
-                _categorySelectBox('카테고리'),
-                const SizedBox(height: 24),
-                _textInputBox('내용', '내용을 입력하세요', _contentsController),
-                SizedBox(height: MediaQuery.of(context).viewInsets.bottom / 10),
-              ],
+    return Scaffold(
+      body: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('데이팅 가이드 작성'),
+          ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  _buildProfileBox(cntWidth),
+                  const SizedBox(height: 24),
+                  _textInputBox('제목', '제목을 입력하세요', _titleController,
+                      isTitle: true),
+                  const SizedBox(height: 24),
+                  _categorySelectBox('카테고리'),
+                  const SizedBox(height: 24),
+                  _textInputBox('내용', '내용을 입력하세요', _contentsController),
+                  SizedBox(
+                      height: MediaQuery.of(context).viewInsets.bottom / 10),
+                ],
+              ),
             ),
           ),
-        ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: _submitButton(),
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: _submitButton(),
+          ),
         ),
       ),
     );

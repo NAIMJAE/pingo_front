@@ -6,7 +6,7 @@ AppBar signupAppBar(context, currentStep, _prevStep) {
       children: [
         Text(
           '회원 가입',
-          style: TextStyle(fontSize: 30, color: Colors.black),
+          style: TextStyle(fontSize: 20, color: Colors.black),
         ),
       ],
     ),
