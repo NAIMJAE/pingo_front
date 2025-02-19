@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mime/mime.dart';
+import 'package:pingo_front/_core/utils/location.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/keyword_model/keyword.dart';
 import 'package:pingo_front/data/models/sign_model/user_signup.dart';
@@ -37,6 +39,13 @@ class UserSignupRepository {
   Future<bool> fetchSignup(UserSignup signupData, File profileImage) async {
     // 파일의 MIME 타입 추론
     String? mimeType = lookupMimeType(profileImage.path) ?? 'image/jpeg';
+
+    // 현재 위치 가져오기 (기존 위치가 없으면 새로 요청)
+    Position? currentPosition = LocationService.lastPosition;
+    if (currentPosition == null) {
+      currentPosition = await LocationService.requestAndGetLocation();
+    }
+
     // 일단 테스트 버튼을 없애면 null 값이 있을 경우 이 함수가 호출이 되지는 않지만
     // 그래도 이 함수에서 전송할 UserSignup 객체에 null이 있는지 확인하는 작업 추가 필요함
     // 이미지 이름도 profile.jpg가 아니라 임의의 사진이름 필요 (백엔드에서 구분 가능하기만 하면 됨)
@@ -46,7 +55,9 @@ class UserSignupRepository {
         profileImage.path,
         filename: "profile.jpg",
         contentType: DioMediaType.parse(mimeType),
-      )
+      ),
+      "latitude": currentPosition?.latitude,
+      "longitude": currentPosition?.longitude,
     });
 
     logger.d(formData);
