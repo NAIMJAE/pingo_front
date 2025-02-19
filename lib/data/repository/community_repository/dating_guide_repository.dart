@@ -58,4 +58,16 @@ class DatingGuideRepository {
 
     return response;
   }
+
+  // 게시글 좋아요
+  Future<String> fetchClickThumbUp(String userNo, String dgNo) async {
+    final response = await _customDio.post(
+      '/community/guide/heart',
+      data: {
+        'userNo': userNo,
+        'dgNo': dgNo,
+      },
+    );
+    return response;
+  }
 }

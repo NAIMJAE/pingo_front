@@ -16,11 +16,6 @@ class DatingGuidePage extends ConsumerStatefulWidget {
   ConsumerState<DatingGuidePage> createState() => _DatingGuidePageState();
 }
 
-// view 페이지 디자인 디테일 마무리
-// 좋아요 기능
-// 카테고리 소개 기능
-// 리스트 페이지 정렬 버튼 디자인 추가
-
 class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
   late final String sessionUserNo;
   late final DatingGuideViewModel datingGuideViewModel;
@@ -57,6 +52,16 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
     }
   }
 
+  void moveToViewPage(BuildContext context, datingGuide) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DatingGuideViewPage(datingGuide),
+      ),
+    );
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     Map<String, DatingGuideSearch> dgsMap =
@@ -72,7 +77,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
               ...dgsMap.entries.map(
                 (entry) {
                   return SizedBox(
-                    height: 270,
+                    height: 306,
                     child: guideGroup(cntWidth, entry.value),
                   );
                 },
@@ -93,89 +98,94 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
   }
 
   Widget guideGroup(double cntWidth, DatingGuideSearch guideGroup) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(
-              left: 16.0, right: 16.0, top: 16.0, bottom: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                guideGroup.category ?? '',
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      changeSearchSort(
-                          'popular', guideGroup.cateNo!, guideGroup.category!);
-                    },
-                    child: Text(
-                      '인기순',
-                      style: TextStyle(
-                          color: guideGroup.sort == 'popular'
-                              ? Colors.redAccent
-                              : Colors.black,
-                          fontWeight: guideGroup.sort == 'popular'
-                              ? FontWeight.bold
-                              : FontWeight.normal),
+    return Container(
+      color: Colors.white,
+      margin: EdgeInsets.only(top: 8),
+      padding: EdgeInsets.only(bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+                left: 16.0, right: 16.0, top: 16.0, bottom: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  guideGroup.category ?? '',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        changeSearchSort('popular', guideGroup.cateNo!,
+                            guideGroup.category!);
+                      },
+                      child: Text(
+                        '인기순',
+                        style: TextStyle(
+                            color: guideGroup.sort == 'popular'
+                                ? Colors.redAccent
+                                : Colors.black,
+                            fontWeight: guideGroup.sort == 'popular'
+                                ? FontWeight.bold
+                                : FontWeight.normal),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onTap: () {
-                      changeSearchSort(
-                          'newest', guideGroup.cateNo!, guideGroup.category!);
-                    },
-                    child: Text(
-                      '최신순',
-                      style: TextStyle(
-                          color: guideGroup.sort == 'newest'
-                              ? Colors.redAccent
-                              : Colors.black,
-                          fontWeight: guideGroup.sort == 'newest'
-                              ? FontWeight.bold
-                              : FontWeight.normal),
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () {
+                        changeSearchSort(
+                            'newest', guideGroup.cateNo!, guideGroup.category!);
+                      },
+                      child: Text(
+                        '최신순',
+                        style: TextStyle(
+                            color: guideGroup.sort == 'newest'
+                                ? Colors.redAccent
+                                : Colors.black,
+                            fontWeight: guideGroup.sort == 'newest'
+                                ? FontWeight.bold
+                                : FontWeight.normal),
+                      ),
                     ),
-                  ),
-                ],
-              )
-            ],
+                  ],
+                )
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              ...List.generate(
-                guideGroup.datingGuideList!.length,
-                (index) {
-                  return guideBox(cntWidth, guideGroup.datingGuideList![index]);
-                },
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, bottom: 4.0),
+            child: Text(guideGroup.cateDesc!,
+                style: Theme.of(context).textTheme.headlineSmall),
           ),
-        ),
-      ],
+          Expanded(
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                ...List.generate(
+                  guideGroup.datingGuideList!.length,
+                  (index) {
+                    return guideBox(
+                        cntWidth, guideGroup.datingGuideList![index]);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget guideBox(double cntWidth, DatingGuide datingGuide) {
     return GestureDetector(
-      onTap: () {
-        // DatingGuideViewPage
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DatingGuideViewPage(datingGuide),
-          ),
-        );
-      },
+      onTap: () => moveToViewPage(context, datingGuide),
       child: Container(
         width: cntWidth * 6 / 10,
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),

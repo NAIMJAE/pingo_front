@@ -37,6 +37,11 @@ class DatingGuideViewModel extends Notifier<Map<String, DatingGuideSearch>> {
       Map<String, dynamic> data, File guideImage) async {
     return await _repository.fetchInsertDatingGuide(data, guideImage);
   }
+
+  // 게시글 좋아요
+  Future<String> clickThumbUp(String userNo, String dgNo) async {
+    return await _repository.fetchClickThumbUp(userNo, dgNo);
+  }
 }
 
 final datingGuideViewModelProvider =
