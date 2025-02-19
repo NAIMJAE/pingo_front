@@ -83,47 +83,51 @@ class UserViewModel extends Notifier<UserMypageInfo> {
     }
   }
 
-  Future<void> addUserImage(BuildContext context) async {
-    final String? userNo = state.userInfo?.userNo; // 현재 상태에서 유저 번호 가져오기
+  // 유저 이미지 추가
+  Future<void> uploadUserImage(BuildContext context, File imageFile) async {
+    final String? userNo = state.userInfo?.userNo;
 
-    if (userNo == null) {
+    bool result = await _repository.uploadUserImage(userNo!, imageFile);
+
+    if (result) {
+      fetchMyPageInfo(userNo);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text("유저 정보를 불러올 수 없습니다."), backgroundColor: Colors.red),
-      );
-      return;
-    }
-
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile == null) {
-      return;
-    }
-
-    File imageFile = File(pickedFile.path);
-    bool success = await _repository.uploadUserImage(userNo, imageFile);
-
-    if (success) {
-      // 상태 업데이트
-      state = UserMypageInfo(
-        users: state.users,
-        userInfo: state.userInfo,
-        userImageList: [
-          ...?state.userImageList,
-          UserImage(imageUrl: pickedFile.path, userNo: userNo),
-        ],
-      );
-
-      logger.d("새로운 state: $state");
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('이미지가 추가되었습니다.'), backgroundColor: Colors.green),
+          content: Text('이미지가 추가되었습니다.'),
+          backgroundColor: Colors.green,
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('이미지 추가에 실패했습니다.'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('이미지 추가를 실패했습니다.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  // 유저 이미지 삭제
+  Future<void> deleteUserImage(
+      BuildContext context, String ImageNoForDelete) async {
+    final String? userNo = state.userInfo?.userNo;
+
+    bool result = await _repository.deleteUserImage(ImageNoForDelete);
+
+    if (result) {
+      fetchMyPageInfo(userNo!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('이미지가 삭제되었습니다.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('이미지 삭제를 실패했습니다.'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }

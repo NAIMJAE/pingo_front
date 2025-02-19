@@ -33,8 +33,6 @@ class UserRepository {
         },
       );
 
-      logger.e("response : ${response}");
-
       return response.data['data'] == true;
     } catch (e) {
       logger.e("대표 이미지 변경 실패: $e");
@@ -42,6 +40,7 @@ class UserRepository {
     }
   }
 
+  // 유저 이미지 추가
   Future<bool> uploadUserImage(String userNo, File imageFile) async {
     try {
       String mimeType = lookupMimeType(imageFile.path) ?? 'image/jpeg';
@@ -53,13 +52,32 @@ class UserRepository {
         ),
       });
 
-      final response = await _customDio.dio.post("/user/image", data: formData);
+      final response = await _customDio.post(
+        "/user/image",
+        data: formData,
+        contentType: 'multipart/form-data',
+      );
 
-      logger.d("이미지 업로드 응답: ${response.data}");
-
-      return response.data['success'] == true; // 서버 응답 확인
+      return response == true; // 서버 응답 확인
     } catch (e) {
       logger.e("이미지 업로드 실패: $e");
+      return false;
+    }
+  }
+
+  // 유저 이미지 삭제
+  Future<bool> deleteUserImage(String ImageNoForDelete) async {
+    try {
+      final response = await _customDio.dio.delete(
+        '/user/image',
+        data: {
+          "ImageNoForDelete": ImageNoForDelete,
+        },
+      );
+
+      return response.data['data'] == true;
+    } catch (e) {
+      logger.e("이미지 삭제 실패: $e");
       return false;
     }
   }

@@ -1,14 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/data/models/user_model/user_info.dart';
+import '../../../../../../data/models/user_model/user_mypage_info.dart';
 import 'jop_page/first_job_select_page.dart';
 import 'jop_page/second_job_select_page.dart';
 
-class ProfilePersonalInformationBox extends StatelessWidget {
-  ProfilePersonalInformationBox({Key? key}) : super(key: key);
+class EditPersonalInformationBox extends ConsumerStatefulWidget {
+  final UserInfo copyUserInfo;
+  const EditPersonalInformationBox(this.copyUserInfo, {super.key});
+
+  @override
+  ConsumerState<EditPersonalInformationBox> createState() =>
+      _EditPersonalInformationBoxState();
+}
+
+class _EditPersonalInformationBoxState
+    extends ConsumerState<EditPersonalInformationBox> {
+  // 신장
+  final TextEditingController heightController = TextEditingController();
+  String? errorMessage;
 
   @override
   Widget build(BuildContext context) {
+    final userInfo = widget.copyUserInfo;
+
+    // 유저 정보가 있을 경우 해당 값을 사용, 없으면 기본값 설정
+    // 생년월일
+    // 신장
+    heightController.text = userInfo.userHeight?.toString() ?? '';
+
     return Card(
       elevation: 0.5,
       margin: EdgeInsets.zero,
@@ -28,12 +49,12 @@ class ProfilePersonalInformationBox extends StatelessWidget {
                 _buildPersonalInfoElement(
                   context,
                   '생년월일',
-                  _buildBirthInfo(context),
+                  _buildBirthInfo(userInfo),
                 ),
                 _buildPersonalInfoElement(
                   context,
                   '신장',
-                  _buildHeightInfo(context),
+                  _buildHeightInfo(),
                 ),
               ],
             ),
@@ -42,12 +63,12 @@ class ProfilePersonalInformationBox extends StatelessWidget {
                 _buildPersonalInfoElement(
                   context,
                   '1차 직종',
-                  _build1stJobInfo(context),
+                  _build1stJobInfo(userInfo),
                 ),
                 _buildPersonalInfoElement(
                   context,
                   '2차 직종',
-                  _build2ndJobInfo(context),
+                  _build2ndJobInfo(userInfo),
                 ),
               ],
             ),
@@ -86,7 +107,8 @@ class ProfilePersonalInformationBox extends StatelessWidget {
   }
 
   // 인적사항 요소
-  Widget _buildPersonalInfoElement(context, title, detail) {
+  Widget _buildPersonalInfoElement(
+      BuildContext context, String title, Widget detail) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 4.0),
       width: MediaQuery.of(context).size.width / 2 - 20,
@@ -107,89 +129,77 @@ class ProfilePersonalInformationBox extends StatelessWidget {
   }
 
   // 생년월일
-  final ValueNotifier<DateTime> selectedDateNotifier =
-      ValueNotifier(DateTime(1998, 5, 28));
-  Widget _buildBirthInfo(context) {
+  Widget _buildBirthInfo(userInfo) {
     return GestureDetector(
       onTap: () {
-        _selectDate(context);
+        _selectDate(userInfo);
       },
-      child: ValueListenableBuilder<DateTime>(
-        valueListenable: selectedDateNotifier,
-        builder: (context, selectedDate, child) {
-          return Row(
-            children: [
-              Text(
-                '${selectedDate.toLocal()}'.split(' ')[0],
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              Icon(
-                Icons.calendar_today,
-                color: Colors.lightBlueAccent,
-                size: 20,
-              ),
-            ],
-          );
-        },
+      child: Row(
+        children: [
+          Text(
+            '${userInfo.userBirth.toLocal()}'.split(' ')[0],
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          Icon(
+            Icons.calendar_today,
+            color: Colors.lightBlueAccent,
+            size: 20,
+          ),
+        ],
       ),
     );
   }
 
-  Future<void> _selectDate(context) async {
+  Future<void> _selectDate(userInfo) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDateNotifier.value,
+      initialDate: userInfo.userBirth,
       firstDate: DateTime(1900),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != selectedDateNotifier.value) {
-      selectedDateNotifier.value = picked; // 날짜 선택 시 상태 업데이트
+    if (picked != null && picked != userInfo.userBirth) {
+      setState(() {
+        userInfo.userBirth = picked;
+      });
     }
   }
 
   // 신장
-  final TextEditingController heightController = TextEditingController();
-  final ValueNotifier<String?> errorMessageNotifier = ValueNotifier(null);
-  Widget _buildHeightInfo(context) {
-    return ValueListenableBuilder<String?>(
-      valueListenable: errorMessageNotifier,
-      builder: (context, errorMessage, child) {
-        return TextField(
-          controller: heightController,
-          style: Theme.of(context).textTheme.titleLarge,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: '신장을 입력하세요',
-            errorText: errorMessage,
-            contentPadding: EdgeInsets.zero,
-            isDense: true,
-          ),
-          keyboardType: TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,1}')),
-          ],
-          onChanged: (value) {
-            _validateHeight(value);
-          },
-        );
+  Widget _buildHeightInfo() {
+    return TextField(
+      controller: heightController,
+      style: Theme.of(context).textTheme.titleLarge,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: '신장을 입력하세요',
+        errorText: errorMessage,
+        contentPadding: EdgeInsets.zero,
+        isDense: true,
+      ),
+      keyboardType: TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(
+            RegExp(r'^(?:[1-9]?\d|[12]\d{2}|300)$')),
+      ],
+      onChanged: (value) {
+        _validateHeight(value);
       },
     );
   }
 
   void _validateHeight(String value) {
-    final regex = RegExp(r'^\d{3}\.\d{1}$');
-    if (!regex.hasMatch(value)) {
-      errorMessageNotifier.value = '신장 정보를 XXX.X 형태로 입력해 주세요.';
-    } else {
-      errorMessageNotifier.value = null; // 오류 메시지 초기화
-    }
+    final regex = RegExp(r'^(?:[1-9]?\d|[12]\d{2}|300)$');
+    setState(() {
+      if (!regex.hasMatch(value)) {
+        errorMessage = '신장 정보를 300cm이하인 XXXcm 형태로 입력해 주세요.';
+      } else {
+        errorMessage = null;
+      }
+    });
   }
 
-  // 직종
-  // 상태 관리용 Notifier
-  final ValueNotifier<String?> firstJobNotifier = ValueNotifier(null);
-  // 1차 직종 정보
-  Widget _build1stJobInfo(context) {
+  // 1차 직종
+  Widget _build1stJobInfo(userInfo) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -197,39 +207,35 @@ class ProfilePersonalInformationBox extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => FirstJobSelectPage(
               onJobSelected: (selectedJob) {
-                firstJobNotifier.value = selectedJob; // 선택한 직종 업데이트
+                setState(() {
+                  userInfo.user1stJob = selectedJob;
+                });
               },
             ),
           ),
         );
       },
-      child: ValueListenableBuilder<String?>(
-        valueListenable: firstJobNotifier,
-        builder: (context, selectedJob, child) {
-          return Text(
-            selectedJob ?? '1차 직종을 선택하세요',
-            style: Theme.of(context).textTheme.titleLarge,
-          );
-        },
+      child: Text(
+        userInfo.user1stJob ?? '1차 직종을 선택하세요',
+        style: Theme.of(context).textTheme.titleLarge,
       ),
     );
   }
 
-  // 상태 관리용 Notifier
-  final ValueNotifier<String?> secondJobNotifier = ValueNotifier(null);
-  // 2차 직종 정보
-  Widget _build2ndJobInfo(context) {
+  // 2차 직종
+  Widget _build2ndJobInfo(userInfo) {
     return GestureDetector(
       onTap: () {
-        if (firstJobNotifier.value != null) {
-          // 1차 직종이 선택된 경우에만
+        if (userInfo.user1stJob != null) {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => SecondJobSelectPage(
-                firstJob: firstJobNotifier.value!,
+                firstJob: userInfo.user1stJob!,
                 onSubJobSelected: (selectedSubJob) {
-                  secondJobNotifier.value = selectedSubJob; // 선택한 2차 직종 업데이트
+                  setState(() {
+                    userInfo.user2ndJob = selectedSubJob;
+                  });
                 },
               ),
             ),
@@ -240,14 +246,9 @@ class ProfilePersonalInformationBox extends StatelessWidget {
           );
         }
       },
-      child: ValueListenableBuilder<String?>(
-        valueListenable: secondJobNotifier,
-        builder: (context, selectedSubJob, child) {
-          return Text(
-            selectedSubJob ?? '2차 직종을 선택하세요',
-            style: Theme.of(context).textTheme.titleLarge,
-          );
-        },
+      child: Text(
+        userInfo.user2ndJob ?? '2차 직종을 선택하세요',
+        style: Theme.of(context).textTheme.titleLarge,
       ),
     );
   }

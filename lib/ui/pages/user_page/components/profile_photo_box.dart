@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pingo_front/data/models/user_model/user_image.dart';
 import 'package:pingo_front/data/models/user_model/user_mypage_info.dart';
 import 'package:pingo_front/data/view_models/user_view_model/user_view_model.dart';
@@ -8,14 +11,29 @@ import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class ProfilePhotoBox extends ConsumerStatefulWidget {
   final UserMypageInfo userMypageInfo;
+  final UserViewModel userViewModelNotifier;
 
-  const ProfilePhotoBox(this.userMypageInfo, {super.key});
+  const ProfilePhotoBox(this.userMypageInfo, this.userViewModelNotifier,
+      {super.key});
 
   @override
   ConsumerState<ProfilePhotoBox> createState() => _ProfilePhotoBoxState();
 }
 
 class _ProfilePhotoBoxState extends ConsumerState<ProfilePhotoBox> {
+  File? _profileImage;
+
+  // picker 라이브러리를 이용한 이미지 파일 처리 함수
+  Future<void> _pickProfileImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      widget.userViewModelNotifier
+          .uploadUserImage(context, File(pickedFile.path));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double totalWidth = MediaQuery.of(context).size.width;
@@ -105,10 +123,8 @@ class _ProfilePhotoBoxState extends ConsumerState<ProfilePhotoBox> {
                         shape: BoxShape.circle, color: Colors.white),
                     child: IconButton(
                       icon: Icon(Icons.add),
-                      onPressed: () async {
-                        await ref
-                            .read(userViewModelProvider.notifier)
-                            .addUserImage(context);
+                      onPressed: () {
+                        _pickProfileImage();
                       },
                     ),
                   ),
@@ -165,14 +181,21 @@ class _ProfilePhotoBoxState extends ConsumerState<ProfilePhotoBox> {
                                 child: Text('대표이미지로 지정'),
                               ),
                               TextButton(
-                                onPressed: () {
-                                  ref
-                                      .read(userViewModelProvider.notifier)
-                                      .fetchMyPageInfo(ref
-                                              .read(userViewModelProvider)
-                                              .userInfo
-                                              ?.userNo ??
-                                          '');
+                                onPressed: () async {
+                                  if (userImage != null) {
+                                    final userViewModel = ref
+                                        .read(userViewModelProvider.notifier);
+
+                                    String? ImageNoForDelete =
+                                        userImage.imageNo;
+
+                                    if (ImageNoForDelete != null) {
+                                      await userViewModel.deleteUserImage(
+                                        context,
+                                        ImageNoForDelete,
+                                      );
+                                    }
+                                  }
                                   Navigator.of(context).pop();
                                 },
                                 child: Text('삭제'),

@@ -46,7 +46,7 @@ class _UserPageState extends ConsumerState<UserPage> {
           const SizedBox(height: 4.0),
           MyinfoBox(userMypageInfo),
           const SizedBox(height: 8.0),
-          ProfilePhotoBox(userMypageInfo),
+          ProfilePhotoBox(userMypageInfo, userViewModelNotifier),
           const SizedBox(height: 8.0),
           MypageBox(myPageMenuList: MypageMenu1),
           const SizedBox(height: 8.0),
