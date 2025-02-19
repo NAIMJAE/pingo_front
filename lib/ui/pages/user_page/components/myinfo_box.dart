@@ -18,10 +18,8 @@ class MyinfoBox extends ConsumerStatefulWidget {
 class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0.5,
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
+    return Container(
+      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         child: Column(
@@ -44,7 +42,7 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
       }
     }
 
-    return Stack(
+    return Column(
       children: [
         Row(
           children: [
@@ -121,19 +119,32 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
             ),
           ],
         ),
-        Positioned(
-          top: 0,
-          right: 0,
-          child: IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => EditProfilePage()),
-              );
-            },
-            icon: Icon(CupertinoIcons.pen),
+        const SizedBox(height: 8),
+        FilledButton(
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.black12),
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
           ),
-        ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EditProfilePage()),
+            );
+          },
+          child: SizedBox(
+            width: double.infinity,
+            child: Text(
+              '프로필 편집',
+              textAlign: TextAlign.center,
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+            ),
+          ),
+        )
       ],
     );
   }

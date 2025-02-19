@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pingo_front/data/models/community_model/dating_guide.dart';
 import 'package:pingo_front/data/view_models/community_view_model/dating_guide_view_model.dart';
+import 'package:pingo_front/ui/widgets/common_appbar_line.dart';
 
 class DatingGuideWritePage extends ConsumerStatefulWidget {
   String userNo;
@@ -85,7 +86,12 @@ class _DatingGuideWritePageState extends ConsumerState<DatingGuideWritePage> {
       body: SafeArea(
         child: Scaffold(
           appBar: AppBar(
-            title: Text('데이팅 가이드 작성'),
+            scrolledUnderElevation: 0,
+            bottom: CommonAppbarLine(),
+            title: Text(
+              '데이팅 가이드 작성',
+              style: TextStyle(fontSize: 16),
+            ),
           ),
           body: SingleChildScrollView(
             child: Padding(
@@ -127,10 +133,12 @@ class _DatingGuideWritePageState extends ConsumerState<DatingGuideWritePage> {
                   fontWeight: FontWeight.bold,
                 ),
           ),
+          const SizedBox(height: 8),
           Center(
             child: GestureDetector(
               onTap: _pickProfileImage,
               child: Container(
+                width: double.infinity,
                 height: cntWidth * 3 / 5,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey, width: 1),
@@ -171,7 +179,7 @@ class _DatingGuideWritePageState extends ConsumerState<DatingGuideWritePage> {
                 fontWeight: FontWeight.bold,
               ),
         ),
-        const SizedBox(height: 4.0),
+        const SizedBox(height: 8.0),
         Container(
           height: isTitle ? 50 : 300,
           decoration: BoxDecoration(
@@ -207,6 +215,7 @@ class _DatingGuideWritePageState extends ConsumerState<DatingGuideWritePage> {
                 fontWeight: FontWeight.bold,
               ),
         ),
+        const SizedBox(height: 8),
         Row(
           children: [
             ...cateMap.entries.map(

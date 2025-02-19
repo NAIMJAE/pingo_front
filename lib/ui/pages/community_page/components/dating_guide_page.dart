@@ -126,15 +126,27 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
                         changeSearchSort('popular', guideGroup.cateNo!,
                             guideGroup.category!);
                       },
-                      child: Text(
-                        '인기순',
-                        style: TextStyle(
-                            color: guideGroup.sort == 'popular'
-                                ? Colors.redAccent
-                                : Colors.black,
-                            fontWeight: guideGroup.sort == 'popular'
-                                ? FontWeight.bold
-                                : FontWeight.normal),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: BorderDirectional(
+                            bottom: BorderSide(
+                              width: 2,
+                              color: guideGroup.sort == 'popular'
+                                  ? Colors.redAccent
+                                  : Colors.white,
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          '인기순',
+                          style: TextStyle(
+                              color: guideGroup.sort == 'popular'
+                                  ? Colors.redAccent
+                                  : Colors.black,
+                              fontWeight: guideGroup.sort == 'popular'
+                                  ? FontWeight.bold
+                                  : FontWeight.normal),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -143,15 +155,27 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
                         changeSearchSort(
                             'newest', guideGroup.cateNo!, guideGroup.category!);
                       },
-                      child: Text(
-                        '최신순',
-                        style: TextStyle(
-                            color: guideGroup.sort == 'newest'
-                                ? Colors.redAccent
-                                : Colors.black,
-                            fontWeight: guideGroup.sort == 'newest'
-                                ? FontWeight.bold
-                                : FontWeight.normal),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: BorderDirectional(
+                            bottom: BorderSide(
+                              width: 2,
+                              color: guideGroup.sort == 'newest'
+                                  ? Colors.redAccent
+                                  : Colors.white,
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          '최신순',
+                          style: TextStyle(
+                              color: guideGroup.sort == 'newest'
+                                  ? Colors.redAccent
+                                  : Colors.black,
+                              fontWeight: guideGroup.sort == 'newest'
+                                  ? FontWeight.bold
+                                  : FontWeight.normal),
+                        ),
                       ),
                     ),
                   ],

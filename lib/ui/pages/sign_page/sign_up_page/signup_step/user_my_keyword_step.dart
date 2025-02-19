@@ -145,16 +145,14 @@ class _UserMyKeywordStepState extends State<UserMyKeywordStep> {
                 border: Border.all(
                     color: isSelected ? Colors.redAccent : Colors.grey),
                 borderRadius: BorderRadius.circular(8.0),
-                color: isSelected
-                    ? Colors.redAccent.withOpacity(0.2)
-                    : Colors.white,
+                color: isSelected ? Colors.redAccent : Colors.white,
               ),
               alignment: Alignment.center,
               child: Text(
                 keyword.kwName!,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? Colors.redAccent : Colors.black),
+                    color: isSelected ? Colors.white : Colors.black),
               ),
             ),
           ),

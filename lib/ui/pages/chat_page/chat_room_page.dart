@@ -103,18 +103,20 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
 
     return Scaffold(
       appBar: chatAppbar(context),
-      backgroundColor: Colors.black12,
-      body: ListView(
-        children: [
-          const SizedBox(height: 8),
-          ChatSearchHeader(chatList),
-          const SizedBox(height: 8),
-          ChatMatch(
-            chatList: matchChat,
-          ),
-          const SizedBox(height: 8),
-          ChatRoomList(listChat, chatRoomViewModel),
-        ],
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView(
+          children: [
+            ChatSearchHeader(chatList),
+            const SizedBox(height: 8),
+            ChatMatch(
+              chatList: matchChat,
+            ),
+            const SizedBox(height: 8),
+            ChatRoomList(listChat, chatRoomViewModel),
+          ],
+        ),
       ),
     );
   }

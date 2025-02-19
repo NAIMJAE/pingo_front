@@ -219,6 +219,7 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
             if (selectedAddress != null) {
               controller.text = selectedAddress.roadAddress;
             }
+            setState(() {});
           },
           readOnly: true,
           controller: controller,
