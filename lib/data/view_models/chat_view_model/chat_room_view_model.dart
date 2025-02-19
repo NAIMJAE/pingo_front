@@ -7,6 +7,7 @@ import 'package:pingo_front/data/repository/chat_repository/chat_repository.dart
 // 채팅목록과 메세지를 하나의 뷰에서 관리하기
 class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
   final ChatRepository _repository;
+
   ChatRoomViewModel(this._repository);
 
   @override
@@ -40,13 +41,40 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
 
   // [3] 매칭 취소 (나아아중에)
 
-  // [-] 마지막 메세지 상태 저장
+  // [4] 마지막 메세지 상태 저장
+  void updateLastMessage(String roomId, String newMessage) {
+    state[roomId]?.lastMessage = newMessage;
+    // state = state.map((chat) {
+    //   if (chat.roomId == roomId) {
+    //     return chat.copyWith(lastMessage: newMessage);
+    //   }
+    //   return chat;
+    // }).toList();
+  }
 
   /// 메세지 ///
   // [1] 메세지 조회 - 채팅방을 클릭할 때
-  // - 조회해서 해당방 roomId로 Map 조회해서 ChatRoom의 메세지 리스트에 초기화하기
-  void addMessage(List<Message> messageList, String roomId) {
-    // state[roomId]?.createNewMessage(messageList);
+  Future<void> selectMessage(String roomId) async {
+    List<Message> messages = await _repository.selectMessage(roomId);
+    if (messages == []) {
+      logger.i('빈배열임당');
+    } else {
+      state[roomId]?.createNewMessage(messages);
+    }
+    logger.i('여기머라나오노 $state.toString()');
+  }
+
+  // 웹소캣에서 받아온 메세지 추가
+  void addMessage(Message messageList, String roomId) {
+    final chatRoom = state[roomId]!;
+    final updatedMessage = [...?chatRoom.message, messageList];
+    final updateChatRoom = chatRoom.copyWith(message: updatedMessage);
+
+    state = {...state, roomId: updateChatRoom};
+
+    // final updatedMessages = [...?chatUser.message, messageList];
+    // final updateChatUser = chatUser.message.copyWith
+    // state[roomId]?.addNewMessage(messageList);
 
     // 캡슐화로 ChatRoom 객체의 값을 외부에서 직접 접근, 수정하지 못하게 하기
     // 그래서 ChatRoom 내부에 값을 변경하는 메서드를 만들고 호출하기
@@ -54,10 +82,6 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
     // state['값'] == ChatRoom
     // state['값']?.message.addAll(messageList);
   }
-
-  // [2] 메세지 추가 (웹소켓에서 보낼때, 받을때 호출하기)
-  // - 새롭게 받은 메세지 + 내가 보낸 새 메시지를 ChatRoom의 메세지 리스트에 추가하기
-  void addNewMessage(Message message, String roomId) {}
 }
 
 //창고 관리자 생성하기

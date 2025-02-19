@@ -8,10 +8,12 @@ import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_msg_view_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
+import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class StompViewModel extends Notifier<bool> {
   StompClient? stompClient;
+  String? userNo;
 
   // 웹소캣 값을 bool로 관리하기
   //build를 오버라이드 해줌, state값을 bool로 관리할 예정 / false면 웹소캣 연결 해제
@@ -22,6 +24,9 @@ class StompViewModel extends Notifier<bool> {
 
   // 웹소캣 연결하기 initState일때사용하기
   void stompConnect() async {
+    final sessionUser = ref.read(sessionProvider);
+    userNo = sessionUser.userNo;
+
     if (stompClient != null) return;
     String? accessToken = await secureStorage.read(key: 'accessToken');
     // stompclient 콜백메서드를 등록할 수 있는 웹소캣의 객체
@@ -50,16 +55,13 @@ class StompViewModel extends Notifier<bool> {
   // 서버에서 메시지 받아오기 받은 메세지를 저장소(chatRoomProvider에 추가할예정)
   // 서버에서 메시지를 받아올 경로
   // 연결되면 연결완료 logger띄우기
+  //StompFrame은 서버에서 보낸 연결 응답을 담고 있는 객체인데 onConnect에서는 무조건 인자로 써줘야함 (안쓰더라도)
   void _onConnect(StompFrame frame) {
-    stompClient?.subscribe(
-      destination: '/topic/msg/1',
-      callback: (StompFrame frame) {
-        final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
-        final Message message = Message.fromJson(jsonData);
-        _addMessage(message);
-      },
+    stompClient?.send(
+      destination: '/pub/main/$userNo',
     );
-    logger.i('웹소켓 연결 완료');
+    logger.i('웹소냥이 연결완료');
+    // receive(userNo!);
   }
 
   // 서버에서 받기 메세지만!! 받기!!! 다른곳에서 상태관리를 하는게 나을 것 같다.
@@ -72,24 +74,25 @@ class StompViewModel extends Notifier<bool> {
   // 메세지가 들어오면 completer.complete(message)로 완료시키고 그다음에 future<Message>리턴때리기
 
   // 비효율적이라 수정 --> return을 하지않고 그대로 message를 필요한 viewModel의 메서드로 전달시켰다.
-  void receive(String roomId, {bool isChatMsg = false}) {
+  // 메세지 받기
+  void receive(String roomId) {
     // final Completer<Message> completer = Completer<Message>();
     stompClient?.subscribe(
       destination: '/topic/msg/$roomId',
       callback: (StompFrame frame) {
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
         Message message = Message.fromJson(jsonData);
-        logger.i('이거이거이거 $message');
+        final roomId = message.roomId;
+        logger.i('receive로 메세지 방ㄷ음 $message');
         // 채팅방 목록 뷰모델을 구독하고 바로 필요한 정보만 전달해버리기!! 로 수정!!!
         // 채팅방 메세지 받는 페이지가 아니면!
-        if (isChatMsg) {
-          // 1. 채팅방목록 뷰모델에 전달!
-          ref.read(chatProvider.notifier);
-        } else {
-          // .updateLastMessage(roomId, message.msgContent!);
-          // 2. 채팅메세지 뷰모델에 전달!
-          ref.read(chatMsgProvider.notifier).addMessage(message);
-        }
+
+        // 1. 마지막메세지 업데이트 + List<Message> 업데이트
+        ref
+            .read(chatProvider.notifier)
+            .updateLastMessage(roomId!, message.msgContent ?? '');
+        ref.read(chatProvider.notifier).addMessage(message, roomId);
+
         // completer.complete(message);
         // _addMessage(message);
       },
@@ -108,10 +111,10 @@ class StompViewModel extends Notifier<bool> {
   }
 
   // 서버로 채팅 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
-  void sendMessage(Message message) {
+  void sendMessage(Message message, String roomId) {
     final messages = jsonEncode(message.toJson());
     stompClient?.send(
-      destination: '/pub/msg/1',
+      destination: '/pub/msg/$roomId',
       body: messages, // 수정 예정 객체 -> JSON 문자열 변환
     );
     logger.i('머나와 $messages.toString()');
@@ -124,11 +127,11 @@ class StompViewModel extends Notifier<bool> {
     state = false;
   }
 
-  void _addMessage(Message message) {
-    final messageNotifier = ref.read(chatMsgProvider.notifier);
-    messageNotifier.addMessage(message);
-    logger.i(messageNotifier);
-  }
+  // void _addMessage(Message message) {
+  //   final messageNotifier = ref.read(chatProvider.notifier);
+  //   messageNotifier.addMessage(message);
+  //   logger.i(messageNotifier);
+  // }
 }
 
 // 창고 관리자 + 관리할 창고 설정

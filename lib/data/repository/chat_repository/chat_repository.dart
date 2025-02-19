@@ -29,13 +29,6 @@ class ChatRepository {
     logger.i(result);
 
     return result;
-
-    // return Map<String, ChatRoom>
-
-    // List<Chat>으로 변경처리
-    // return List<Map<String, dynamic>>.from(response)
-    //     .map((json) => Chat.fromJson(json))
-    //     .toList();
   }
 
   //채팅방 메세지 조회

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room.dart';
 import 'package:pingo_front/data/models/chat_model/chat_user.dart';
+import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class ChatMatch extends StatelessWidget {
   // final List<Chat> chatList;
@@ -30,47 +31,25 @@ class ChatMatch extends StatelessWidget {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: List.generate(
-                10,
-                (index) {
-                  return NewMatchItem(
-                    imageUrl: 'https://picsum.photos/250/250', // 실제 이미지 URL
-                    name: 'ㅇㄱㅇ', // 실제 이름
-                    connection: true,
-                    onTap: () {
-                      print('클릭했음');
-                      // 매치 클릭 처리 -> 클릭했을 때 채팅방으로 이동
-                    },
-                  );
-                },
-              ),
+              children: [
+                ...chatList.entries.map(
+                  (each) {
+                    return _newMatchChatItem(chatList[each.key]!);
+                  },
+                )
+              ],
             ),
           ),
         ),
       ],
     );
   }
-}
 
-// model
-class NewMatchItem extends StatelessWidget {
-  final String imageUrl;
-  final String name;
-  final bool connection; // 접속중 여부
-  final VoidCallback onTap;
+  Widget _newMatchChatItem(ChatRoom chatRoom) {
+    ChatUser otherUser = chatRoom.chatUser[0]; ///// 나중에 수정
 
-  const NewMatchItem({
-    Key? key,
-    required this.imageUrl,
-    required this.name,
-    this.connection = false,
-    required this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {},
       child: Container(
         width: 80,
         margin: EdgeInsets.symmetric(horizontal: 4),
@@ -83,13 +62,10 @@ class NewMatchItem extends StatelessWidget {
                   height: 100,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                    ),
+                    child: CustomImage().token(otherUser.imageUrl!),
                   ),
                 ),
-                if (connection)
+                if (true) ///// 나중에 수정
                   Positioned(
                     bottom: 5,
                     right: 5,
@@ -105,7 +81,7 @@ class NewMatchItem extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Text(
-              name,
+              otherUser.userName!,
               style: TextStyle(
                 fontWeight: FontWeight.w500, // 사이즈수정
               ),

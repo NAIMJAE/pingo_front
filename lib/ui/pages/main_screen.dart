@@ -26,6 +26,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
     // STOMP 웹소캣 연결
     // 현재 코드 실행이 끝난 직후에 실행할 비동기 작업을 예약
+    // IndexedStack은 한 번 빌드된 위젯을 계속 유지함(아래 페이지 모두 웹소켓 연결된 상태)
     Future.microtask(
         () => ref.read(stompViewModelProvider.notifier).stompConnect());
   }
