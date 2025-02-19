@@ -61,7 +61,7 @@ class StompViewModel extends Notifier<bool> {
       destination: '/pub/main/$userNo',
     );
     logger.i('웹소냥이 연결완료');
-    receive(userNo!);
+    // receive(userNo!);
   }
 
   // 서버에서 받기 메세지만!! 받기!!! 다른곳에서 상태관리를 하는게 나을 것 같다.
@@ -75,10 +75,10 @@ class StompViewModel extends Notifier<bool> {
 
   // 비효율적이라 수정 --> return을 하지않고 그대로 message를 필요한 viewModel의 메서드로 전달시켰다.
   // 메세지 받기
-  void receive(String userNo) {
+  void receive(String roomId) {
     // final Completer<Message> completer = Completer<Message>();
     stompClient?.subscribe(
-      destination: '/topic/msg/$userNo',
+      destination: '/topic/msg/$roomId',
       callback: (StompFrame frame) {
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
         Message message = Message.fromJson(jsonData);

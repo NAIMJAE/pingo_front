@@ -8,6 +8,7 @@ import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
+import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 // consumer 처리하기.
 class ChatMsgBody extends ConsumerStatefulWidget {
@@ -30,7 +31,7 @@ class ChatMsgBody extends ConsumerStatefulWidget {
 class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController scroll = ScrollController();
-  late StompViewModel websocketProvider; // 웹소캣 객체를 저장
+  late StompViewModel websocketProvider; // 웹소캣 객체를 저장(메세지를 보내기 위한)
 
   // 선언하고 initState()에서 ref.read를 사용해서 초기화를 했기때문에 build 안에서 사용가능함!
 
@@ -133,8 +134,6 @@ Widget _buildMessageItem(
     Message message, String? userNo, List<ChatUser> totalUser) {
   final ChatUser selectUser = totalUser.firstWhere(
     (each) => each.userNo == message.userNo,
-    orElse: () => ChatUser(
-        userNo: '1111', roomId: '2222', imageUrl: '3333', userName: '4444'),
   );
 
   return Align(
@@ -152,7 +151,7 @@ Widget _buildMessageItem(
           if (message.userNo != userNo) //상대방일때
             CircleAvatar(
               radius: 20,
-              backgroundImage: NetworkImage(selectUser.imageUrl!),
+              backgroundImage: CustomImage().provider(selectUser.imageUrl!),
             ),
           Row(
             // 정렬 변경

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/ui/pages/chat_page/chat_msg2_page.dart';
+import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class ChatRoomList extends StatefulWidget {
   final Map<String, ChatRoom> chatList;
@@ -52,26 +54,26 @@ class _ChatMessageListState extends State<ChatRoomList> {
     );
   }
 
-  Widget _chatList(BuildContext context, String imgUrl, String chatName,
-      String chatMsg, String roomId, String userNo) {
+  Widget _chatList(BuildContext context, String imgUrl, String userName,
+      String lastMessage, String roomId, String userNo) {
     return ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 4.0),
         leading: CircleAvatar(
-          backgroundImage: NetworkImage(imgUrl),
+          backgroundImage: CustomImage().provider(imgUrl),
           radius: 28, // 기본 크기 설정
         ),
-        title: Text(chatName),
-        subtitle: Text(chatMsg),
+        title: Text(userName),
+        subtitle: Text(lastMessage),
         trailing: Icon(Icons.play_arrow),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ChatMsg2Page(
-                  chatRoomName: chatName,
+                  chatRoomName: userName,
                   roomId: roomId,
                   userNo: userNo,
-                  chatList: widget.chatList[roomId]!,
+                  chatRoom: widget.chatList[roomId]!,
                   chatRoomViewModel: widget.chatRoomViewModel),
             ),
           );

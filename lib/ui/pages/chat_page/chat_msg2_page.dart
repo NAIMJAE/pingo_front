@@ -7,14 +7,14 @@ class ChatMsg2Page extends StatefulWidget {
   final String chatRoomName;
   final String roomId;
   final String userNo;
-  final ChatRoom chatList;
+  final ChatRoom chatRoom;
   final ChatRoomViewModel chatRoomViewModel;
 
   const ChatMsg2Page({
     required this.chatRoomName,
     required this.roomId,
     required this.userNo,
-    required this.chatList,
+    required this.chatRoom,
     required this.chatRoomViewModel,
     super.key,
   });
@@ -36,7 +36,7 @@ class _ChatMsg2PageState extends State<ChatMsg2Page> {
             padding: const EdgeInsets.all(8.0),
             child: ChatMsgBody(
               roomId: widget.roomId,
-              chatRoom2: widget.chatList,
+              chatRoom2: widget.chatRoom,
               userNo: widget.userNo ?? '',
               chatRoomViewModel: widget.chatRoomViewModel,
             ),
