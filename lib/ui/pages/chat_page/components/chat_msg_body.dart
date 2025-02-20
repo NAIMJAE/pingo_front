@@ -72,6 +72,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     //     widget.chatRoom[widget.roomId]?.chatUser ?? [];
 
     List<ChatUser>? totalUser = chatRoom?.chatUser;
+    logger.e('ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ ${totalUser.toString()}');
 
     return Column(
       children: [
@@ -135,6 +136,9 @@ Widget _buildMessageItem(
   final ChatUser selectUser = totalUser.firstWhere(
     (each) => each.userNo == message.userNo,
   );
+  // logger.e('★★★★ 너는 누구냐 ${userNo}');
+  // logger.e('★★★★ 메세지 주인 ${message.userNo}');
+  // logger.e('★★★★ 셀렉트 유저 ${selectUser.userNo}');
 
   return Align(
     alignment:
