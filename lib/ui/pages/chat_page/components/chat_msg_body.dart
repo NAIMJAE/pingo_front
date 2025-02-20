@@ -16,12 +16,14 @@ class ChatMsgBody extends ConsumerStatefulWidget {
   final String userNo;
   final ChatRoom chatRoom2;
   final ChatRoomViewModel chatRoomViewModel;
+  final String myUserNo;
 
   ChatMsgBody(
       {required this.userNo,
       required this.chatRoom2,
       required this.roomId,
       required this.chatRoomViewModel,
+      required this.myUserNo,
       super.key});
 
   @override
@@ -41,6 +43,11 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     // 2. 메세지를 지속적으로 받아오면서 구독하고 receive 요청!
     websocketProvider =
         ref.read(stompViewModelProvider.notifier); // 웹소캣 창고 접근(메서드 사용하려고)
+
+    // 리스트뷰가 스크롤과 연결되어있을 때 들어오자마자 가장 하단으로 보낸다
+    if (scroll.hasClients) {
+      scroll.jumpTo(scroll.position.maxScrollExtent);
+    }
     // websocketProvider.receive(widget.roomId);
   }
   //   super.initState();
@@ -64,8 +71,16 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     // final sessionUser = ref.read(sessionProvider);
     // final myUserNo = sessionUser.userNo;
     final chatRoom = ref.watch(chatProvider)[
-        widget.roomId]; // 상태값 꺼내오기(state = Map<String,ChatRoom> 꺼내오는거임)
-    // logger.i('도달여부확인');
+        widget.roomId]; // 상태값 꺼내오기(state = Map<String,ChatRoom> 꺼내오는거임)'
+
+    //WidgetsBinding : 라이프사이클 관리
+    // build() 완료 후 최하단으로 스크롤
+    //  Flutter의 프레임이 그려진 직후(즉, build()가 완료된 후)에 특정 코드를 실행하도록 예약하는 함수(한번만 실행)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scroll.hasClients) {
+        scroll.jumpTo(scroll.position.maxScrollExtent);
+      }
+    }); // logger.i('도달여부확인');
     // final List<Message> chatMessages =
     //     widget.chatRoom[widget.roomId]?.message ?? [];
     // final List<ChatUser> chatUsers =
@@ -84,7 +99,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
             itemBuilder: (context, index) {
               final message = chatRoom?.message![index];
               // final chatUser = chatUsers[index];
-              return _buildMessageItem(message!, widget.userNo, totalUser!);
+              return _buildMessageItem(message!, widget.myUserNo, totalUser!);
             },
           ),
         ),
@@ -104,7 +119,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                 // 새 메시지 생성
                 final newMessage = defaultMessage.copyWith(
                   msgContent: _messageController.text, // 입력 필드에서 가져온 내용
-                  userNo: widget.userNo, // 보낸 사람 ID (로그인한 사용자 ID)
+                  userNo: widget.myUserNo, // 보낸 사람 ID (로그인한 사용자 ID)
                   msgTime: DateTime.now(), // 현재 시간
                 );
                 logger.i('머머 $newMessage');

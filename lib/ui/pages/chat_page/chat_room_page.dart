@@ -22,7 +22,7 @@ class ChatRoomPage extends ConsumerStatefulWidget {
 }
 
 class _ChatPageState extends ConsumerState<ChatRoomPage> {
-  late String? userNo;
+  late String? myUserNo;
 
   // initState는 비동기를 직접 사용할 수 없음.
   @override
@@ -30,14 +30,14 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
     super.initState();
 
     final sessionUser = ref.read(sessionProvider);
-    userNo = sessionUser.userNo;
+    myUserNo = sessionUser.userNo;
 
     // 여기서 chat 뷰모델의 초기 데이터 조회하는 로직 수행 (userNo)
     // 여기에서 모든 정보 다 받아오기 (페이징처리 필요)
     Future<void> _fetchChatList() async {
       final chatProviders = ref.read(chatProvider.notifier);
       Map<String, ChatRoom> chatList =
-          await chatProviders.selectChatRoom(userNo ?? '사용자없음');
+          await chatProviders.selectChatRoom(myUserNo ?? '사용자없음');
       logger.e("이거  chatList 머나와나 $chatList");
       //키 RoomId를 가져온다.
       List<String> roomIds = chatList.keys.toList();
@@ -69,7 +69,7 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
 
       // 파싱처리
       List<ChatUser> filterUsers =
-          chatRoom.chatUser.where((user) => user.userNo != userNo).toList();
+          chatRoom.chatUser.where((user) => user.userNo != myUserNo).toList();
 
       if (chatRoom.lastMessage != '') {
         listChat[roomKey] = ChatRoom(
@@ -116,7 +116,7 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
               chatList: matchChat,
             ),
             const SizedBox(height: 8),
-            ChatRoomList(listChat, chatRoomViewModel),
+            ChatRoomList(listChat, myUserNo!, chatRoomViewModel),
           ],
         ),
       ),
