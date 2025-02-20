@@ -1,3 +1,5 @@
+import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 
 import '../../models/keyword_model/keyword_group.dart';
@@ -19,10 +21,26 @@ class KeywordRepository {
     return keywordGroup;
   }
 
-  Future<void> fetchSelectedKeyword(userNo, kwId) async {
+  // 키워드로 조회
+  Future<List<Profile>> fetchSelectedKeyword(userNo, kwId) async {
     final response = await _customDio.get(
       '/recommend',
       query: {'userNo': userNo, 'sKwId': kwId},
     );
+
+    List<dynamic> usersData = response;
+
+    List<Profile> users = usersData
+        .map((user) => Profile(
+            userNo: user['userNo'],
+            name: user['userName'],
+            age: user['age'],
+            status: user['status'],
+            distance: user['distance'],
+            ImageList: List<String>.from(user['imageList'] ?? [])))
+        .toList();
+
+    logger.i("✅ fetchSelectedKeyword 주변 유저 불러오기 성공: ${users.length}명");
+    return users;
   }
 }

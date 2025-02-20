@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/community_model/place_review.dart';
 import 'package:pingo_front/data/models/community_model/place_review_search.dart';
 import 'package:pingo_front/data/models/community_model/review_search_result.dart';
@@ -33,7 +34,7 @@ class _PlaceListState extends ConsumerState<PlaceList> {
     return Column(
       children: [
         // cate
-        if (!searchList.isEmpty)
+        if (searchList.isNotEmpty)
           SizedBox(
             height: 90,
             child: ListView(
@@ -53,7 +54,7 @@ class _PlaceListState extends ConsumerState<PlaceList> {
             ),
           ),
         // sort
-        if (!searchList.isEmpty)
+        if (searchList.isNotEmpty)
           Row(
             children: [
               _placeSortBtn(
@@ -170,86 +171,4 @@ class _PlaceListState extends ConsumerState<PlaceList> {
       ),
     );
   }
-
-  // Widget _placeBox(buildContext, PlaceReview placeReview) {
-  //   double totalWidth = MediaQuery.of(buildContext).size.width;
-  //
-  //   return Container(
-  //     padding: EdgeInsets.all(8),
-  //     margin: EdgeInsets.only(bottom: 8.0),
-  //     width: totalWidth * 0.9,
-  //     height: totalWidth * 0.9 / 16 * 7,
-  //     decoration: BoxDecoration(
-  //       image: DecorationImage(
-  //         image: CustomImage().provider(placeReview.thumb!),
-  //         fit: BoxFit.cover,
-  //       ),
-  //       color: Colors.white,
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withOpacity(0.2),
-  //           offset: Offset(0, 2), // 방향
-  //           blurRadius: 4, // 흐림 정도
-  //           spreadRadius: 0, // 확산 정도
-  //         ),
-  //       ],
-  //       borderRadius: BorderRadius.circular(12),
-  //       border: Border.all(
-  //         color: Colors.transparent,
-  //       ),
-  //     ),
-  //     child: Column(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Row(
-  //           mainAxisAlignment: MainAxisAlignment.end,
-  //           children: [
-  //             GestureDetector(
-  //               onTap: () {},
-  //               child: Padding(
-  //                 padding: const EdgeInsets.all(8.0),
-  //                 child: Icon(
-  //                   Icons.thumb_up,
-  //                   size: 20,
-  //                   color: Colors.white,
-  //                 ),
-  //               ),
-  //             ),
-  //             GestureDetector(
-  //               onTap: () {},
-  //               child: Padding(
-  //                 padding: const EdgeInsets.all(8.0),
-  //                 child: Icon(
-  //                   Icons.ios_share_outlined,
-  //                   size: 20,
-  //                   color: Colors.white,
-  //                 ),
-  //               ),
-  //             )
-  //           ],
-  //         ),
-  //         Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Text(
-  //               placeReview.placeName!,
-  //               style: Theme.of(buildContext)
-  //                   .textTheme
-  //                   .headlineLarge
-  //                   ?.copyWith(color: Colors.white),
-  //             ),
-  //             Text(
-  //               placeReview.addressName!,
-  //               style: Theme.of(buildContext)
-  //                   .textTheme
-  //                   .bodyLarge
-  //                   ?.copyWith(color: Colors.white),
-  //             ),
-  //           ],
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
 }

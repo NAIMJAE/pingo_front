@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/view_models/keyword_view_model/keyword_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/widgets/appbar/keyword_appbar.dart';
@@ -7,7 +8,8 @@ import '../../../data/models/keyword_model/keyword.dart';
 import '../../../data/models/keyword_model/keyword_group.dart';
 
 class KeywordPage extends ConsumerStatefulWidget {
-  const KeywordPage({super.key});
+  final Function changePageForKeyword;
+  const KeywordPage(this.changePageForKeyword, {super.key});
 
   @override
   ConsumerState<KeywordPage> createState() => _KeywordPageState();
@@ -23,6 +25,13 @@ class _KeywordPageState extends ConsumerState<KeywordPage> {
     kGNotifier = ref.read(KeywordViewModelProvider.notifier);
     sessionUserNo = ref.read(sessionProvider).userNo!;
     kGNotifier.fetchKeywords();
+  }
+
+  // 키워드로 조회 - 키워드 카드 클릭
+  void _clickKeywordCard(String kwId) async {
+    List<Profile> users =
+        await kGNotifier.fetchSelectedKeyword(sessionUserNo, kwId);
+    widget.changePageForKeyword(0, users);
   }
 
   @override
@@ -88,7 +97,7 @@ class _KeywordPageState extends ConsumerState<KeywordPage> {
   Widget _keywordCard(BuildContext buildContext, Keyword keyword) {
     return GestureDetector(
       onTap: () {
-        kGNotifier.fetchSelectedKeyword(sessionUserNo, keyword.kwId);
+        _clickKeywordCard(keyword.kwId!);
       },
       child: Container(
         margin: EdgeInsets.only(left: 16.0, bottom: 8.0),
