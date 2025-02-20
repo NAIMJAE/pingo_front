@@ -7,9 +7,11 @@ import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class ChatRoomList extends StatefulWidget {
   final Map<String, ChatRoom> chatList;
+  final String myUserNo;
   final ChatRoomViewModel chatRoomViewModel;
 
-  const ChatRoomList(this.chatList, this.chatRoomViewModel, {super.key});
+  const ChatRoomList(this.chatList, this.myUserNo, this.chatRoomViewModel,
+      {super.key});
 
   @override
   State<ChatRoomList> createState() => _ChatMessageListState();
@@ -51,6 +53,7 @@ class _ChatMessageListState extends State<ChatRoomList> {
                     chat.lastMessage ?? '',
                     roomId,
                     user.userNo ?? '',
+                    widget.myUserNo,
                   ));
             }).toList(),
           ],
@@ -60,7 +63,7 @@ class _ChatMessageListState extends State<ChatRoomList> {
   }
 
   Widget _chatList(BuildContext context, String imgUrl, String userName,
-      String lastMessage, String roomId, String userNo) {
+      String lastMessage, String roomId, String userNo, String myUserNo) {
     return ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 4.0),
         leading: CircleAvatar(
@@ -79,7 +82,8 @@ class _ChatMessageListState extends State<ChatRoomList> {
                   roomId: roomId,
                   userNo: userNo,
                   chatRoom: widget.chatList[roomId]!,
-                  chatRoomViewModel: widget.chatRoomViewModel),
+                  chatRoomViewModel: widget.chatRoomViewModel,
+                  myUserNo: myUserNo),
             ),
           );
         });

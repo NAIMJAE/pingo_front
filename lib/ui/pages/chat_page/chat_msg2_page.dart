@@ -9,6 +9,7 @@ class ChatMsg2Page extends StatefulWidget {
   final String userNo;
   final ChatRoom chatRoom;
   final ChatRoomViewModel chatRoomViewModel;
+  final String myUserNo;
 
   const ChatMsg2Page({
     required this.chatRoomName,
@@ -16,6 +17,7 @@ class ChatMsg2Page extends StatefulWidget {
     required this.userNo,
     required this.chatRoom,
     required this.chatRoomViewModel,
+    required this.myUserNo,
     super.key,
   });
 
@@ -39,6 +41,7 @@ class _ChatMsg2PageState extends State<ChatMsg2Page> {
               chatRoom2: widget.chatRoom,
               userNo: widget.userNo ?? '',
               chatRoomViewModel: widget.chatRoomViewModel,
+              myUserNo: widget.myUserNo,
             ),
           ),
         ),
