@@ -26,6 +26,10 @@ class _UserPageState extends ConsumerState<UserPage> {
     ref.read(userViewModelProvider.notifier).fetchMyPageInfo(userNo);
   }
 
+  void logout() {
+    ref.read(sessionProvider.notifier).logout();
+  }
+
   @override
   Widget build(BuildContext context) {
     final userViewModelNotifier =
@@ -34,7 +38,7 @@ class _UserPageState extends ConsumerState<UserPage> {
         ref.watch(userViewModelProvider); // 계속해서 감시 (즉, 추적 관리, 구독)
 
     return Scaffold(
-      appBar: userAppbar(context),
+      appBar: userAppbar(context, logout),
       backgroundColor: Colors.white,
       body: ListView(
         children: [
