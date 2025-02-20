@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class EditSelfIntroductionBox extends StatelessWidget {
-  const EditSelfIntroductionBox({super.key});
+  // <- 여기 부모로부터 받아온 유저 정보 복사본의 유저 소개 부분
+  // 이거 TextField의 controller에 연결하면 댐
+  final String? userIntroduction;
+  const EditSelfIntroductionBox(this.userIntroduction, {super.key});
 
   @override
   Widget build(BuildContext context) {

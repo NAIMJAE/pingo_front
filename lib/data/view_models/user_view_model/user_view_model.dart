@@ -26,6 +26,11 @@ class UserViewModel extends Notifier<UserMypageInfo> {
     }
   }
 
+  // 개인 정보 수정 완료 후 서버 전송
+  Future<void> submitUpdateInfo(Map<String, dynamic> updateInfo) async {
+    await _repository.fetchSubmitUpdateInfo(updateInfo);
+  }
+
   // 대표 이미지 변경 기능 추가
   Future<void> setMainImage(String currentMainImageNo, String newMainImageNo,
       BuildContext context) async {

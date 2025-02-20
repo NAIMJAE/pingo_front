@@ -64,6 +64,7 @@ class _PlaceListState extends ConsumerState<PlaceList> {
                   buildContext, '거리순', 'location', searchResult.searchSort),
             ],
           ),
+        // list
         Expanded(
           child: searchList.isEmpty
               ? ListView(

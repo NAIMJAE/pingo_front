@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/user_model/user_info.dart';
 import '../../../../../../data/models/user_model/user_mypage_info.dart';
 import 'jop_page/first_job_select_page.dart';
@@ -25,6 +26,7 @@ class _EditPersonalInformationBoxState
   Widget build(BuildContext context) {
     final userInfo = widget.copyUserInfo;
 
+    logger.i(userInfo);
     // 유저 정보가 있을 경우 해당 값을 사용, 없으면 기본값 설정
     // 생년월일
     // 신장
@@ -41,65 +43,17 @@ class _EditPersonalInformationBoxState
           children: [
             Text(
               '인적사항',
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                _buildPersonalInfoElement(
-                  context,
-                  '생년월일',
-                  _buildBirthInfo(userInfo),
-                ),
-                _buildPersonalInfoElement(
-                  context,
-                  '신장',
-                  _buildHeightInfo(),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                _buildPersonalInfoElement(
-                  context,
-                  '1차 직종',
-                  _build1stJobInfo(userInfo),
-                ),
-                _buildPersonalInfoElement(
-                  context,
-                  '2차 직종',
-                  _build2ndJobInfo(userInfo),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                _buildPersonalInfoElement(
-                  context,
-                  '거주지',
-                  _buildAddressInfo(context),
-                ),
-                _buildPersonalInfoElement(
-                  context,
-                  '종교',
-                  _buildReligionInfo(context),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                _buildPersonalInfoElement(
-                  context,
-                  '흡연여부',
-                  _buildSmokingInfo(context),
-                ),
-                _buildPersonalInfoElement(
-                  context,
-                  '음주여부',
-                  _buildDrinkingInfo(context),
-                ),
-              ],
-            ),
+            const SizedBox(height: 6),
+            _buildInformationBox(context, '생년월일', _buildBirthInfo(userInfo)),
+            _buildInformationBox(context, '신장', _buildHeightInfo()),
+            _buildInformationBox(context, '1차 직종', _build1stJobInfo(userInfo)),
+            _buildInformationBox(context, '2차 직종', _build2ndJobInfo(userInfo)),
+            _buildInformationBox(context, '거주지', _buildAddressInfo(context)),
+            _buildInformationBox(context, '종교', _buildReligionInfo(context)),
+            _buildInformationBox(context, '흡연여부', _buildSmokingInfo(context)),
+            _buildInformationBox(context, '음주여부', _buildDrinkingInfo(context)),
           ],
         ),
       ),
@@ -107,22 +61,29 @@ class _EditPersonalInformationBoxState
   }
 
   // 인적사항 요소
-  Widget _buildPersonalInfoElement(
-      BuildContext context, String title, Widget detail) {
+  Widget _buildInformationBox(
+      BuildContext context, String title, Widget widgetDetail) {
+    double cntWidth = MediaQuery.of(context).size.width;
+
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4.0),
-      width: MediaQuery.of(context).size.width / 2 - 20,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Colors.grey,
-                ),
+          SizedBox(
+            width: (cntWidth - 32) / 4,
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                    color: Colors.black54,
+                  ),
+            ),
           ),
-          const SizedBox(height: 4),
-          detail,
+          SizedBox(
+            width: ((cntWidth - 32) * 3 / 4) - 10,
+            child: widgetDetail,
+          ),
         ],
       ),
     );
@@ -138,7 +99,7 @@ class _EditPersonalInformationBoxState
         children: [
           Text(
             '${userInfo.userBirth.toLocal()}'.split(' ')[0],
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           Icon(
             Icons.calendar_today,
@@ -168,7 +129,7 @@ class _EditPersonalInformationBoxState
   Widget _buildHeightInfo() {
     return TextField(
       controller: heightController,
-      style: Theme.of(context).textTheme.titleLarge,
+      style: Theme.of(context).textTheme.headlineSmall,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         hintText: '신장을 입력하세요',
@@ -217,7 +178,7 @@ class _EditPersonalInformationBoxState
       },
       child: Text(
         userInfo.user1stJob ?? '1차 직종을 선택하세요',
-        style: Theme.of(context).textTheme.titleLarge,
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
     );
   }
@@ -248,7 +209,7 @@ class _EditPersonalInformationBoxState
       },
       child: Text(
         userInfo.user2ndJob ?? '2차 직종을 선택하세요',
-        style: Theme.of(context).textTheme.titleLarge,
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
     );
   }
@@ -258,7 +219,7 @@ class _EditPersonalInformationBoxState
     return Container(
       child: Text(
         '주소',
-        style: Theme.of(context).textTheme.titleLarge,
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
     );
   }
@@ -268,7 +229,7 @@ class _EditPersonalInformationBoxState
     return Container(
       child: Text(
         '종교',
-        style: Theme.of(context).textTheme.titleLarge,
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
     );
   }
@@ -278,7 +239,7 @@ class _EditPersonalInformationBoxState
     return Container(
       child: Text(
         '흡연여부',
-        style: Theme.of(context).textTheme.titleLarge,
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
     );
   }
@@ -288,7 +249,7 @@ class _EditPersonalInformationBoxState
     return Container(
       child: Text(
         '음주여부',
-        style: Theme.of(context).textTheme.titleLarge,
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
     );
   }
