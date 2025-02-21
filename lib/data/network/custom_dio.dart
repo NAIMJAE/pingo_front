@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/network/response_dto.dart';

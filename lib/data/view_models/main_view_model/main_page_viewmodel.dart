@@ -126,6 +126,14 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     highlightedButton = index;
   }
 
+  // 키워드로 조회
+  Future<void> changeStateForKeyword(List<Profile> users) async {
+    state = users;
+    logger.i('state 길이 : ${state.length}');
+    currentProfileIndex = 0;
+    noMoreUsers = users.isEmpty;
+  }
+
   @override
   void dispose() {
     animationController.dispose();

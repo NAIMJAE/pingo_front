@@ -6,6 +6,14 @@ class KakaoSearch {
   double? latitude; // 위도
   double? longitude; // 경도
 
+  KakaoSearch(
+      {this.placeName,
+      this.addressName,
+      this.roadAddressName,
+      this.category,
+      this.latitude,
+      this.longitude});
+
   KakaoSearch.fromJson(Map<String, dynamic> json)
       : placeName = json['place_name'],
         addressName = json['address_name'],

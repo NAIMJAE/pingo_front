@@ -9,14 +9,13 @@ import 'package:pingo_front/data/repository/community_repository/place_review_se
 
 class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
   final PlaceReviewSearchRepository _repository;
-  late KakaoSearch lastSearch;
+  KakaoSearch lastSearch = KakaoSearch();
   PlaceReviewSearchViewModel(this._repository);
 
   @override
   PlaceReviewSearch build() {
-    PlaceReviewSearch(KakaoSearchResult([]), ReviewSearchResult([]));
     placeReviewInit();
-    return state;
+    return PlaceReviewSearch(KakaoSearchResult([]), ReviewSearchResult([]));
   }
 
   // init
@@ -27,6 +26,8 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
     dynamic response = await _repository.fetchSearchPlaceReview(
         cateSort: initData.reviewSearchResult.cateSort,
         searchSort: initData.reviewSearchResult.searchSort);
+
+    logger.i(response);
 
     // 이 response는 PlaceReviewSearch의 reviewSearchResult의 List<PlaceReview>
     initData.reviewSearchResult.changePlaceReviewList(response);

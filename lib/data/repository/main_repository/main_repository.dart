@@ -2,7 +2,6 @@ import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/network/response_dto.dart';
-import 'package:pingo_front/data/repository/root_url.dart';
 
 class MainRepository {
   final CustomDio _customDio = CustomDio.instance;
@@ -32,7 +31,6 @@ class MainRepository {
 
   // 스와이프 등록 요청
   Future<bool> insertSwipe(Map<String, dynamic> reqData) async {
-    logger.e(reqData);
     final response = await _customDio.post(
       '/insertSwipe',
       data: reqData,
