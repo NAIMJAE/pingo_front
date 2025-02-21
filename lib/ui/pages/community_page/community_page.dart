@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/ui/pages/community_page/components/dating_guide_page.dart';
 import 'package:pingo_front/ui/pages/community_page/components/place_suggest_page.dart';
-import 'package:pingo_front/ui/pages/community_page/components/user_recommend_page.dart';
 import 'package:pingo_front/ui/widgets/appbar/community_appbar.dart';
 
 class CommunityPage extends ConsumerStatefulWidget {
