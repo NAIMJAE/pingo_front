@@ -85,7 +85,7 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
     return Scaffold(
       appBar: AppBar(title: const Text("추천 장소 등록")),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(32.0),
         child: Center(
           child: Column(
             children: [
@@ -93,21 +93,21 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
                 '다른 사용자를 위해 장소를 추천해보세요!',
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               _buildProfileBox(cntWidth),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               Text(
                 kakaoSearch.placeName ?? '이름 없음',
                 style: Theme.of(context).textTheme.displaySmall,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               Text(
                 kakaoSearch.addressName ?? '주소 없음',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               SizedBox(
-                width: cntWidth * 2 / 3,
+                width: double.infinity,
                 child: TextField(
                   controller: _textController,
                   decoration: InputDecoration(
@@ -122,9 +122,9 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               SizedBox(
-                width: cntWidth * 2 / 3,
+                width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -136,7 +136,6 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
                       borderRadius: BorderRadius.circular(4.0),
                     ),
                   ),
-                  // onPressed: _placeImage == null ? null : checkValidation,
                   onPressed: () => checkValidation(),
                   child: Text(
                     '작성',
@@ -158,8 +157,8 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
     return GestureDetector(
       onTap: _pickProfileImage,
       child: Container(
-        width: cntWidth * 2 / 3,
-        height: cntWidth * 1 / 3,
+        width: double.infinity,
+        height: cntWidth * 2 / 3,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.black26, width: 2),
           borderRadius: BorderRadius.circular(16),
