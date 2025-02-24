@@ -42,6 +42,8 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
       }
     }
 
+    double cntWidth = MediaQuery.of(context).size.width;
+
     return Column(
       children: [
         Row(
@@ -55,67 +57,72 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
               ),
             ),
             const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(userMypageInfo.users.userName,
-                        style: Theme.of(context).textTheme.headlineLarge),
-                    Text(
-                      ' | ',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineLarge
-                          ?.copyWith(color: Colors.grey),
-                    ),
-                    Text(userMypageInfo.users.userNick,
-                        style: Theme.of(context).textTheme.headlineLarge),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  userMypageInfo.userInfo.userAddress,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Text(userMypageInfo.userInfo.user1stJob,
-                        style: Theme.of(context).textTheme.bodyLarge),
-                    Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
-                    Text(userMypageInfo.userInfo.user2ndJob,
-                        style: Theme.of(context).textTheme.bodyLarge),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  userMypageInfo.userInfo.userBirth.toString().split(' ')[0],
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Text(userMypageInfo.userInfo.userHeight.toString() + 'cm',
-                        style: Theme.of(context).textTheme.bodyLarge),
-                    Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
-                    Text(userMypageInfo.userInfo.userReligion,
-                        style: Theme.of(context).textTheme.bodyLarge),
-                    Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
-                    Text(userMypageInfo.userInfo.userBloodType + '형',
-                        style: Theme.of(context).textTheme.bodyLarge),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    _buildUserDrinkingParse(
-                        userMypageInfo.userInfo.userDrinking),
-                    Text('ㆍ', style: Theme.of(context).textTheme.headlineLarge),
-                    _buildUserSmokingParse(userMypageInfo.userInfo.userSmoking),
-                  ],
-                ),
-              ],
+            SizedBox(
+              width: cntWidth / 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(userMypageInfo.users.userName,
+                          style: Theme.of(context).textTheme.headlineLarge),
+                      Text(
+                        ' | ',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge
+                            ?.copyWith(color: Colors.grey),
+                      ),
+                      Text(userMypageInfo.users.userNick,
+                          style: Theme.of(context).textTheme.headlineLarge),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    userMypageInfo.userInfo.userAddress,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          '${userMypageInfo.userInfo.user1stJob}ㆍ${userMypageInfo.userInfo.user2ndJob}',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    userMypageInfo.userInfo.userBirth.toString().split(' ')[0],
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Text(userMypageInfo.userInfo.userHeight.toString() + 'cm',
+                          style: Theme.of(context).textTheme.bodyLarge),
+                      Text('ㆍ', style: Theme.of(context).textTheme.bodyLarge),
+                      Text(userMypageInfo.userInfo.userReligion,
+                          style: Theme.of(context).textTheme.bodyLarge),
+                      Text('ㆍ', style: Theme.of(context).textTheme.bodyLarge),
+                      Text(userMypageInfo.userInfo.userBloodType + '형',
+                          style: Theme.of(context).textTheme.bodyLarge),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      _buildUserDrinkingParse(
+                          userMypageInfo.userInfo.userDrinking),
+                      Text('ㆍ', style: Theme.of(context).textTheme.bodyLarge),
+                      _buildUserSmokingParse(
+                          userMypageInfo.userInfo.userSmoking),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

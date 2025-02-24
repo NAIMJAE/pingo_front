@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 
 class EditSelfIntroductionBox extends StatelessWidget {
   // <- 여기 부모로부터 받아온 유저 정보 복사본의 유저 소개 부분
@@ -8,6 +9,8 @@ class EditSelfIntroductionBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    logger.i('자기소개 $userIntroduction');
+
     return Card(
       elevation: 0.5,
       margin: EdgeInsets.zero,
