@@ -5,7 +5,6 @@ import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/repository/main_repository/main_repository.dart';
 
 class MainPageViewModel extends StateNotifier<List<Profile>> {
-  late final AnimationController animationController;
   double posY = 0.0;
   int? highlightedButton;
   int? lastSwipedIndex;
@@ -13,15 +12,21 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
   int currentProfileIndex = 0; // 유저 리스트 num 관리
   bool noMoreUsers = false; // 인덱스가 끝
 
-  MainPageViewModel(TickerProvider vsync, this.repository) : super([]) {
-    animationController = AnimationController(
-      vsync: vsync,
-      duration: const Duration(milliseconds: 500),
-      lowerBound: -1.5,
-      upperBound: 1.5,
-    );
-    // ✅ 애니메이션 초기 값을 강제로 0.0으로 설정
-    animationController.value = 0.0;
+  MainPageViewModel(this.repository) : super([]);
+
+  // ✅ 애니메이션 컨트롤러를 외부에서 설정하도록 변경
+  AnimationController? _animationController;
+  bool get isAnimationControllerSet => _animationController != null;
+
+  void attachAnimationController(AnimationController controller) {
+    _animationController = controller;
+  }
+
+  AnimationController get animationController {
+    if (_animationController == null) {
+      throw Exception("AnimationController가 설정되지 않았습니다.");
+    }
+    return _animationController!;
   }
 
   // 주변 멤버 로드
@@ -145,7 +150,8 @@ final mainRepositoryProvider = Provider<MainRepository>((ref) {
   return MainRepository();
 });
 
-final mainPageViewModelProvider = StateNotifierProvider.family<
-    MainPageViewModel, List<Profile>, TickerProvider>(
-  (ref, vsync) => MainPageViewModel(vsync, ref.read(mainRepositoryProvider)),
-);
+final mainPageViewModelProvider =
+    StateNotifierProvider<MainPageViewModel, List<Profile>>((ref) {
+  final repository = ref.read(mainRepositoryProvider);
+  return MainPageViewModel(repository);
+});
