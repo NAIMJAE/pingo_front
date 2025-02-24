@@ -11,7 +11,7 @@ import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
 
-// consumer 처리하기.
+// consumer 처리하기
 class ChatMsgBody extends ConsumerStatefulWidget {
   final String roomId;
   final String userNo;

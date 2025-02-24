@@ -163,11 +163,11 @@ class _MainScreenState extends ConsumerState<MainScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildUserInfo(matchModel.fromUserName ?? '사용자1', 25,
-                    matchModel.fromImage ?? ''),
+                _buildUserInfo(matchModel.userName ?? '사용자1', 25,
+                    matchModel.userImage ?? ''),
                 Icon(Icons.favorite, color: Colors.red, size: 40), // ❤️ 하트 아이콘
-                _buildUserInfo(matchModel.toUserName ?? '사용자2', 28,
-                    matchModel.toUserImage ?? ''),
+                _buildUserInfo(matchModel.userName ?? '사용자2', 28,
+                    matchModel.userImage ?? ''),
               ],
             ),
           ),
