@@ -8,7 +8,6 @@ class ChatMsg2Page extends StatefulWidget {
   final String roomId;
   final String userNo;
   final ChatRoom chatRoom;
-  final ChatRoomViewModel chatRoomViewModel;
   final String myUserNo;
 
   const ChatMsg2Page({
@@ -16,7 +15,6 @@ class ChatMsg2Page extends StatefulWidget {
     required this.roomId,
     required this.userNo,
     required this.chatRoom,
-    required this.chatRoomViewModel,
     required this.myUserNo,
     super.key,
   });
@@ -33,16 +31,13 @@ class _ChatMsg2PageState extends State<ChatMsg2Page> {
         title: Text(widget.chatRoomName),
       ),
       body: SafeArea(
-        child: SizedBox.expand(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ChatMsgBody(
-              roomId: widget.roomId,
-              chatRoom2: widget.chatRoom,
-              userNo: widget.userNo ?? '',
-              chatRoomViewModel: widget.chatRoomViewModel,
-              myUserNo: widget.myUserNo,
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ChatMsgBody(
+            roomId: widget.roomId,
+            chatRoom2: widget.chatRoom,
+            userNo: widget.userNo ?? '',
+            myUserNo: widget.myUserNo,
           ),
         ),
       ),

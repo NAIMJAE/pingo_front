@@ -100,8 +100,8 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
     // chatList로 받기
     // ChatMessageList의 마지막메세지 내용을 웹소캣으로 변경처리 해주기
     // ChatMessageList의 내용을 바꿔주기..
-    logger.e('★★★$listChat');
-    logger.e('★★★$matchChat');
+    // logger.e('★★★$listChat');
+    // logger.e('★★★$matchChat');
 
     return Scaffold(
       appBar: chatAppbar(context),
@@ -114,9 +114,10 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
             const SizedBox(height: 8),
             ChatMatch(
               chatList: matchChat,
+              myUserNo: myUserNo!,
             ),
             const SizedBox(height: 8),
-            ChatRoomList(listChat, myUserNo!, chatRoomViewModel),
+            ChatRoomList(listChat, myUserNo!),
           ],
         ),
       ),

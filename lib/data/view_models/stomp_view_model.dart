@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
+import 'package:pingo_front/data/models/match_model.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_msg_view_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
+import 'package:pingo_front/data/view_models/notification_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
@@ -83,7 +85,7 @@ class StompViewModel extends Notifier<bool> {
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
         Message message = Message.fromJson(jsonData);
         final roomId = message.roomId;
-        logger.i('receive로 메세지 방ㄷ음 $message');
+        logger.i('receive로 메세지 받음 $message');
         // 채팅방 목록 뷰모델을 구독하고 바로 필요한 정보만 전달해버리기!! 로 수정!!!
         // 채팅방 메세지 받는 페이지가 아니면!
 
@@ -100,11 +102,19 @@ class StompViewModel extends Notifier<bool> {
     // return completer.future;
   }
 
-  void notification(StompFrame frame, String userNo) {
+  // 로그인한 사용자에게 알림
+  void notification(String userNo) {
     // 2. 알림받기
     stompClient?.subscribe(
-      destination: '/topic/one/$userNo',
+      destination: '/topic/match/notification/$userNo',
+      // 메세지가 수신될때 frame으로 수신되어서 매개변수로 받음
       callback: (StompFrame frame) {
+        // 받아온 정보를 dart Map 객체로 변환
+        final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
+        MatchModel matchModel = MatchModel.fromJson(jsonData);
+        ref
+            .read(notificationViewModelProvider.notifier)
+            .matchNotification(matchModel);
         print('알림받기');
       },
     );
