@@ -24,7 +24,7 @@ Map<String, dynamic> kakaoCategory = {
   "편의점": Icons.local_convenience_store,
   "공공기관": Icons.apartment,
   "주차장": Icons.local_parking,
-  "주유소, 충전소": Icons.local_gas_station,
+  // "주유소, 충전소": Icons.local_gas_station,
 
   // "어린이집, 유치원": Icons.child_care,
   // "학교": Icons.school,
@@ -34,5 +34,5 @@ Map<String, dynamic> kakaoCategory = {
   // "중개업소": Icons.real_estate_agent,
   // "병원": Icons.local_hospital,
   // "약국": Icons.local_pharmacy,
-  "기타": Icons.pin_drop_outlined,
+  // "기타": Icons.pin_drop_outlined,
 };

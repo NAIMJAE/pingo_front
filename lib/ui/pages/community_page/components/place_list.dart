@@ -89,9 +89,14 @@ class _PlaceListState extends ConsumerState<PlaceList> {
                         ),
                         const SizedBox(height: 16),
                         SizedBox(
-                          width: 130,
                           height: 50,
                           child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.0),
+                              ),
+                            ),
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -101,9 +106,14 @@ class _PlaceListState extends ConsumerState<PlaceList> {
                               );
                             },
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add),
-                                Text('리뷰 작성'),
+                                Icon(Icons.add, color: Colors.white),
+                                Text('리뷰 작성',
+                                    style: Theme.of(buildContext)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(color: Colors.white)),
                               ],
                             ),
                           ),
