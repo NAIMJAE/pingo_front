@@ -41,4 +41,6 @@ class ChatRepository {
         .map((json) => Message.fromJson(json))
         .toList();
   }
+
+  //서버에 이미지 전송
 }

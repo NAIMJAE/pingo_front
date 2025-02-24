@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -103,7 +105,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
             // + 버튼 (모달 열기)
             IconButton(
               onPressed: () {
-                _showBottomSheet(context);
+                showBottomSheet(context);
               },
               icon: Icon(Icons.add, color: Colors.blue),
             ),
@@ -122,12 +124,12 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                     onPressed: () {
                       final defaultMessage = Message(
                         roomId: widget.roomId, // 채팅방 번호는 고정
-                        msgType: 'MessageType.text', // 메시지 타입
                         isRead: false, // 읽음 카운트
                       );
                       // 새 메시지 생성
                       final newMessage = defaultMessage.copyWith(
                         msgContent: _messageController.text, // 입력 필드에서 가져온 내용
+                        msgType: 'text',
                         userNo: widget.myUserNo, // 보낸 사람 ID (로그인한 사용자 ID)
                         msgTime: DateTime.now(), // 현재 시간
                       );
@@ -157,6 +159,66 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
       ],
     );
   }
+
+  // 이미지 바텀 모달
+  void showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return _showBottomSheet(context); // 아래에서 `Widget` 반환
+      },
+    );
+  }
+
+  // 이미지 바텀 모달
+  Widget _showBottomSheet(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        height: 150,
+        child: Column(
+          children: [
+            ListTile(
+              leading: Icon(Icons.image, color: Colors.blue),
+              title: Text("이미지 보내기"),
+              onTap: () async {
+                String? imagePath = await getImage(ImageSource.gallery);
+                if (!mounted) return; // ✅ 위젯이 여전히 살아있는지 확인
+                logger.i('현재상태 $mounted');
+                final defaultMessage = Message(
+                  roomId: widget.roomId,
+                  isRead: false,
+                );
+                final newMessage = defaultMessage.copyWith(
+                  msgContent: imagePath ?? '',
+                  msgType: 'image',
+                  userNo: widget.myUserNo,
+                  msgTime: DateTime.now(),
+                );
+                websocketProvider.sendMessage(newMessage, widget.roomId);
+                if (mounted) {
+                  Future.microtask(() {
+                    Navigator.pop(context);
+                  });
+                }
+                // 이미지 보내기 로직 추가
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.attach_file, color: Colors.blue),
+              title: Text("첨부파일 보내기"),
+              onTap: () {
+                // 첨부파일 보내기 로직 추가
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 // 메시지 내용 띄우는 위젯
@@ -165,9 +227,6 @@ Widget _buildMessageItem(
   final ChatUser selectUser = totalUser.firstWhere(
     (each) => each.userNo == message.userNo,
   );
-  // logger.e('★★★★ 너는 누구냐 ${userNo}');
-  // logger.e('★★★★ 메세지 주인 ${message.userNo}');
-  // logger.e('★★★★ 셀렉트 유저 ${selectUser.userNo}');
 
   return Align(
     alignment:
@@ -188,6 +247,7 @@ Widget _buildMessageItem(
             ),
           Row(
             // 정렬 변경
+
             crossAxisAlignment: CrossAxisAlignment.end,
             children: message.userNo != userNo
                 ? [
@@ -209,7 +269,7 @@ Widget _buildMessageItem(
   );
 }
 
-// 메시지 내용
+// 메시지 내용 말풍선
 Widget _buildText(Message message, String? userNo) {
   return Container(
     //wrap --> 길면 자를 수 있도록 설정할 수 있는 것
@@ -228,7 +288,7 @@ Widget _buildText(Message message, String? userNo) {
   );
 }
 
-// 읽음 + 시간
+// 읽음 + 시간 풍선
 Widget _buildRead(Message message, String? userNo) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
@@ -246,49 +306,66 @@ String formatTime(DateTime? time) {
 }
 
 // 모달 바텀시트 열기
-void _showBottomSheet(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.white,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
-    builder: (context) {
-      return SafeArea(
-        child: Container(
-          height: 150,
-          child: Column(
-            children: [
-              ListTile(
-                leading: Icon(Icons.image, color: Colors.blue),
-                title: Text("이미지 보내기"),
-                onTap: () {
-                  // 이미지 보내기 로직 추가
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.attach_file, color: Colors.blue),
-                title: Text("첨부파일 보내기"),
-                onTap: () {
-                  // 첨부파일 보내기 로직 추가
-                },
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
+// Widget _showBottomSheet(BuildContext context) {
+//   return showModalBottomSheet(
+//     context: context,
+//     backgroundColor: Colors.white,
+//     shape: RoundedRectangleBorder(
+//       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+//     ),
+//     builder: (context) {
+//       return SafeArea(
+//         child: Container(
+//           height: 150,
+//           child: Column(
+//             children: [
+//               ListTile(
+//                 leading: Icon(Icons.image, color: Colors.blue),
+//                 title: Text("이미지 보내기"),
+//                 onTap: () async {
+//                   String? imagePath = await getImage(ImageSource.gallery);
+//                   final defaultMessage = Message(
+//                     roomId: widget.roomId, // 채팅방 번호는 고정
+//                     msgType: 'MessageType.image', // 메시지 타입
+//                     isRead: false, // 읽음 카운트
+//                   );
+//                   // 새 메시지 생성
+//                   final newMessage = defaultMessage.copyWith(
+//                     msgContent: imagePath ?? '', // 입력 필드에서 가져온 내용
+//                     userNo: widget.myUserNo, // 보낸 사람 ID (로그인한 사용자 ID)
+//                     msgTime: DateTime.now(), // 현재 시간
+//                   );
+//
+//                   // 이미지 보내기 로직 추가
+//                 },
+//               ),
+//               ListTile(
+//                 leading: Icon(Icons.attach_file, color: Colors.blue),
+//                 title: Text("첨부파일 보내기"),
+//                 onTap: () {
+//                   // 첨부파일 보내기 로직 추가
+//                 },
+//               ),
+//             ],
+//           ),
+//         ),
+//       );
+//     },
+//   );
+// }
 
 // 이미지 가져오는 함수 (imageSource = 갤러리 사진) 매개변수로 받아서 디코딩
+// 플러터 로컬 디바이스 전용 경로
+// 서버에서 해당 경로를 직접 접근할 수 없기때문에 multipart/form-data로 전송해야 한다.?
 Future<String?> getImage(ImageSource imageSource) async {
-  XFile? _image; // 이미지 담을 변수 선언
+  File? _image; // 이미지 담을 변수 선언
   final ImagePicker picker = ImagePicker(); // 이미지픽커 초기화
-  final XFile? pickedFile = await picker.pickImage(source: imageSource);
+  final pickedFile = await picker.pickImage(source: imageSource);
+
+  if (pickedFile != null) {
+    _image = File(pickedFile.path);
+    return _image.path;
+  }
 }
 
-// 이미지파일은 바이트 배열로 변환하여 데이터를 Base64 문자열로 코딩하기
-// 결과적으로 JSON 형태로 전송기능을 통해 Stomp 서버로 전송가능
-// 차후 받을 때 Base64 문자열을 디코딩해서 바이트 배열로 변환 후
-// 이미지 파일 쓰기를 통해 복원하기
+// File
