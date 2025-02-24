@@ -23,8 +23,18 @@ class _MainPageState extends ConsumerState<MainPage>
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final viewModel = ref.read(mainPageViewModelProvider(this).notifier);
+      final viewModel = ref.read(mainPageViewModelProvider.notifier);
       final sessionUser = ref.read(sessionProvider);
+
+      // AnimationController가 설정되지 않았다면 설정 (다른 페이지에서도 유지됨)
+      if (!viewModel.isAnimationControllerSet) {
+        viewModel.attachAnimationController(AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 500),
+          lowerBound: -1.5,
+          upperBound: 1.5,
+        ));
+      }
 
       // ✅ sessionUser.userNo가 존재하면 바로 유저 데이터 로드
       if (sessionUser.userNo != null) {
@@ -37,8 +47,8 @@ class _MainPageState extends ConsumerState<MainPage>
   @override
   Widget build(BuildContext context) {
     final sessionUser = ref.watch(sessionProvider);
-    final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
-    final userList = ref.watch(mainPageViewModelProvider(this));
+    final viewModel = ref.watch(mainPageViewModelProvider.notifier);
+    final userList = ref.watch(mainPageViewModelProvider);
     final size = MediaQuery.of(context).size;
 
     logger.i("📌 [메인페이지] 현재 userList 길이: ${userList.length}");
@@ -86,11 +96,15 @@ class _MainPageState extends ConsumerState<MainPage>
                           child: Align(
                             alignment: Alignment.center,
                             child: Transform.translate(
-                              offset: offset,
-                              child: ProfileCard(
-                                  profile:
-                                      userList[viewModel.currentProfileIndex]),
-                            ),
+                                offset: offset,
+                                child: Stack(
+                                  children: [
+                                    ProfileCard(
+                                        profile: userList[
+                                            viewModel.currentProfileIndex]),
+                                    _buildSwipeStamp(viewModel),
+                                  ],
+                                )),
                           ),
                         ),
                       ]
@@ -103,8 +117,56 @@ class _MainPageState extends ConsumerState<MainPage>
     );
   }
 
+  // ✅ PING/PANG/SUPERPING 도장 표시 위젯
+  Widget _buildSwipeStamp(MainPageViewModel viewModel) {
+    String? stampText;
+    Color stampColor = Colors.transparent;
+    double rotation = 0.0;
+
+    if (viewModel.posY <= -0.4) {
+      stampText = "SUPERPING!";
+      stampColor = Colors.blue;
+      rotation = 0.1;
+    } else if (viewModel.animationController.value <= -0.4) {
+      stampText = "PING!";
+      stampColor = Colors.red;
+      rotation = -0.2;
+    } else if (viewModel.animationController.value >= 0.4) {
+      stampText = "PANG!";
+      stampColor = Colors.green;
+      rotation = 0.2;
+    }
+    if (stampText == null)
+      return SizedBox(); // ✅ stampText가 null이면 위젯을 렌더링하지 않음
+    return Positioned(
+      top: 100, // ✅ 프로필카드 위쪽에 배치
+      child: AnimatedOpacity(
+        duration: Duration(milliseconds: 200),
+        opacity: 1.0, // ✅ 항상 보이게 설정 후 애니메이션으로 변동
+        child: Transform.rotate(
+          angle: rotation,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            decoration: BoxDecoration(
+              color: stampColor.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              stampText,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildBottomNavigationBar(String userNo) {
-    final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
+    final viewModel = ref.watch(mainPageViewModelProvider.notifier);
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -138,7 +200,7 @@ class _MainPageState extends ConsumerState<MainPage>
 
   Widget _buildSwipeButton(
       IconData icon, Color color, int index, VoidCallback onTap) {
-    final viewModel = ref.watch(mainPageViewModelProvider(this).notifier);
+    final viewModel = ref.watch(mainPageViewModelProvider.notifier);
     final isHighlighted = viewModel.highlightedButton == index;
 
     return GestureDetector(

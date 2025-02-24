@@ -44,9 +44,12 @@ class _MainScreenState extends ConsumerState<MainScreen>
   // 키워드로 조회 - 유저 조회 후 페이지 전환 & main state 변경
   void changePageForKeyword(int index, List<Profile> users) async {
     logger.i('새 유저 ${users.length}');
-    await ref
-        .read(mainPageViewModelProvider(this).notifier)
-        .changeStateForKeyword(users);
+
+    // ✅ 이미 사용 중인 ViewModel 가져오기 (기존 TickerProvider 유지)
+    final viewModel = ref.read(mainPageViewModelProvider.notifier);
+
+    // ✅ 기존 ViewModel 상태 변경 (새 인스턴스 생성하지 않음)
+    await viewModel.changeStateForKeyword(users);
 
     setState(() {
       _selectedIndex = index;
