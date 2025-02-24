@@ -84,25 +84,30 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
   }
 
   void animateAndSwitchCard(double target, String userNo, {String? direction}) {
+    final String? toUserNo =
+        state.isNotEmpty && currentProfileIndex < state.length
+            ? state[currentProfileIndex].userNo
+            : null; // ✅ 스와이프 전의 userNo 저장
+
     animationController
         .animateTo(target, duration: const Duration(milliseconds: 300))
         .whenComplete(() {
       _moveToNextCard();
-      if (direction != null) {
-        _sendSwipeData(direction, userNo); // 서버 요청은 애니메이션이 끝난 후 비동기 실행
+      if (direction != null && toUserNo != null) {
+        _sendSwipeData(direction, userNo, toUserNo); // ✅ 저장한 toUserNo 사용
       }
     });
   }
 
-  // 스와이프 보내기
-  Future<void> _sendSwipeData(String? direction, String userNo) async {
-    if (direction != null) {
-      await repository.insertSwipe({
-        'fromUserNo': userNo,
-        'toUserNo': state[currentProfileIndex].userNo,
-        'swipeType': direction,
-      });
-    }
+// ✅ 수정된 _sendSwipeData 함수
+  Future<void> _sendSwipeData(
+      String direction, String fromUserNo, String toUserNo) async {
+    print("보내는 놈 : " + toUserNo);
+    await repository.insertSwipe({
+      'fromUserNo': fromUserNo,
+      'toUserNo': toUserNo,
+      'swipeType': direction,
+    });
   }
 
   void _moveToNextCard() {
