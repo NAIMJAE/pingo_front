@@ -2,13 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room.dart';
 import 'package:pingo_front/data/models/chat_model/chat_user.dart';
+import 'package:pingo_front/ui/pages/chat_page/chat_msg2_page.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class ChatMatch extends StatelessWidget {
   // final List<Chat> chatList;
   final Map<String, ChatRoom> chatList;
+  final String myUserNo;
   // Constructor
-  ChatMatch({required this.chatList, Key? key}) : super(key: key);
+  const ChatMatch({required this.myUserNo, required this.chatList, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,7 @@ class ChatMatch extends StatelessWidget {
                 children: [
                   ...chatList.entries.map(
                     (each) {
-                      return _newMatchChatItem(chatList[each.key]!);
+                      return _newMatchChatItem(chatList[each.key]!, context);
                     },
                   )
                 ],
@@ -49,11 +52,23 @@ class ChatMatch extends StatelessWidget {
     );
   }
 
-  Widget _newMatchChatItem(ChatRoom chatRoom) {
+  Widget _newMatchChatItem(ChatRoom chatRoom, context) {
     ChatUser otherUser = chatRoom.chatUser[0]; ///// 나중에 수정
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatMsg2Page(
+                chatRoomName: otherUser.userName ?? '',
+                roomId: otherUser.roomId,
+                userNo: otherUser.userNo ?? '',
+                chatRoom: chatList[otherUser.roomId]!,
+                myUserNo: myUserNo),
+          ),
+        );
+      },
       child: Container(
         width: 80,
         margin: EdgeInsets.symmetric(horizontal: 4),

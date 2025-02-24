@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
@@ -15,14 +16,12 @@ class ChatMsgBody extends ConsumerStatefulWidget {
   final String roomId;
   final String userNo;
   final ChatRoom chatRoom2;
-  final ChatRoomViewModel chatRoomViewModel;
   final String myUserNo;
 
   ChatMsgBody(
       {required this.userNo,
       required this.chatRoom2,
       required this.roomId,
-      required this.chatRoomViewModel,
       required this.myUserNo,
       super.key});
 
@@ -44,10 +43,6 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     websocketProvider =
         ref.read(stompViewModelProvider.notifier); // 웹소캣 창고 접근(메서드 사용하려고)
 
-    // 리스트뷰가 스크롤과 연결되어있을 때 들어오자마자 가장 하단으로 보낸다
-    if (scroll.hasClients) {
-      scroll.jumpTo(scroll.position.maxScrollExtent);
-    }
     // websocketProvider.receive(widget.roomId);
   }
   //   super.initState();
@@ -103,42 +98,61 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
             },
           ),
         ),
-        TextField(
-          controller: _messageController,
-          maxLines: 4,
-          minLines: 1,
-          decoration: InputDecoration(
-            hintText: '메시지 내용을 입력하세요',
-            suffixIcon: IconButton(
+        Row(
+          children: [
+            // + 버튼 (모달 열기)
+            IconButton(
               onPressed: () {
-                final defaultMessage = Message(
-                  roomId: widget.roomId, // 채팅방 번호는 고정
-                  msgType: 'MessageType.text', // 메시지 타입
-                  isRead: false, // 읽음 카운트
-                );
-                // 새 메시지 생성
-                final newMessage = defaultMessage.copyWith(
-                  msgContent: _messageController.text, // 입력 필드에서 가져온 내용
-                  userNo: widget.myUserNo, // 보낸 사람 ID (로그인한 사용자 ID)
-                  msgTime: DateTime.now(), // 현재 시간
-                );
-                logger.i('머머 $newMessage');
-                websocketProvider.sendMessage(newMessage, widget.roomId);
-
-                // 메시지 추가
-
-                // 입력 필드 초기화
-                _messageController.clear();
-                // 최하단으로 스크롤 내리려고하는데..
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (scroll.hasClients) {
-                    scroll.jumpTo(scroll.position.maxScrollExtent);
-                  }
-                });
+                _showBottomSheet(context);
               },
-              icon: Icon(Icons.send),
+              icon: Icon(Icons.add, color: Colors.blue),
             ),
-          ),
+            Expanded(
+              child: TextField(
+                controller: _messageController,
+                maxLines: 4,
+                minLines: 1,
+                textAlignVertical: TextAlignVertical.center, // 커서 수직 정렬
+                decoration: InputDecoration(
+                  hintText: '메시지 내용을 입력하세요',
+                  border: InputBorder.none,
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 10), // 커서 중앙 정렬
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      final defaultMessage = Message(
+                        roomId: widget.roomId, // 채팅방 번호는 고정
+                        msgType: 'MessageType.text', // 메시지 타입
+                        isRead: false, // 읽음 카운트
+                      );
+                      // 새 메시지 생성
+                      final newMessage = defaultMessage.copyWith(
+                        msgContent: _messageController.text, // 입력 필드에서 가져온 내용
+                        userNo: widget.myUserNo, // 보낸 사람 ID (로그인한 사용자 ID)
+                        msgTime: DateTime.now(), // 현재 시간
+                      );
+                      logger.i('머머 $newMessage');
+                      websocketProvider.sendMessage(newMessage, widget.roomId);
+
+                      // 메시지 추가
+
+                      // 입력 필드 초기화
+                      _messageController.clear();
+                      // 최하단으로 스크롤 내리려고하는데..
+                      WidgetsBinding.instance.addPostFrameCallback(
+                        (_) {
+                          if (scroll.hasClients) {
+                            scroll.jumpTo(scroll.position.maxScrollExtent);
+                          }
+                        },
+                      );
+                    },
+                    icon: Icon(Icons.send),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -230,3 +244,51 @@ String formatTime(DateTime? time) {
   if (time == null) return '';
   return DateFormat('HH:mm').format(time);
 }
+
+// 모달 바텀시트 열기
+void _showBottomSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) {
+      return SafeArea(
+        child: Container(
+          height: 150,
+          child: Column(
+            children: [
+              ListTile(
+                leading: Icon(Icons.image, color: Colors.blue),
+                title: Text("이미지 보내기"),
+                onTap: () {
+                  // 이미지 보내기 로직 추가
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.attach_file, color: Colors.blue),
+                title: Text("첨부파일 보내기"),
+                onTap: () {
+                  // 첨부파일 보내기 로직 추가
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// 이미지 가져오는 함수 (imageSource = 갤러리 사진) 매개변수로 받아서 디코딩
+Future<String?> getImage(ImageSource imageSource) async {
+  XFile? _image; // 이미지 담을 변수 선언
+  final ImagePicker picker = ImagePicker(); // 이미지픽커 초기화
+  final XFile? pickedFile = await picker.pickImage(source: imageSource);
+}
+
+// 이미지파일은 바이트 배열로 변환하여 데이터를 Base64 문자열로 코딩하기
+// 결과적으로 JSON 형태로 전송기능을 통해 Stomp 서버로 전송가능
+// 차후 받을 때 Base64 문자열을 디코딩해서 바이트 배열로 변환 후
+// 이미지 파일 쓰기를 통해 복원하기

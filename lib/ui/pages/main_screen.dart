@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/main_model/Profile.dart';
+import 'package:pingo_front/data/models/match_model.dart';
 import 'package:pingo_front/data/view_models/main_view_model/main_page_viewmodel.dart';
+import 'package:pingo_front/data/view_models/notification_view_model.dart';
+import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/community_page.dart';
 import 'chat_page/chat_room_page.dart';
@@ -27,12 +30,16 @@ class _MainScreenState extends ConsumerState<MainScreen>
   @override
   void initState() {
     super.initState();
+    final userNo = ref.read(sessionProvider).userNo; // 내아이디
 
     // STOMP 웹소캣 연결
     // 현재 코드 실행이 끝난 직후에 실행할 비동기 작업을 예약
     // IndexedStack은 한 번 빌드된 위젯을 계속 유지함(아래 페이지 모두 웹소켓 연결된 상태)
-    Future.microtask(
-        () => ref.read(stompViewModelProvider.notifier).stompConnect());
+    Future.microtask(() {
+      final stompViewModel = ref.read(stompViewModelProvider.notifier);
+      stompViewModel.stompConnect(); // STOMP 연결
+      stompViewModel.notification(userNo!); // 알림 구독
+    });
   }
 
   void changeStackPages(int index) {
@@ -76,6 +83,17 @@ class _MainScreenState extends ConsumerState<MainScreen>
 
   @override
   Widget build(BuildContext context) {
+    MatchModel? matchModel = ref.watch(notificationViewModelProvider);
+    logger.i('match모델머임 ? : ${matchModel.toString()}');
+    // 레이아웃이 모두 구성된 이후 호출하기
+    if (matchModel != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showNotificationAlert(context, matchModel!);
+        ref
+            .read(notificationViewModelProvider.notifier)
+            .emptyNotification(); // 상태 초기화
+      });
+    }
     return Scaffold(
       body: SafeArea(
         child: IndexedStack(
@@ -118,5 +136,71 @@ class _MainScreenState extends ConsumerState<MainScreen>
     // 앱 꺼지면 웹소캣 해제
     ref.read(stompViewModelProvider.notifier).stompDisconnect();
     super.dispose();
+  }
+
+  // ✅ 자동으로 띄우는 `AlertDialog`
+  void _showNotificationAlert(BuildContext context, MatchModel matchModel) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Center(
+            child: Text(
+              "💖 새로운 매칭! 💖",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ),
+          content: Container(
+            width: 300,
+            height: 150,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildUserInfo(matchModel.fromUserName ?? '사용자1', 25,
+                    matchModel.fromImage ?? ''),
+                Icon(Icons.favorite, color: Colors.red, size: 40), // ❤️ 하트 아이콘
+                _buildUserInfo(matchModel.toUserName ?? '사용자2', 28,
+                    matchModel.toUserImage ?? ''),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(
+                    context); // 다이얼로그 닫기, 다이얼로그는 새로운 화면이 아니라 오버레이된 UI 요소, 스택관리 X
+              },
+              child: Text("확인"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ✅ 동그란 프로필 사진 + 이름 + 나이 표시하는 위젯
+  Widget _buildUserInfo(String name, int age, String imageUrl) {
+    return Expanded(
+      child: Column(
+        children: [
+          ClipOval(
+            child: Image.network(
+              imageUrl,
+              width: 70,
+              height: 70,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(name,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Text("$age세", style: TextStyle(color: Colors.grey, fontSize: 14)),
+        ],
+      ),
+    );
   }
 }
