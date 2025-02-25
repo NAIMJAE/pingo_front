@@ -24,7 +24,7 @@ class UserRepository {
 
   // 개인 정보 수정 완료 후 서버 전송
   Future<void> fetchSubmitUpdateInfo(Map<String, dynamic> updateInfo) async {
-    await _customDio.post('/user/info', data: updateInfo);
+    final response = await _customDio.post('/user/info', data: updateInfo);
   }
 
   // 대표 이미지 변경 API 추가

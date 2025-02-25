@@ -12,6 +12,16 @@ class Keyword {
       required this.kwMessage,
       required this.kwLevel});
 
+  Map<String, dynamic> toJson() {
+    return {
+      'kwId': kwId,
+      'kwName': kwName,
+      'kwParentId': kwParentId,
+      'kwMessage': kwMessage,
+      'kwLevel': kwLevel,
+    };
+  }
+
   Keyword.fromJson(Map<String, dynamic> json)
       : kwId = json['kwId'],
         kwName = json['kwName'],
