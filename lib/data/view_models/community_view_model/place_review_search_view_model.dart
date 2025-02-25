@@ -105,6 +105,11 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
   // void renewalSearchResult() {
   //   state.reviewSearchResult.changePlaceReviewList(lastSearch);
   // }
+
+  // 카카오 주소 기반 장소 이미지 크롤링
+  Future<dynamic> crawlingPlaceImage(String placeUrl) async {
+    return await _repository.fetchCrawlingPlaceImage(placeUrl);
+  }
 }
 
 final placeReviewSearchViewModelProvider =

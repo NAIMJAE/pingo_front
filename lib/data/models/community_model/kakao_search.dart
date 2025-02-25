@@ -3,6 +3,7 @@ class KakaoSearch {
   String? addressName;
   String? roadAddressName;
   String? category;
+  String? placeUrl;
   double? latitude; // 위도
   double? longitude; // 경도
 
@@ -19,6 +20,7 @@ class KakaoSearch {
         addressName = json['address_name'],
         roadAddressName = json['road_address_name'],
         category = json['category_group_name'],
-        latitude = double.parse(json['x']),
-        longitude = double.parse(json['y']);
+        placeUrl = json['place_url'],
+        latitude = double.parse(json['y']),
+        longitude = double.parse(json['x']);
 }

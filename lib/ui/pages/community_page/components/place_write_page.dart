@@ -1,11 +1,13 @@
 import 'dart:io';
-
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/community_model/kakao_search.dart';
 import 'package:pingo_front/data/models/community_model/place_review.dart';
 import 'package:pingo_front/data/view_models/community_view_model/place_review_search_view_model.dart';
+import 'package:path_provider/path_provider.dart';
 
 class PlaceWritePage extends StatefulWidget {
   String userNo;
@@ -20,12 +22,54 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
   late KakaoSearch kakaoSearch;
   final TextEditingController _textController = TextEditingController();
   File? _placeImage;
+  bool _isLoading = true; // 서버 이미지 로딩 여부
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     kakaoSearch = widget.kakaoSearchProvider.lastSearch;
+
+    if (kakaoSearch.placeUrl != null) {
+      _fetchServerImage(kakaoSearch.placeUrl!);
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // 📝 서버에서 Base64 이미지 받아와 File로 변환하는 함수
+  Future<void> _fetchServerImage(String url) async {
+    try {
+      String? base64Image =
+          await widget.kakaoSearchProvider.crawlingPlaceImage(url);
+      if (base64Image != null) {
+        Uint8List bytes = base64Decode(base64Image);
+        File file = await _saveImageToFile(bytes);
+
+        setState(() {
+          _placeImage = file; // 서버에서 받은 이미지를 File로 저장
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('서버 이미지 가져오기 실패: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // 📝 Uint8List 데이터를 파일로 변환하는 함수
+  Future<File> _saveImageToFile(Uint8List bytes) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/place_image.png');
+    await file.writeAsBytes(bytes);
+    return file;
   }
 
   // picker 라이브러리를 이용한 이미지 파일 처리 함수
@@ -96,6 +140,8 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
                 ),
                 const SizedBox(height: 32),
                 _buildProfileBox(cntWidth),
+                const SizedBox(height: 8),
+                Text('클릭하여 이미지를 변경할 수 있습니다.'),
                 const SizedBox(height: 32),
                 Text(
                   kakaoSearch.placeName ?? '이름 없음',
@@ -167,21 +213,25 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
           border: Border.all(color: Colors.black26, width: 2),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: _placeImage == null
+        child: _isLoading
             ? Center(
-                child: Icon(
-                  Icons.add_a_photo,
-                  size: 50,
-                  color: Colors.black38,
-                ),
+                child: CircularProgressIndicator(), // 로딩 표시
               )
-            : ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: Image.file(
-                  _placeImage!,
-                  fit: BoxFit.cover,
-                ),
-              ),
+            : (_placeImage == null
+                ? Center(
+                    child: Icon(
+                      Icons.add_a_photo,
+                      size: 50,
+                      color: Colors.black38,
+                    ),
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Image.file(
+                      _placeImage!,
+                      fit: BoxFit.cover,
+                    ),
+                  )),
       ),
     );
   }

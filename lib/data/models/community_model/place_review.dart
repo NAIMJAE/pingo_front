@@ -7,8 +7,8 @@ class PlaceReview {
   String? userNo;
   String? contents;
   String? category;
-  double? latitude;
-  double? longitude;
+  double? latitude; // 위도
+  double? longitude; // 경도
   int? heart;
 
   String? userNick;

@@ -13,47 +13,43 @@ class KakaoMapScreen extends StatefulWidget {
 
 class _KakaoMapScreenState extends State<KakaoMapScreen> {
   KakaoMapController? mapController;
-  late final LatLng _latLng;
-  Set<Marker> markers = {};
+  LatLng? _latLng;
+  List<Marker> markers = [];
 
   @override
   void initState() {
     super.initState();
 
-    // 초기 위도/경도 설정
-    _latLng = LatLng(
-      widget.kakaoSearch.latitude ?? 37.5665,
-      widget.kakaoSearch.longitude ?? 126.9780,
-    );
+    // 부모에서 받은 좌표를 가져와 _latLng 설정
+    double lat = widget.kakaoSearch.latitude!;
+    double lng = widget.kakaoSearch.longitude!;
+    _latLng = LatLng(lat, lng);
 
-    logger.i(
-        '초기 위도: ${widget.kakaoSearch.latitude}, 초기 경도: ${widget.kakaoSearch.longitude}');
-
-    markers = {
-      Marker(
-        markerId: 'search_marker',
-        latLng: _latLng,
-      ),
-    };
+    logger.i('검색한 위도: $lat, 경도: $lng');
   }
-
-  // 지도의 초기 화면을 위해 center 속성을 부모 위젯에서 받아온 위도 경도 값으로
-  // 동적으로 할당했을때 위도, 경도가 KakaoMap에 전달되지 않는 이슈
-  // onMapCreated 안에서 setCenter 메서드를 이용해 동적으로 위도 경도를 넣거나
-  // center 속성에 동적으로 위도 경도를 넣었을 때 둘 모두 값이 들어가지 않고
-  // kakaoMap의 기본 위도 경도인 이상한 값으로 계속 남음
-  // 랜더링 시점의 문제인지 확인도 딜레이를 걸어 확인해 봤지만 아닌듯
-  // 어디가 문제인지 모르겠어서 일단 보류하고 나중에 에러 잡기
-  // https://github.com/johyunchol/kakao_map_plugin  -> 카카오맵플러그인 깃허브
 
   @override
   Widget build(BuildContext context) {
     return KakaoMap(
-      center: LatLng(37.5665, 126.9780),
+      center: _latLng,
       onMapCreated: (controller) async {
         mapController = controller;
+
+        // 마커 추가
+        markers = [
+          Marker(
+            markerId: 'search_marker',
+            latLng: _latLng!,
+          ),
+        ];
+
+        // setCenter 및 마커 적용
+        await mapController?.setCenter(_latLng!);
+        await mapController?.addMarker(markers: markers);
+
+        logger.i('setCenter 및 setMarkers 적용 완료');
       },
-      markers: markers.toList(),
+      markers: markers,
       currentLevel: 3,
     );
   }
