@@ -134,7 +134,6 @@ class StompViewModel extends Notifier<bool> {
             .matchNotification(matchUserMap);
 
         ref.read(chatProvider.notifier).updateChatRoomState(chatRoomUserMap);
-        logger.i('매칭 성공후 chatRoomUserMap의 값은? : $chatRqoomUserMap');
       },
     );
   }

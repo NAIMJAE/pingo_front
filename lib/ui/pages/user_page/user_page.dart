@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/user_view_model/user_view_model.dart';
+import 'package:pingo_front/ui/pages/paymentPage/payment_page.dart';
 import 'package:pingo_front/ui/widgets/appbar/user_appbar.dart';
 import '../../../data/models/user_model/mypage_menu.dart';
 import 'components/myinfo_box.dart';
@@ -58,7 +59,22 @@ class _UserPageState extends ConsumerState<UserPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    _logoutMenu(),
+                    _menuBtn(
+                      btnName: '로그아웃',
+                      btnIcon: Icon(Icons.logout),
+                      btnFunction: ref.read(sessionProvider.notifier).logout,
+                    ),
+                    _menuBtn(
+                      btnName: '결제',
+                      btnIcon: Icon(Icons.payment),
+                      btnFunction: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PaymentPage()),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -70,17 +86,24 @@ class _UserPageState extends ConsumerState<UserPage> {
     );
   }
 
-  Widget _logoutMenu() {
-    return InkWell(
-      onTap: () {
-        ref.read(sessionProvider.notifier).logout();
-      },
-      child: Row(
-        children: [
-          Icon(Icons.logout),
-          const SizedBox(width: 20),
-          Text('로그아웃', style: Theme.of(context).textTheme.headlineMedium),
-        ],
+  Widget _menuBtn(
+      {required String btnName,
+      required Icon btnIcon,
+      required Function btnFunction}) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      margin: EdgeInsets.symmetric(vertical: 2),
+      child: InkWell(
+        onTap: () {
+          btnFunction();
+        },
+        child: Row(
+          children: [
+            btnIcon,
+            const SizedBox(width: 20),
+            Text(btnName, style: Theme.of(context).textTheme.headlineMedium),
+          ],
+        ),
       ),
     );
   }
