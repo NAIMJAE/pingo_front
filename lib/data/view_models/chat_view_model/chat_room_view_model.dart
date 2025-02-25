@@ -38,6 +38,13 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
 
   // [2] 채팅 목록 추가하기 - 새로운 매칭이 생기면 추가해주기
   // - 매칭 성공해서 새로운 채팅방 생기면 Map에 put하기
+  void updateChatRoomState(Map<String, ChatRoom> chatRoom) {
+    chatRoom.forEach(
+      (key, value) {
+        state.putIfAbsent(key, () => value);
+      },
+    );
+  }
 
   // [3] 매칭 취소 (나아아중에)
 

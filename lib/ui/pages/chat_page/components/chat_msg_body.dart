@@ -134,7 +134,8 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                         msgTime: DateTime.now(), // 현재 시간
                       );
                       logger.i('머머 $newMessage');
-                      websocketProvider.sendMessage(newMessage, widget.roomId);
+                      websocketProvider.sendMessage(
+                          newMessage, widget.roomId, null);
 
                       // 메시지 추가
 
@@ -185,7 +186,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
               leading: Icon(Icons.image, color: Colors.blue),
               title: Text("이미지 보내기"),
               onTap: () async {
-                String? imagePath = await getImage(ImageSource.gallery);
+                File? image = await getImage(ImageSource.gallery);
                 if (!mounted) return; // ✅ 위젯이 여전히 살아있는지 확인
                 logger.i('현재상태 $mounted');
                 final defaultMessage = Message(
@@ -193,12 +194,12 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                   isRead: false,
                 );
                 final newMessage = defaultMessage.copyWith(
-                  msgContent: imagePath ?? '',
+                  //msgContent: imagePath ?? '',
                   msgType: 'image',
                   userNo: widget.myUserNo,
                   msgTime: DateTime.now(),
                 );
-                websocketProvider.sendMessage(newMessage, widget.roomId);
+                websocketProvider.sendMessage(newMessage, widget.roomId, image);
                 if (mounted) {
                   Future.microtask(() {
                     Navigator.pop(context);
@@ -271,6 +272,16 @@ Widget _buildMessageItem(
 
 // 메시지 내용 말풍선
 Widget _buildText(Message message, String? userNo) {
+  if (message.msgType == 'image') {
+    return Container(
+      constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      child: CustomImage().token(
+        message.msgContent ?? '',
+      ),
+    );
+  }
+
   return Container(
     //wrap --> 길면 자를 수 있도록 설정할 수 있는 것
     constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
@@ -357,14 +368,14 @@ String formatTime(DateTime? time) {
 // 이미지 가져오는 함수 (imageSource = 갤러리 사진) 매개변수로 받아서 디코딩
 // 플러터 로컬 디바이스 전용 경로
 // 서버에서 해당 경로를 직접 접근할 수 없기때문에 multipart/form-data로 전송해야 한다.?
-Future<String?> getImage(ImageSource imageSource) async {
+Future<File?> getImage(ImageSource imageSource) async {
   File? _image; // 이미지 담을 변수 선언
   final ImagePicker picker = ImagePicker(); // 이미지픽커 초기화
   final pickedFile = await picker.pickImage(source: imageSource);
 
   if (pickedFile != null) {
     _image = File(pickedFile.path);
-    return _image.path;
+    return _image;
   }
 }
 

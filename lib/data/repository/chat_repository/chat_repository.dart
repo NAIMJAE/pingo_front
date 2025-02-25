@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:mime/mime.dart';
+import 'package:dio/dio.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
@@ -42,5 +46,36 @@ class ChatRepository {
         .toList();
   }
 
-  //서버에 이미지 전송
+  //서버에 이미지 전송 후 서버에 저장된 이미지의 주소를 String -> messageContent에 저장
+  Future<String?> uploadImageToServer(String roomId, File image) async {
+    //MultipartFile을 생성하여 multipart/form-data로 변환
+    //MultipartFile --> 파일을 multipart/form-data 형식으로 변환할 수 있게 도와줌 즉 파일 데이터를
+    // HTTP 요청에 맞는 형식으로 변환하는 역할을 한다.
+    // 서버가 파일을 JSON 객체로 해석하려고 하기 때문에 multipart/form-data로 전송해야 함
+
+    // 1. 현재 File 객체의 확장자 추출
+    String? mimeType = lookupMimeType(image.path) ?? 'image/jpeg';
+
+    // 2. FromData 변환 (Multipart/form-data)
+    FormData formData = FormData.fromMap({
+      "roomId": MultipartFile.fromString(
+        jsonEncode(roomId),
+        contentType: DioMediaType("application", "json"),
+      ),
+      "chatImage": await MultipartFile.fromFile(
+        image.path,
+        filename: "chatImage.jpg",
+        contentType: DioMediaType.parse(mimeType),
+      ),
+    });
+
+    // 3. 서버에 요청 보내기
+    final response =
+        await _customDio.post('/chat/save/chatImage', data: formData);
+
+    // 4. 서버에 업로드된 이미지의 Url 반환(주소 String값)
+    logger.i('반환된 이미지 주소 : $response');
+
+    return response;
+  }
 }

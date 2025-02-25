@@ -76,12 +76,17 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
             chatUser: filterUsers,
             message: chatRoom.message,
             lastMessage: chatRoom.lastMessage);
+        logger.i('여기도 실행이 된다고?');
       } else {
         matchChat[roomKey] = ChatRoom(
             chatUser: filterUsers,
             message: chatRoom.message,
             lastMessage: chatRoom.lastMessage);
+        logger.i('왜 널이야? ${filterUsers}');
+        logger.i('여기실행됨? 안되어야함');
       }
+      logger.i('listChat ${listChat[roomKey]}');
+      logger.i('matchChat ${matchChat[roomKey]}');
     }
 
     // chatList의 List<ChatRoom> 안에 userNo가 아닌 ChatRoom List를 들고오기

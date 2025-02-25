@@ -6,7 +6,7 @@ class Message {
   String? msgId; //메세지 번호
   final String? roomId; // 채팅방 번호
   final String? userNo; // 보낸사람과 로그인한 사용자가 동일하면 오른쪽에 메세지 띄우기 / 우선 2면 상대방
-  final String? msgContent; //메세지 내용
+  String? msgContent; //메세지 내용
   final DateTime? msgTime; // 메세지 보낸 시간
   final String? msgType; // 타입 enum
   final bool? isRead; // 읽음 여부를 나타내는 카운트 추가

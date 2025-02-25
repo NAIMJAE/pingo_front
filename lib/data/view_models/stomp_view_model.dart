@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
+import 'package:pingo_front/data/models/chat_model/chat_room.dart';
 import 'package:pingo_front/data/models/match_model.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/repository/chat_repository/chat_repository.dart';
@@ -88,9 +90,8 @@ class StompViewModel extends Notifier<bool> {
         // 채팅방 메세지 받는 페이지가 아니면!
 
         // 1. 마지막메세지 업데이트 + List<Message> 업데이트
-        ref
-            .read(chatProvider.notifier)
-            .updateLastMessage(roomId!, message.msgContent ?? '');
+        ref.read(chatProvider.notifier).updateLastMessage(roomId!,
+            message.msgType == 'image' ? '이미지' : message.msgContent ?? '');
         ref.read(chatProvider.notifier).addMessage(message, roomId);
 
         // completer.complete(message);
@@ -102,6 +103,7 @@ class StompViewModel extends Notifier<bool> {
 
   // 로그인한 사용자에게 알림
   void notification(String userNo) {
+    logger.i('여기까지');
     // 알림받기
     stompClient?.subscribe(
       destination: '/topic/match/notification/$userNo',
@@ -109,30 +111,46 @@ class StompViewModel extends Notifier<bool> {
       callback: (StompFrame frame) {
         // 받아온 정보를 dart Map 객체로 변환
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
+
+        final Map<String, dynamic> matchUsersJson = jsonData['matchUsers'];
+        final Map<String, dynamic> chatRoomUsersJson =
+            jsonData['chatRoomUsers'];
+
         // 새로운 맵 형태로 변환
-        final Map<String, MatchModel> matchUserMap = jsonData.map(
+        final Map<String, MatchModel> matchUserMap = matchUsersJson.map(
           (key, value) => MapEntry(
             key,
-            MatchModel.fromJson(value),
+            MatchModel.fromJson(value as Map<String, dynamic>),
           ),
         );
+        logger.i('매칭성공 후 matchUserMap의 값은? $matchUserMap');
+
+        final Map<String, ChatRoom> chatRoomUserMap = chatRoomUsersJson.map(
+            (key, value) => MapEntry(
+                key, ChatRoom.fromJson(value as Map<String, dynamic>)));
 
         ref
             .read(notificationViewModelProvider.notifier)
             .matchNotification(matchUserMap);
-        print('알림받기');
+
+        ref.read(chatProvider.notifier).updateChatRoomState(chatRoomUserMap);
+        logger.i('매칭 성공후 chatRoomUserMap의 값은? : $chatRqoomUserMap');
       },
     );
   }
 
   // 서버로 채팅 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
-  void sendMessage(Message message, String roomId) {
-    ChatRepository chatRepository;
+  void sendMessage(Message message, String roomId, File? image) async {
+    ChatRepository chatRepository = ChatRepository();
     String? msgContent = message.msgContent;
 
-    // 이미지일 때 먼저 서버에 업로드
+    // // 이미지일 때 먼저 서버에 업로드 후 그 값을 가져와서 /pub/msg/$roomId 주소로 보내야 한다.
     if (message.msgType == 'image') {
-      String? uploadUrl = await chatRepository.uploadImageToServer(msgContent);
+      String? uploadUrl =
+          await chatRepository.uploadImageToServer(message.roomId!, image!);
+      if (uploadUrl != null) {
+        message.msgContent = uploadUrl;
+      }
     }
     final messages = jsonEncode(message.toJson());
     stompClient?.send(
