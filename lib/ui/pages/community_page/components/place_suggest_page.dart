@@ -63,7 +63,7 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
       ref
           .read(placeReviewSearchViewModelProvider.notifier)
           .searchLastPlaceReview();
-      // 마지막 검색 로직 저장해두고 불러오기 + 키보드 내리기
+      FocusScope.of(context).unfocus();
     });
   }
 

@@ -76,4 +76,14 @@ class PlaceReviewSearchRepository {
       throw Exception("카카오 API 요청 실패: ${e.toString()}");
     }
   }
+
+  // 카카오 주소 기반 장소 이미지 크롤링
+  Future<dynamic> fetchCrawlingPlaceImage(String placeUrl) async {
+    dynamic response = await _customDio
+        .post('/community/place/crawling', data: {'placeUrl': placeUrl});
+
+    print(response.runtimeType);
+
+    return response;
+  }
 }

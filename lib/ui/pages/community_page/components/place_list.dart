@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/community_model/place_review.dart';
 import 'package:pingo_front/data/models/community_model/place_review_search.dart';
 import 'package:pingo_front/data/models/community_model/review_search_result.dart';
@@ -79,7 +78,7 @@ class _PlaceListState extends ConsumerState<PlaceList> {
                           child: KakaoMapScreen(
                               widget.searchReviewProvider.lastSearch),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 32),
                         Center(
                           child: Text(
                             '${widget.searchReviewProvider.lastSearch.placeName}에 대한 리뷰가 없습니다.',
@@ -87,7 +86,7 @@ class _PlaceListState extends ConsumerState<PlaceList> {
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 32),
                         SizedBox(
                           height: 50,
                           child: ElevatedButton(
