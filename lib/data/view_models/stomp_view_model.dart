@@ -126,15 +126,18 @@ class StompViewModel extends Notifier<bool> {
         logger.i('매칭성공 후 matchUserMap의 값은? $matchUserMap');
 
         final Map<String, ChatRoom> chatRoomUserMap = chatRoomUsersJson.map(
-            (key, value) => MapEntry(
-                key, ChatRoom.fromJson(value as Map<String, dynamic>)));
+          (key, value) => MapEntry(
+            key,
+            ChatRoom.fromJson(value as Map<String, dynamic>),
+          ),
+        );
 
         ref
             .read(notificationViewModelProvider.notifier)
             .matchNotification(matchUserMap);
 
         ref.read(chatProvider.notifier).updateChatRoomState(chatRoomUserMap);
-        logger.i('매칭 성공후 chatRoomUserMap의 값은? : $chatRqoomUserMap');
+        logger.i('매칭 성공후 chatRoomUserMap의 값은? : $chatRoomUserMap');
       },
     );
   }
