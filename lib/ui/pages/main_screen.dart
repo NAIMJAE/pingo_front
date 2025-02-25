@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
@@ -8,6 +10,7 @@ import 'package:pingo_front/data/view_models/notification_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/community_page.dart';
+import 'package:pingo_front/ui/widgets/custom_image.dart';
 import 'chat_page/chat_room_page.dart';
 import 'keyword_page/keyword_page.dart';
 import 'main_page/main_page.dart';
@@ -86,12 +89,13 @@ class _MainScreenState extends ConsumerState<MainScreen>
 
   @override
   Widget build(BuildContext context) {
-    MatchModel? matchModel = ref.watch(notificationViewModelProvider);
+    Map<String, MatchModel> matchModel =
+        ref.watch(notificationViewModelProvider);
     logger.i('match모델머임 ? : ${matchModel.toString()}');
     // 레이아웃이 모두 구성된 이후 호출하기
-    if (matchModel != null) {
+    if (matchModel.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showNotificationAlert(context, matchModel!);
+        showMatchDialog(context, matchModel);
         ref
             .read(notificationViewModelProvider.notifier)
             .emptyNotification(); // 상태 초기화
@@ -141,69 +145,107 @@ class _MainScreenState extends ConsumerState<MainScreen>
     super.dispose();
   }
 
-  // ✅ 자동으로 띄우는 `AlertDialog`
-  void _showNotificationAlert(BuildContext context, MatchModel matchModel) {
+  // 다이얼로그 메서드
+  void showMatchDialog(
+      BuildContext context, Map<String, MatchModel> matchModel) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
+      barrierDismissible: false, // 외부 클릭 시 닫히지 않도록 설정
+      builder: (context) {
+        return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20)), // 둥근 테두리 적용
+          backgroundColor: Colors.transparent, // 배경 투명
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // 빛나는 효과를 위한 블러 배경
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                  child: Container(color: Colors.transparent),
+                ),
+              ),
+
+              // 매치 다이얼로그 내용
+              Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.deepPurple.shade500,
+                      Colors.deepPurple.shade300
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 타이틀
+                    Text(
+                      "It's a Match",
+                      style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                                offset: Offset(2, 2),
+                                blurRadius: 6,
+                                color: Colors.black26)
+                          ]),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      '${matchModel['toUserNo']?.userName ?? ''} 님과 매치되었어요!',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    SizedBox(height: 20),
+
+                    // 프로필 이미지 (좌우 배치)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildProfileImage(
+                            matchModel['toUserNo']?.userImage ?? ''),
+                        SizedBox(width: 20),
+                        _buildProfileImage(
+                            matchModel['fromUserNo']?.userImage ?? ''),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+
+                    // 확인 버튼
+                    ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: Text(
+                        "확인",
+                        style: TextStyle(color: Colors.purple, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          title: Center(
-            child: Text(
-              "💖 새로운 매칭! 💖",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-          ),
-          content: Container(
-            width: 300,
-            height: 150,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildUserInfo(matchModel.userName ?? '사용자1', 25,
-                    matchModel.userImage ?? ''),
-                Icon(Icons.favorite, color: Colors.red, size: 40), // ❤️ 하트 아이콘
-                _buildUserInfo(matchModel.userName ?? '사용자2', 28,
-                    matchModel.userImage ?? ''),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(
-                    context); // 다이얼로그 닫기, 다이얼로그는 새로운 화면이 아니라 오버레이된 UI 요소, 스택관리 X
-              },
-              child: Text("확인"),
-            ),
-          ],
         );
       },
     );
   }
 
-  // ✅ 동그란 프로필 사진 + 이름 + 나이 표시하는 위젯
-  Widget _buildUserInfo(String name, int age, String imageUrl) {
-    return Expanded(
-      child: Column(
-        children: [
-          ClipOval(
-            child: Image.network(
-              imageUrl,
-              width: 70,
-              height: 70,
-              fit: BoxFit.cover,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(name,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          Text("$age세", style: TextStyle(color: Colors.grey, fontSize: 14)),
-        ],
-      ),
+// 둥근 프로필 이미지 위젯
+  Widget _buildProfileImage(String imageUrl) {
+    return CircleAvatar(
+      radius: 40,
+      backgroundImage: CustomImage().provider(imageUrl),
     );
   }
 }

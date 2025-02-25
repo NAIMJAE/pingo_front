@@ -1,14 +1,12 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
 import 'package:pingo_front/data/models/match_model.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
+import 'package:pingo_front/data/repository/chat_repository/chat_repository.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
-import 'package:pingo_front/data/view_models/chat_view_model/chat_msg_view_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
-import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:pingo_front/data/view_models/notification_view_model.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
@@ -104,17 +102,24 @@ class StompViewModel extends Notifier<bool> {
 
   // 로그인한 사용자에게 알림
   void notification(String userNo) {
-    // 2. 알림받기
+    // 알림받기
     stompClient?.subscribe(
       destination: '/topic/match/notification/$userNo',
       // 메세지가 수신될때 frame으로 수신되어서 매개변수로 받음
       callback: (StompFrame frame) {
         // 받아온 정보를 dart Map 객체로 변환
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
-        MatchModel matchModel = MatchModel.fromJson(jsonData);
+        // 새로운 맵 형태로 변환
+        final Map<String, MatchModel> matchUserMap = jsonData.map(
+          (key, value) => MapEntry(
+            key,
+            MatchModel.fromJson(value),
+          ),
+        );
+
         ref
             .read(notificationViewModelProvider.notifier)
-            .matchNotification(matchModel);
+            .matchNotification(matchUserMap);
         print('알림받기');
       },
     );
@@ -122,6 +127,13 @@ class StompViewModel extends Notifier<bool> {
 
   // 서버로 채팅 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
   void sendMessage(Message message, String roomId) {
+    ChatRepository chatRepository;
+    String? msgContent = message.msgContent;
+
+    // 이미지일 때 먼저 서버에 업로드
+    if (message.msgType == 'image') {
+      String? uploadUrl = await chatRepository.uploadImageToServer(msgContent);
+    }
     final messages = jsonEncode(message.toJson());
     stompClient?.send(
       destination: '/pub/msg/$roomId',
