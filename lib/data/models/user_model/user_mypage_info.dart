@@ -19,14 +19,17 @@ class UserMypageInfo {
       this.favoriteKeywordList,
       this.userIntroduction});
 
+  // JSON으로 변환하는 메서드
   Map<String, dynamic> toJson() {
     return {
-      "users": users,
-      "userInfo": userInfo,
-      "userImageList": userImageList,
-      "myKeywordList": myKeywordList,
-      "favoriteKeywordList": favoriteKeywordList,
-      "userIntroduction": userIntroduction,
+      'users': users?.toJson(),
+      'userInfo': userInfo?.toJson(),
+      'userImageList': userImageList?.map((image) => image.toJson()).toList(),
+      'myKeywordList':
+          myKeywordList?.map((keyword) => keyword.toJson()).toList(),
+      'favoriteKeywordList':
+          favoriteKeywordList?.map((keyword) => keyword.toJson()).toList(),
+      'userIntroduction': userIntroduction,
     };
   }
 

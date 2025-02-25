@@ -31,14 +31,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
   // 수정 완료 버튼 눌렀을때 실행되는 함수
   void _submitUserInfo() async {
-    // 서버에 전달할 정보만 담은 Map
-    Map<String, dynamic> updateInfo = {
-      'userInfo': copyUserInfo.userInfo,
-      'myKeywordList': copyUserInfo.myKeywordList,
-      'favoriteKeywordList': copyUserInfo.favoriteKeywordList,
-      'userIntroduction': copyUserInfo.userIntroduction,
-    };
-    await ref.read(userViewModelProvider.notifier).submitUpdateInfo(updateInfo);
+    await ref
+        .read(userViewModelProvider.notifier)
+        .submitUpdateInfo(copyUserInfo.toJson());
   }
 
   @override
@@ -64,7 +59,14 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               EditUserKeywordBox(copyUserInfo.myKeywordList!,
                   copyUserInfo.favoriteKeywordList!),
               const SizedBox(height: 8.0),
-              EditSelfIntroductionBox(copyUserInfo.userIntroduction),
+              EditSelfIntroductionBox(
+                copyUserInfo.userIntroduction,
+                onIntroductionChanged: (newIntro) {
+                  setState(() {
+                    copyUserInfo.userIntroduction = newIntro;
+                  });
+                },
+              ),
               const SizedBox(height: 8.0),
             ],
           ),
@@ -83,7 +85,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       height: 50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Colors.lightBlueAccent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.0),
           ),

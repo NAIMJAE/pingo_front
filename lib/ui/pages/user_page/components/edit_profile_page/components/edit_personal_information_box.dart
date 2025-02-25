@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/user_model/user_info.dart';
 import 'package:pingo_front/ui/widgets/post_code_search.dart';
-import '../../../../../../data/models/user_model/user_mypage_info.dart';
 import 'jop_page/first_job_select_page.dart';
 import 'jop_page/second_job_select_page.dart';
 
@@ -27,20 +26,18 @@ class _EditPersonalInformationBoxState
   // 주소
   final TextEditingController _userAddressController = TextEditingController();
 
-  // 흡연여부
-
-  // 음주여부
-
-  // 혈액형
+  @override
+  void initState() {
+    super.initState();
+    _userAddressController.text = widget.copyUserInfo.userAddress ?? '';
+    _heightController.text = widget.copyUserInfo.userHeight?.toString() ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
     final userInfo = widget.copyUserInfo;
 
     logger.i(userInfo);
-    // 유저 정보가 있을 경우 해당 값을 사용, 없으면 기본값 설정
-    // 신장
-    _heightController.text = userInfo.userHeight?.toString() ?? '';
 
     return Card(
       elevation: 0.5,
@@ -60,8 +57,11 @@ class _EditPersonalInformationBoxState
             _buildInformationBox(context, '신장', _buildHeightInfo(userInfo)),
             _buildInformationBox(context, '1차 직종', _build1stJobInfo(userInfo)),
             _buildInformationBox(context, '2차 직종', _build2ndJobInfo(userInfo)),
-            _buildInformationBox(context, '거주지',
-                _buildAddressInfo(userInfo, false, _userAddressController)),
+            _buildInformationBox(
+                context,
+                '거주지',
+                _buildAddressInfo(
+                    userInfo.userAddress, '', false, _userAddressController)),
             _buildInformationBox(
               context,
               '종교',
@@ -71,22 +71,32 @@ class _EditPersonalInformationBoxState
                   _buildSelectedButton(
                     widget.copyUserInfo.userReligion,
                     "무교",
+                    "무교",
+                    (selected) => widget.copyUserInfo.userReligion = selected,
                   ),
                   _buildSelectedButton(
                     widget.copyUserInfo.userReligion,
                     "천주교",
+                    "천주교",
+                    (selected) => widget.copyUserInfo.userReligion = selected,
                   ),
                   _buildSelectedButton(
                     widget.copyUserInfo.userReligion,
                     "불교",
+                    "불교",
+                    (selected) => widget.copyUserInfo.userReligion = selected,
                   ),
                   _buildSelectedButton(
                     widget.copyUserInfo.userReligion,
                     "기독교",
+                    "기독교",
+                    (selected) => widget.copyUserInfo.userReligion = selected,
                   ),
                   _buildSelectedButton(
                     widget.copyUserInfo.userReligion,
                     "기타",
+                    "기타",
+                    (selected) => widget.copyUserInfo.userReligion = selected,
                   ),
                 ],
               ),
@@ -98,12 +108,16 @@ class _EditPersonalInformationBoxState
                 spacing: 4.0,
                 children: [
                   _buildSelectedButton(
-                    _buildUserSmokingParse(widget.copyUserInfo.userSmoking),
+                    widget.copyUserInfo.userSmoking,
+                    "F",
                     "비흡연",
+                    (selected) => widget.copyUserInfo.userSmoking = selected,
                   ),
                   _buildSelectedButton(
-                    _buildUserSmokingParse(widget.copyUserInfo.userSmoking),
+                    widget.copyUserInfo.userSmoking,
+                    "T",
                     "흡연",
+                    (selected) => widget.copyUserInfo.userSmoking = selected,
                   ),
                 ],
               ),
@@ -115,16 +129,22 @@ class _EditPersonalInformationBoxState
                 spacing: 4.0,
                 children: [
                   _buildSelectedButton(
-                    _buildUserDrinkingParse(widget.copyUserInfo.userDrinking),
+                    widget.copyUserInfo.userDrinking,
+                    "N",
                     "비음주",
+                    (selected) => widget.copyUserInfo.userDrinking = selected,
                   ),
                   _buildSelectedButton(
-                    _buildUserDrinkingParse(widget.copyUserInfo.userDrinking),
+                    widget.copyUserInfo.userDrinking,
+                    "O",
                     "가끔 음주",
+                    (selected) => widget.copyUserInfo.userDrinking = selected,
                   ),
                   _buildSelectedButton(
-                    _buildUserDrinkingParse(widget.copyUserInfo.userDrinking),
+                    widget.copyUserInfo.userDrinking,
+                    "F",
                     "잦은 음주",
+                    (selected) => widget.copyUserInfo.userDrinking = selected,
                   ),
                 ],
               ),
@@ -136,20 +156,28 @@ class _EditPersonalInformationBoxState
                 spacing: 4.0,
                 children: [
                   _buildSelectedButton(
-                    _buildUserBloodTypeParse(widget.copyUserInfo.userBloodType),
+                    widget.copyUserInfo.userBloodType,
+                    "A",
                     "A형",
+                    (selected) => widget.copyUserInfo.userBloodType = selected,
                   ),
                   _buildSelectedButton(
-                    _buildUserBloodTypeParse(widget.copyUserInfo.userBloodType),
+                    widget.copyUserInfo.userBloodType,
+                    "B",
                     "B형",
+                    (selected) => widget.copyUserInfo.userBloodType = selected,
                   ),
                   _buildSelectedButton(
-                    _buildUserBloodTypeParse(widget.copyUserInfo.userBloodType),
+                    widget.copyUserInfo.userBloodType,
+                    "O",
                     "O형",
+                    (selected) => widget.copyUserInfo.userBloodType = selected,
                   ),
                   _buildSelectedButton(
-                    _buildUserBloodTypeParse(widget.copyUserInfo.userBloodType),
+                    widget.copyUserInfo.userBloodType,
+                    "AB",
                     "AB형",
+                    (selected) => widget.copyUserInfo.userBloodType = selected,
                   ),
                 ],
               ),
@@ -227,8 +255,6 @@ class _EditPersonalInformationBoxState
 
   // 신장
   Widget _buildHeightInfo(userInfo) {
-    _heightController.text = userInfo.userHeight?.toString() ?? '';
-
     return TextField(
       controller: _heightController,
       style: Theme.of(context).textTheme.headlineSmall,
@@ -244,9 +270,6 @@ class _EditPersonalInformationBoxState
         FilteringTextInputFormatter.allow(
             RegExp(r'^(?:[1-9]?\d|[12]\d{2}|300)$')),
       ],
-      onChanged: (value) {
-        _validateHeight(value);
-      },
     );
   }
 
@@ -272,6 +295,7 @@ class _EditPersonalInformationBoxState
               onJobSelected: (selectedJob) {
                 setState(() {
                   userInfo.user1stJob = selectedJob;
+                  userInfo.user2ndJob = null; // 1차 직종 변경 시 2차 직종 초기화
                 });
               },
             ),
@@ -317,10 +341,7 @@ class _EditPersonalInformationBoxState
   }
 
   // 거주지
-  Widget _buildAddressInfo(
-      userInfo, obscure, TextEditingController _userAddressController) {
-    _userAddressController.text = userInfo.userAddress ?? '';
-
+  Widget _buildAddressInfo(userAddress, textHint, obscure, controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -338,12 +359,12 @@ class _EditPersonalInformationBoxState
             );
 
             if (selectedAddress != null) {
-              _userAddressController.text = selectedAddress.roadAddress;
+              controller.text = selectedAddress.roadAddress;
             }
             setState(() {});
           },
           readOnly: true,
-          controller: _userAddressController,
+          controller: controller,
           style: Theme.of(context).textTheme.headlineSmall,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
@@ -357,25 +378,33 @@ class _EditPersonalInformationBoxState
     );
   }
 
-// 버튼 위젯(종교, 흡연여부, 음주여부)
-  Widget _buildSelectedButton(userValue, btnText) {
-    return TextButton(
-      onPressed: () {
-        // 누르면 선택되어 있는 값이 누른 값으로 변경
-        setState(() {});
+  // 버튼 위젯(종교, 흡연여부, 음주여부)
+  Widget _buildSelectedButton(String? userValue, String btnValue,
+      String btnText, Function(String) onSelected) {
+    bool isSelected = userValue == btnValue;
+
+    return InkWell(
+      onTap: () {
+        setState(() {
+          onSelected(btnValue); // 선택한 값 업데이트
+        });
       },
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(
-          userValue == btnText ? Colors.lightBlueAccent : Colors.white,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.lightBlueAccent : Colors.white,
+          border: Border.all(
+            color: isSelected ? Colors.lightBlueAccent : Colors.black12,
+          ),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
-        foregroundColor: MaterialStateProperty.all(
-          userValue == btnText ? Colors.white : Colors.lightBlueAccent,
-        ),
-        side: MaterialStateProperty.all(
-          BorderSide(color: Colors.lightBlueAccent),
+        child: Text(
+          btnText,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+          ),
         ),
       ),
-      child: Text(btnText),
     );
   }
 
