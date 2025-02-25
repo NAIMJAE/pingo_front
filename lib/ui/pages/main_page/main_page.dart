@@ -119,40 +119,40 @@ class _MainPageState extends ConsumerState<MainPage>
 
   // ✅ PING/PANG/SUPERPING 도장 표시 위젯
   Widget _buildSwipeStamp(MainPageViewModel viewModel) {
-    String? stampText;
-    Color stampColor = Colors.transparent;
-    double rotation = 0.0;
+    if (viewModel.stampText == null) return SizedBox();
 
-    if (viewModel.posY <= -0.4) {
-      stampText = "SUPERPING!";
-      stampColor = Colors.blue;
-      rotation = 0.1;
-    } else if (viewModel.animationController.value <= -0.4) {
-      stampText = "PING!";
-      stampColor = Colors.red;
-      rotation = -0.2;
-    } else if (viewModel.animationController.value >= 0.4) {
-      stampText = "PANG!";
-      stampColor = Colors.green;
-      rotation = 0.2;
+    // 기본 위치 설정
+    double stampTop = 100; // 기본 위치
+    double? stampLeft; // 왼쪽 정렬용
+    double? stampRight; // 오른쪽 정렬용
+
+    // 위치 조정 로직
+    if (viewModel.stampText == "SUPERPING!") {
+      stampTop += 50; // 🔹 SUPERPING!을 아래로 이동
+      stampLeft = 0; // 중앙 정렬 유지
+    } else if (viewModel.stampText == "PANG!") {
+      stampLeft = 50; // 🔹 좋아요일 때 오른쪽으로 이동
+    } else if (viewModel.stampText == "PING!") {
+      stampRight = -50; // 🔹 싫어요일 때 왼쪽으로 이동
     }
-    if (stampText == null)
-      return SizedBox(); // ✅ stampText가 null이면 위젯을 렌더링하지 않음
+
     return Positioned(
-      top: 100, // ✅ 프로필카드 위쪽에 배치
+      top: stampTop, // 🔹 위치 반영
+      left: stampLeft,
+      right: stampRight,
       child: AnimatedOpacity(
         duration: Duration(milliseconds: 200),
-        opacity: 1.0, // ✅ 항상 보이게 설정 후 애니메이션으로 변동
+        opacity: 1.0, // ✅ 투명하지 않도록 설정
         child: Transform.rotate(
-          angle: rotation,
+          angle: viewModel.rotation,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-              color: stampColor.withOpacity(0.8),
+              color: viewModel.stampColor.withOpacity(0.8),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              stampText,
+              viewModel.stampText!,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 30,
