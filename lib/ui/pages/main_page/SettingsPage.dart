@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/models/setting_model/AppSettings.dart';
 import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
+import 'package:pingo_front/ui/pages/membership_Page/membership_page.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   @override
@@ -121,24 +122,31 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   // UI 즉각 반영 + API 호출 최적화
   Widget _buildSmoothSlider(
       SettingsNotifier settingsNotifier, AppSettings settings) {
+    final sessionUser = ref.watch(sessionProvider);
+    final bool isPremium = sessionUser?.expDate != null; // 유료 회원 여부 확인
+
+    double maxDistance = isPremium ? 200 : 50; // 유료회원 200km, 무료회원 50km 제한
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Slider(
-          value: _tempMaxDistance, // UI 즉각 반영
+          value: _tempMaxDistance.clamp(1, maxDistance), // 거리 제한 적용
           min: 1,
-          max: 50,
-          divisions: 49,
+          max: 200, // 유료 회원이면 200km, 무료 회원이면 50km
+          divisions: isPremium ? 199 : 49,
           label: "${_tempMaxDistance.toInt()}km",
           onChanged: (newValue) {
+            if (!isPremium && newValue > 50) {
+              _showUpgradeAlert(context); // 경고 메시지 표시
+              newValue = 50; // 강제로 50km로 되돌림
+            }
+
             setState(() {
-              _tempMaxDistance = newValue; // UI에 즉시 반영
+              _tempMaxDistance = newValue;
             });
 
-            // 기존 타이머 취소
             _debounceTimer?.cancel();
-
-            // 0.5초 동안 변화가 없으면 API 요청
             _debounceTimer = Timer(Duration(milliseconds: 500), () {
               settingsNotifier.updateSettings(
                 settings.copyWith(maxDistance: newValue.toInt()),
@@ -151,6 +159,43 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             style: TextStyle(color: Colors.white, fontSize: 14)),
       ],
     );
+  }
+
+  // 무료 회원이 50km 이상 조정하려 하면 경고 메시지 표시
+  void _showUpgradeAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("업그레이드 필요"),
+          content: Text("더 먼 거리를 설정하려면 프리미엄 멤버십이 필요합니다."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("닫기"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _navigateToSubscriptionPage(context); // 결제 페이지 이동
+              },
+              child: Text("업그레이드"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 결제 페이지로 이동 (페이지 경로 넣어야함)
+  void _navigateToSubscriptionPage(BuildContext context) {
+    Navigator.pop(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MembershipPage(),
+        )); // 구독 페이지 경로
   }
 
   Widget _buildGenderSelection(
