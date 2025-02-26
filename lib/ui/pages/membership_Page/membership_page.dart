@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/models/global_model/session_user.dart';
 import 'package:pingo_front/data/models/membership_model/membership.dart';
+import 'package:pingo_front/data/models/membership_model/user_membership.dart';
 import 'package:pingo_front/data/repository/membership_repository/membership_repository.dart';
+import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/membership_Page/payment_page.dart';
 
 class MembershipPage extends ConsumerStatefulWidget {
@@ -15,22 +19,85 @@ class MembershipPage extends ConsumerStatefulWidget {
 class _PaymentPageState extends ConsumerState<MembershipPage> {
   final MembershipRepository _repository = MembershipRepository();
   Future<List<Membership>>? _membershipFuture;
+  late UserMembership? userMembership;
   List<Color> couponColors = [
     Colors.lightBlueAccent,
     Colors.lightGreenAccent,
     Colors.orangeAccent
   ];
   Membership? selectedMembership;
+  late SessionUser sessionUser;
 
   @override
   void initState() {
     super.initState();
-    _membershipFuture = _repository.fetchSelectMemberShip();
+    sessionUser = ref.read(sessionProvider);
+    _loadMembershipData();
+  }
+
+  Future<void> _loadMembershipData() async {
+    var result = await _repository.fetchSelectMemberShip(sessionUser.userNo!);
+    setState(() {
+      userMembership = result.item1;
+      _membershipFuture = Future.value(result.item2);
+    });
   }
 
   void _clickCoupon(Membership membership) {
     selectedMembership = membership;
     setState(() {});
+  }
+
+  void _clickPayment() async {
+    logger.i(selectedMembership);
+    if (selectedMembership == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("결제하실 구독권을 선택해주세요."),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.only(bottom: 80, left: 16, right: 16),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    if (userMembership != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("이미 구독중인 상품이 존재합니다."),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.only(bottom: 80, left: 16, right: 16),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentPage(selectedMembership),
+      ),
+    );
+    logger.e(result);
+    if (result != null) {
+      if (result["status"] == "fail") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text("결제에 실패했습니다. 다시 시도해주세요."),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.only(bottom: 80, left: 16, right: 16),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } else {
+        Navigator.pop(context, {"status": "success"});
+      }
+    }
   }
 
   @override
@@ -123,14 +190,8 @@ class _PaymentPageState extends ConsumerState<MembershipPage> {
             borderRadius: BorderRadius.circular(4.0),
           ),
         ),
-        onPressed: () {
-          // 널 체크 추가
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PaymentPage(),
-            ),
-          );
+        onPressed: () async {
+          _clickPayment();
         },
         child: Text(
           '${selectedMembership != null ? NumberFormat('#,###').format(selectedMembership?.price) : 0} 원  결제하기',
@@ -145,8 +206,8 @@ class _PaymentPageState extends ConsumerState<MembershipPage> {
 
   Widget _couponBox(Membership membership, Color backColor) {
     return InkWell(
-      splashColor: Colors.transparent, // ✅ 물결 효과 제거
-      highlightColor: Colors.transparent, // ✅ 클릭 시 배경 강조 제거
+      splashColor: Colors.transparent, // 물결 효과 제거
+      highlightColor: Colors.transparent, // 클릭 시 배경 강조 제거
       onTap: () {
         _clickCoupon(membership);
       },
@@ -231,6 +292,43 @@ class _PaymentPageState extends ConsumerState<MembershipPage> {
             ),
         ],
       ),
+    );
+  }
+
+  /// 하단 모달 팝업
+  void _showBottomPopup(BuildContext context,
+      {required String title,
+      required String message,
+      required IconData icon,
+      required Color color}) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 48, color: color),
+              const SizedBox(height: 10),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+              const SizedBox(height: 5),
+              Text(message, style: const TextStyle(fontSize: 16)),
+              const SizedBox(height: 15),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("확인"),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

@@ -6,6 +6,7 @@ class SessionUser {
   String? userRole;
   String? accessToken;
   bool isLogin;
+  DateTime? expDate;
   Position? currentLocation; // 현재 위치 저장
 
   // 🔥 생성자에서 현재 위치 자동 할당 (서버 요청 ❌)
@@ -13,6 +14,7 @@ class SessionUser {
     this.userNo,
     this.userRole,
     this.accessToken,
+    this.expDate,
     this.isLogin = false,
   }) {
     _initializeUserLocation();
@@ -20,7 +22,7 @@ class SessionUser {
 
   @override
   String toString() {
-    return 'SessionUser{userNo: $userNo, userRole: $userRole, accessToken: $accessToken, isLogin: $isLogin, currentLocation: ${currentLocation?.latitude}, ${currentLocation?.longitude}}';
+    return 'SessionUser{userNo: $userNo, userRole: $userRole, accessToken: $accessToken, isLogin: $isLogin, membership: $expDate, currentLocation: $currentLocation}';
   }
 
   // 세션 유저 정보 업데이트
@@ -28,6 +30,7 @@ class SessionUser {
     userNo = userData['userNo'];
     userRole = userData['userRole'];
     accessToken = userData['accessToken'];
+    expDate = userData['expDate'];
     isLogin = true;
 
     // 로그인 성공 후 위치 추적 시작

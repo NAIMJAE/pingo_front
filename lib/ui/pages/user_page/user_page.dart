@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/user_view_model/user_view_model.dart';
 import 'package:pingo_front/ui/pages/membership_Page/membership_page.dart';
@@ -67,12 +68,23 @@ class _UserPageState extends ConsumerState<UserPage> {
                     _menuBtn(
                       btnName: '결제',
                       btnIcon: Icon(Icons.payment),
-                      btnFunction: () {
-                        Navigator.push(
+                      btnFunction: () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => MembershipPage()),
                         );
+                        logger.i(result);
+                        if (result['status'] == 'success') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text("결제가 성공적으로 완료되었습니다!"),
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
                       },
                     ),
                   ],
