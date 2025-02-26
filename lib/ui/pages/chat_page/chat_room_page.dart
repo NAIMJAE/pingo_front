@@ -6,7 +6,7 @@ import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 import 'package:pingo_front/ui/widgets/appbar/chat_appbar.dart';
 

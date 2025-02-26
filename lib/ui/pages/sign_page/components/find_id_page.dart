@@ -9,6 +9,7 @@ class FindIdPage extends StatefulWidget {
 }
 
 class _FindIdPageState extends State<FindIdPage> {
+  final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _userEmailController = TextEditingController();
 
   @override
@@ -22,6 +23,8 @@ class _FindIdPageState extends State<FindIdPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                _textInputBox('이름', '2~10자의 한글', false, _userNameController),
+                const SizedBox(height: 20),
                 _textInputBox(
                     '이메일', 'example@email.com', false, _userEmailController),
                 const SizedBox(height: 10),
@@ -69,7 +72,6 @@ class _FindIdPageState extends State<FindIdPage> {
         const SizedBox(height: 4.0),
         TextField(
           controller: controller,
-          keyboardType: TextInputType.emailAddress, // 이메일 키보드
           decoration: InputDecoration(
             enabledBorder:
                 OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),

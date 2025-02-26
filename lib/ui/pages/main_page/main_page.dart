@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/setting_model/AppSettings.dart';
 import 'package:pingo_front/data/view_models/main_view_model/main_page_viewmodel.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/widgets/appbar/main_appbar.dart';
 import 'components/ProfileCard.dart';
 

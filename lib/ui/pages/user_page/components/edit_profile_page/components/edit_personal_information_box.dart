@@ -31,6 +31,24 @@ class _EditPersonalInformationBoxState
     super.initState();
     _userAddressController.text = widget.copyUserInfo.userAddress ?? '';
     _heightController.text = widget.copyUserInfo.userHeight?.toString() ?? '';
+
+    // 변경 감지를 위한 리스너 추가
+    _heightController.addListener(() {
+      String text = _heightController.text;
+
+      // 신장 입력값 검증
+      _validateHeight(text);
+
+      // 300 이하의 값만 userInfo에 저장
+      int? height = int.tryParse(text);
+      if (height != null && height <= 300) {
+        widget.copyUserInfo.userHeight = height;
+      }
+    });
+
+    _userAddressController.addListener(() {
+      widget.copyUserInfo.userAddress = _userAddressController.text;
+    });
   }
 
   @override
@@ -255,21 +273,32 @@ class _EditPersonalInformationBoxState
 
   // 신장
   Widget _buildHeightInfo(userInfo) {
-    return TextField(
-      controller: _heightController,
-      style: Theme.of(context).textTheme.headlineSmall,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: '신장을 입력하세요',
-        errorText: errorMessage,
-        contentPadding: EdgeInsets.zero,
-        isDense: true,
+    return TextSelectionTheme(
+      data: TextSelectionThemeData(
+        cursorColor: Colors.lightBlueAccent, // 커서 색상
+        selectionColor: Colors.lightBlueAccent.withOpacity(0.4), // 선택된 영역 색상
+        selectionHandleColor: Colors.lightBlueAccent, // 둥근 핸들러 색상
       ),
-      keyboardType: TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(
-            RegExp(r'^(?:[1-9]?\d|[12]\d{2}|300)$')),
-      ],
+      child: TextField(
+        controller: _heightController,
+        style: Theme.of(context).textTheme.headlineSmall,
+        cursorColor: Colors.lightBlueAccent, // 커서 색상
+        decoration: InputDecoration(
+          border: OutlineInputBorder(), // 기본 테두리
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.lightBlueAccent, width: 2.0),
+          ),
+          hintText: '신장을 입력하세요',
+          errorText: errorMessage, // 오류 메시지 적용
+          contentPadding: EdgeInsets.zero,
+          isDense: true,
+        ),
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly, // 숫자만 입력 가능
+          LengthLimitingTextInputFormatter(3), // 3자리까지만 입력 가능
+        ],
+      ),
     );
   }
 

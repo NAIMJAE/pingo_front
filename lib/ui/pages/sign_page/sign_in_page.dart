@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/sign_up_page2.dart';
 import 'components/find_id_page.dart';
 import 'components/find_pw_page.dart';
@@ -16,8 +16,40 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _userPwController = TextEditingController();
 
-  void test() {
-    print('object');
+  String? _idError; // 아이디 에러 메시지
+  String? _pwError; // 비밀번호 에러 메시지
+
+  // 아이디 정규식 검증
+  bool _validateUserId(String userId) {
+    final RegExp regex = RegExp(r'^[a-zA-Z0-9]{6,12}$');
+    return regex.hasMatch(userId);
+  }
+
+  // 비밀번호 정규식 검증
+  bool _validateUserPw(String userPw) {
+    final RegExp regex = RegExp(
+        r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()-_+=])[A-Za-z\d!@#$%^&*()-_+=]{8,14}$');
+    return regex.hasMatch(userPw);
+  }
+
+  // 로그인 버튼 클릭 시 실행되는 함수
+  void _onLoginPressed() {
+    setState(() {
+      // 입력값 확인 후 에러 메시지 설정
+      _idError = _validateUserId(_userIdController.text.trim())
+          ? null
+          : "아이디는 영문 대소문자, 숫자로 6~12자여야 합니다.";
+      _pwError = _validateUserPw(_userPwController.text.trim())
+          ? null
+          : "비밀번호는 8~14자이며, 영문 + 숫자 + 특수문자를 포함해야 합니다.";
+    });
+
+    if (_idError == null && _pwError == null) {
+      ref.read(sessionProvider.notifier).login(
+            _userIdController.text.trim(),
+            _userPwController.text.trim(),
+          );
+    }
   }
 
   @override
@@ -42,8 +74,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                     width: 200,
                     height: 200,
                   ),
-                  // Form 위젯 추가
-
+                  // 아이디 입력 필드
                   TextField(
                     controller: _userIdController,
                     decoration: InputDecoration(
@@ -55,10 +86,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       fillColor: Colors.white,
                       hintText: '아이디를 입력하세요.',
                       hintStyle: TextStyle(color: Colors.grey),
+                      errorText: _idError,
                     ),
-                    obscureText: false,
                   ),
                   const SizedBox(height: 20),
+                  // 비밀번호 입력 필드
                   TextField(
                     controller: _userPwController,
                     decoration: InputDecoration(
@@ -70,11 +102,13 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       fillColor: Colors.white,
                       hintText: '비밀번호를 입력하세요.',
                       hintStyle: TextStyle(color: Colors.grey),
+                      errorText: _pwError,
                     ),
                     obscureText: true,
                   ),
                   const SizedBox(height: 20),
 
+                  // 로그인 버튼
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -85,9 +119,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           borderRadius: BorderRadius.circular(4.0),
                         ),
                       ),
-                      onPressed: () => signinViewModel.login(
-                          _userIdController.text.trim(),
-                          _userPwController.text.trim()),
+                      onPressed: _onLoginPressed, // 로그인 버튼 클릭 시 검증 실행
                       child: Text(
                         '로그인',
                         style: Theme.of(context)

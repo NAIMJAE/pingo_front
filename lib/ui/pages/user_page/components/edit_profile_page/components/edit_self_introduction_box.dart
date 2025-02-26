@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/models/user_model/user_mypage_info.dart';
 
 class EditSelfIntroductionBox extends StatefulWidget {
-  final String? userIntroduction;
-  final Function(String) onIntroductionChanged; // 추가된 콜백
+  final UserMypageInfo copyUserInfo; // 객체를 직접 받도록 수정
 
-  const EditSelfIntroductionBox(this.userIntroduction,
-      {super.key, required this.onIntroductionChanged});
+  const EditSelfIntroductionBox(this.copyUserInfo, {super.key});
 
   @override
   _EditSelfIntroductionBoxState createState() =>
@@ -19,12 +18,24 @@ class _EditSelfIntroductionBoxState extends State<EditSelfIntroductionBox> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.userIntroduction ?? '');
+    _controller =
+        TextEditingController(text: widget.copyUserInfo.userIntroduction ?? '');
+
+    // 변경 감지를 위한 리스너 추가
+    _controller.addListener(() {
+      widget.copyUserInfo.userIntroduction = _controller.text;
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // 메모리 누수 방지
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    logger.i('자기소개 ${widget.userIntroduction}');
+    logger.i('자기소개: ${widget.copyUserInfo.userIntroduction}');
 
     return Card(
       elevation: 0.5,
@@ -40,38 +51,39 @@ class _EditSelfIntroductionBoxState extends State<EditSelfIntroductionBox> {
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 4.0),
-            TextField(
-              controller: _controller,
-              maxLines: 5,
-              maxLength: 1000,
-              keyboardType: TextInputType.text,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black12),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black12),
-                ),
-                hintText: '자기소개를 입력하세요',
-                contentPadding: EdgeInsets.all(8.0),
+            TextSelectionTheme(
+              data: TextSelectionThemeData(
+                cursorColor: Colors.lightBlueAccent, // 커서 색상 변경
+                selectionColor:
+                    Colors.lightBlueAccent.withOpacity(0.4), // 선택된 영역 색상
+                selectionHandleColor:
+                    Colors.lightBlueAccent, // 선택 핸들러 색상 (커서 아래 둥근 점)
               ),
-              onChanged: (value) {
-                widget.onIntroductionChanged(value); // 입력값을 부모로 전달
-                logger.i('입력된 자기소개 값: $value');
-              },
+              child: TextField(
+                controller: _controller,
+                maxLines: 5,
+                maxLength: 1000,
+                keyboardType: TextInputType.text,
+                cursorColor: Colors.lightBlueAccent, // 커서 색상
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.lightBlueAccent), // 포커스 시 테두리 색상 변경
+                  ),
+                  hintText: '자기소개를 입력하세요',
+                  contentPadding: EdgeInsets.all(8.0),
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }

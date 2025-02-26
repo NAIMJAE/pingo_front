@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/models/user_model/user_image.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/models/user_model/user_mypage_info.dart';
 import 'package:mime/mime.dart';
@@ -22,9 +21,20 @@ class UserRepository {
     return userInfo;
   }
 
-  // 개인 정보 수정 완료 후 서버 전송
-  Future<void> fetchSubmitUpdateInfo(Map<String, dynamic> updateInfo) async {
-    final response = await _customDio.post('/user/info', data: updateInfo);
+  // 유저 정보 수정
+  Future<bool> fetchSubmitUpdateInfo(Map<String, dynamic> updateInfo) async {
+    try {
+      final response = await _customDio.post('/user/info', data: updateInfo);
+
+      if (response == true) {
+        return true; // 서버 응답이 true면 성공
+      } else {
+        throw Exception("서버에서 성공 응답을 받지 못했습니다.");
+      }
+    } catch (e) {
+      logger.e("개인 정보 수정 실패: $e");
+      throw Exception("개인 정보 수정 요청 실패");
+    }
   }
 
   // 대표 이미지 변경 API 추가
