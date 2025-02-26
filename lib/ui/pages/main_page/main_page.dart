@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/_core/utils/SharedPreference.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/models/setting_model/AppSettings.dart';
 import 'package:pingo_front/data/view_models/main_view_model/main_page_viewmodel.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/widgets/appbar/main_appbar.dart';
@@ -17,7 +17,6 @@ class MainPage extends ConsumerStatefulWidget {
 class _MainPageState extends ConsumerState<MainPage>
     with SingleTickerProviderStateMixin {
   late MainPageViewModel viewModel;
-  int _maxDistance = 50; // 기본 최대 거리 (SharedPreferences에서 로드)
 
   // 멤버 로드
   @override
@@ -30,15 +29,8 @@ class _MainPageState extends ConsumerState<MainPage>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final viewModel = ref.read(mainPageViewModelProvider.notifier);
       final sessionUser = ref.read(sessionProvider);
-
-      // 설정된 최대 거리 불러오기
-      int savedDistance = await SharedPrefsHelper.getMaxDistance();
-      if (savedDistance != _maxDistance) {
-        setState(() {
-          _maxDistance = savedDistance; // 거리 변경 반영
-        });
-      }
-      logger.i("불러온 최대 거리: $_maxDistance km");
+      final userId = sessionUser?.userNo ?? "guest"; // 유저 ID가 없으면 "guest" 사용
+      final settings = ref.read(settingsProvider(userId));
 
       // AnimationController 설정
       if (!viewModel.isAnimationControllerSet) {
@@ -52,35 +44,11 @@ class _MainPageState extends ConsumerState<MainPage>
 
       // sessionUser.userNo가 존재하면 설정된 최대 거리 값으로 유저 데이터 로드
       if (sessionUser.userNo != null) {
-        viewModel.loadNearbyUsers(sessionUser.userNo!, _maxDistance);
+        viewModel.loadNearbyUsers(sessionUser.userNo!, settings.maxDistance);
         logger.i(
-            "loadNearbyUsers 실행됨: userNo=${sessionUser.userNo}, maxDistance=$_maxDistance km");
+            "loadNearbyUsers 실행됨: userNo=${sessionUser.userNo}, maxDistance=${settings.maxDistance} km");
       }
     });
-  }
-
-  // SettingsPage에서 돌아왔을 때 maxDistance 값 자동 업데이트
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _updateMaxDistance();
-  }
-
-  Future<void> _updateMaxDistance() async {
-    int newMaxDistance = await SharedPrefsHelper.getMaxDistance();
-    if (newMaxDistance != _maxDistance) {
-      setState(() {
-        _maxDistance = newMaxDistance;
-      });
-
-      final viewModel = ref.read(mainPageViewModelProvider.notifier);
-      final sessionUser = ref.read(sessionProvider);
-
-      if (sessionUser.userNo != null) {
-        viewModel.loadNearbyUsers(sessionUser.userNo!, _maxDistance);
-        logger.i("🔄 유저 목록 갱신됨: maxDistance=$_maxDistance km");
-      }
-    }
   }
 
   @override
@@ -89,8 +57,20 @@ class _MainPageState extends ConsumerState<MainPage>
     final viewModel = ref.watch(mainPageViewModelProvider.notifier);
     final userList = ref.watch(mainPageViewModelProvider);
     final size = MediaQuery.of(context).size;
+    final userId = sessionUser?.userNo ?? "guest";
+    final settings = ref.watch(settingsProvider(userId));
 
-    logger.i("📌 [메인페이지] 현재 userList 길이: ${userList.length}");
+    // maxDistance가 변경될 때 유저 목록 자동 갱신
+    ref.listen(settingsProvider(userId), (previous, next) {
+      if (previous?.maxDistance != next.maxDistance) {
+        if (sessionUser.userNo != null) {
+          viewModel.loadNearbyUsers(sessionUser.userNo!, next.maxDistance);
+          logger.i("유저 목록 갱신됨: maxDistance=${next.maxDistance} km");
+        }
+      }
+    });
+
+    logger.i("[메인페이지] 현재 userList 길이: ${userList.length}");
 
     return Scaffold(
       appBar: mainAppbar(context),
@@ -156,7 +136,7 @@ class _MainPageState extends ConsumerState<MainPage>
     );
   }
 
-  // ✅ PING/PANG/SUPERPING 도장 표시 위젯
+  // PING/PANG/SUPERPING 도장 표시 위젯
   Widget _buildSwipeStamp(MainPageViewModel viewModel) {
     if (viewModel.stampText == null) return SizedBox();
 
@@ -167,8 +147,8 @@ class _MainPageState extends ConsumerState<MainPage>
 
     // 위치 조정 로직
     if (viewModel.stampText == "SUPERPING!") {
-      stampTop += 350; // 🔹 SUPERPING!을 아래로 이동
-      stampLeft = 100; // 중앙 정렬 유지
+      stampTop += 350; // SUPERPING!을 아래로 이동
+      stampLeft = 100;
     } else if (viewModel.stampText == "PANG!") {
       stampLeft = 0; //
     } else if (viewModel.stampText == "PING!") {
@@ -176,12 +156,12 @@ class _MainPageState extends ConsumerState<MainPage>
     }
 
     return Positioned(
-      top: stampTop, // 🔹 위치 반영
+      top: stampTop, // 스탬프 마다 위치 다르게 반영
       left: stampLeft,
       right: stampRight,
       child: AnimatedOpacity(
         duration: Duration(milliseconds: 200),
-        opacity: 1.0, // ✅ 투명하지 않도록 설정
+        opacity: 1.0,
         child: Transform.rotate(
           angle: viewModel.rotation,
           child: Container(

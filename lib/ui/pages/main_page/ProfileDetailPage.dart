@@ -85,9 +85,9 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
       },
       child: Column(
         children: [
-          SizedBox(height: 10), // 🔥 이미지 위치 조금 아래로 조정
+          SizedBox(height: 10),
           Container(
-            height: 500, // 🔥 기존 300에서 살짝 줄여 자연스럽게 보이게 조정
+            height: 500,
             width: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
