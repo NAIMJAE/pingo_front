@@ -24,4 +24,9 @@ class MembershipRepository {
 
     return Tuple2(userMembership, memberships);
   }
+
+  Future<String> fetchUpdateUserMembership(Map<String, dynamic> reqData) async {
+    final response = await _customDio.post('/membership', data: reqData);
+    return response.toString();
+  }
 }

@@ -96,7 +96,9 @@ class SigninViewModel extends Notifier<SessionUser> {
     state = SessionUser(
       userNo: userData['userNo'],
       userRole: userData['userRole'],
-      expDate: DateTime.parse(userData['expDate']),
+      expDate: userData['expDate'] != null
+          ? DateTime.parse(userData['expDate'])
+          : null,
       accessToken: userData['accessToken'],
       isLogin: true,
     );
@@ -126,6 +128,12 @@ class SigninViewModel extends Notifier<SessionUser> {
 
     CustomDio.instance.clearToken();
     Navigator.popAndPushNamed(mContext, '/signin');
+  }
+
+  // 멤버쉽 정보 수정
+  void updateExpDate(String updateExpDate) {
+    state.expDate = DateTime.parse(updateExpDate);
+    logger.i(state.expDate);
   }
 }
 
