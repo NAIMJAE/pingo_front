@@ -36,7 +36,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
 
   // 주변 멤버 로드
   Future<void> loadNearbyUsers(String userNo, int distanceKm) async {
-    logger.i("🔍 [메인페이지] 주변 사용자 호출 : userNo=$userNo, distanceKm=$distanceKm");
+    logger.i("[메인페이지] 주변 사용자 호출 : userNo=$userNo, distanceKm=$distanceKm");
 
     List<Profile> users = await repository.fetchNearbyUsers(userNo, distanceKm);
     state = users;
@@ -64,7 +64,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     double verticalSwipe = posY; // 수직 이동 값 사용
 
     if (verticalSwipe < -0.4) {
-      // 🔼 위로 스와이프 시 SUPERPING 적용
+      // 위로 스와이프 시 SUPERPING 적용
       animateAndSwitchCard(-1.5, userNo, direction: 'SUPERPING');
     } else if (horizontalSwipe.abs() > 0.4) {
       if (horizontalSwipe > 0) {
@@ -75,25 +75,13 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     } else {
       resetPosition();
     }
-    // ✅ 스와이프 완료 후 도장 상태 초기화
+    // 스와이프 완료 후 도장 상태 초기화
     stampText = null;
     stampColor = Colors.transparent;
     rotation = 0.0;
 
     highlightedButton = null;
     state = List<Profile>.from(state);
-  }
-
-  // 버튼 하이라이트 함수
-  void _updateHighlightedButton() {
-    int? newHighlightedButton;
-    if (animationController.value <= -0.3)
-      newHighlightedButton = 1; // 싫어요
-    else if (animationController.value >= 0.3)
-      newHighlightedButton = 0; // 좋아요
-    else if (posY <= -0.3) newHighlightedButton = 2; // 슈퍼좋아요
-    if (highlightedButton != newHighlightedButton)
-      highlightedButton = newHighlightedButton;
   }
 
   void _updateSwipeState() {
@@ -105,14 +93,14 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     double horizontalSwipe = animationController.value;
     double verticalSwipe = posY;
 
-    // ✅ 수직 방향을 먼저 확인 (SUPERPING이 먼저 체크되도록)
+    // 수직 방향을 먼저 확인 (SUPERPING이 먼저 체크되도록)
     if (verticalSwipe <= -0.4) {
       newHighlightedButton = 2; // 슈퍼좋아요
       newStampText = "SUPERPING!";
       newStampColor = Colors.blue;
-      newRotation = -0.3; // 🔹 좀 더 기울여서 명확하게 표시
+      newRotation = -0.3; // 좀 더 기울여서 명확하게 표시
     }
-    // ✅ 그 다음 수평 방향 체크 (PING/PANG)
+    // 그 다음 수평 방향 체크 (PING/PANG)
     else if (horizontalSwipe <= -0.4) {
       newHighlightedButton = 1; // 싫어요
       newStampText = "PING!";
@@ -124,7 +112,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
       newStampColor = Colors.green;
       newRotation = 0.2;
     }
-    // ✅ 기본값 (도장 숨기기)
+    // 기본값 (도장 숨기기)
     else {
       newHighlightedButton = null;
       newStampText = null;
@@ -132,7 +120,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
       newRotation = 0.0;
     }
 
-    // ✅ 값이 변경된 경우만 업데이트
+    // 값이 변경된 경우만 업데이트
     if (highlightedButton != newHighlightedButton ||
         stampText != newStampText ||
         stampColor != newStampColor ||
@@ -142,7 +130,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
       stampColor = newStampColor;
       rotation = newRotation;
 
-      // ✅ UI 강제 업데이트
+      // UI 강제 업데이트
       state = List<Profile>.from(state);
     }
   }
@@ -151,7 +139,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     final String? toUserNo =
         state.isNotEmpty && currentProfileIndex < state.length
             ? state[currentProfileIndex].userNo
-            : null; // ✅ 스와이프 전의 userNo 저장
+            : null; // 스와이프 전의 userNo 저장
 
     animationController
         .animateTo(target, duration: const Duration(milliseconds: 300))
@@ -163,7 +151,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     });
   }
 
-// ✅ 수정된 _sendSwipeData 함수
+  // 스와이프 API 요청 메서드
   Future<void> _sendSwipeData(
       String direction, String fromUserNo, String toUserNo) async {
     print("보내는 놈 : " + toUserNo);
@@ -189,7 +177,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     posY = 0.0;
     animationController.value = 0.0;
 
-    // ✅ UI 강제 업데이트
+    // UI 강제 업데이트
     state = List<Profile>.from(state);
   }
 
