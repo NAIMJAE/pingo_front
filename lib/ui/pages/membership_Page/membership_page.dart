@@ -95,7 +95,8 @@ class _PaymentPageState extends ConsumerState<MembershipPage> {
           ),
         );
       } else {
-        Navigator.pop(context, {"status": "success"});
+        Navigator.pop(
+            context, {"status": "success", "membership": selectedMembership});
       }
     }
   }
@@ -153,7 +154,7 @@ class _PaymentPageState extends ConsumerState<MembershipPage> {
                             _explainRow('되돌리기 무한?'),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   );
                 },
