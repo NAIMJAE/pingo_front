@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/_core/utils/SharedPreference.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/view_models/main_view_model/main_page_viewmodel.dart';
 import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
@@ -16,17 +17,30 @@ class MainPage extends ConsumerStatefulWidget {
 class _MainPageState extends ConsumerState<MainPage>
     with SingleTickerProviderStateMixin {
   late MainPageViewModel viewModel;
+  int _maxDistance = 50; // 기본 최대 거리 (SharedPreferences에서 로드)
 
   // 멤버 로드
   @override
   void initState() {
     super.initState();
+    _initializeSettings(); // 비동기 함수 호출
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  Future<void> _initializeSettings() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final viewModel = ref.read(mainPageViewModelProvider.notifier);
       final sessionUser = ref.read(sessionProvider);
 
-      // AnimationController가 설정되지 않았다면 설정 (다른 페이지에서도 유지됨)
+      // 설정된 최대 거리 불러오기
+      int savedDistance = await SharedPrefsHelper.getMaxDistance();
+      if (savedDistance != _maxDistance) {
+        setState(() {
+          _maxDistance = savedDistance; // 거리 변경 반영
+        });
+      }
+      logger.i("불러온 최대 거리: $_maxDistance km");
+
+      // AnimationController 설정
       if (!viewModel.isAnimationControllerSet) {
         viewModel.attachAnimationController(AnimationController(
           vsync: this,
@@ -36,12 +50,37 @@ class _MainPageState extends ConsumerState<MainPage>
         ));
       }
 
-      // ✅ sessionUser.userNo가 존재하면 바로 유저 데이터 로드
+      // sessionUser.userNo가 존재하면 설정된 최대 거리 값으로 유저 데이터 로드
       if (sessionUser.userNo != null) {
-        viewModel.loadNearbyUsers(sessionUser.userNo!, 10);
-        logger.i("✅ loadNearbyUsers 실행됨: userNo=${sessionUser.userNo}");
+        viewModel.loadNearbyUsers(sessionUser.userNo!, _maxDistance);
+        logger.i(
+            "loadNearbyUsers 실행됨: userNo=${sessionUser.userNo}, maxDistance=$_maxDistance km");
       }
     });
+  }
+
+  // SettingsPage에서 돌아왔을 때 maxDistance 값 자동 업데이트
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateMaxDistance();
+  }
+
+  Future<void> _updateMaxDistance() async {
+    int newMaxDistance = await SharedPrefsHelper.getMaxDistance();
+    if (newMaxDistance != _maxDistance) {
+      setState(() {
+        _maxDistance = newMaxDistance;
+      });
+
+      final viewModel = ref.read(mainPageViewModelProvider.notifier);
+      final sessionUser = ref.read(sessionProvider);
+
+      if (sessionUser.userNo != null) {
+        viewModel.loadNearbyUsers(sessionUser.userNo!, _maxDistance);
+        logger.i("🔄 유저 목록 갱신됨: maxDistance=$_maxDistance km");
+      }
+    }
   }
 
   @override
@@ -128,12 +167,12 @@ class _MainPageState extends ConsumerState<MainPage>
 
     // 위치 조정 로직
     if (viewModel.stampText == "SUPERPING!") {
-      stampTop += 50; // 🔹 SUPERPING!을 아래로 이동
-      stampLeft = 0; // 중앙 정렬 유지
+      stampTop += 350; // 🔹 SUPERPING!을 아래로 이동
+      stampLeft = 100; // 중앙 정렬 유지
     } else if (viewModel.stampText == "PANG!") {
-      stampLeft = 50; // 🔹 좋아요일 때 오른쪽으로 이동
+      stampLeft = 0; //
     } else if (viewModel.stampText == "PING!") {
-      stampRight = -50; // 🔹 싫어요일 때 왼쪽으로 이동
+      stampRight = 0; //
     }
 
     return Positioned(
@@ -179,20 +218,20 @@ class _MainPageState extends ConsumerState<MainPage>
               Icons.close,
               Colors.pink,
               0,
-              () => viewModel.animateAndSwitchCard(-1.5, userNo,
-                  direction: 'left')),
+              () => viewModel.animateAndSwitchCard(1.5, userNo,
+                  direction: 'PANG')),
           _buildSwipeButton(
               Icons.star,
               Colors.blue,
               2,
               () => viewModel.animateAndSwitchCard(-1.5, userNo,
-                  direction: 'up')),
+                  direction: 'SUPERPING')),
           _buildSwipeButton(
               Icons.favorite,
               Colors.green,
               1,
-              () => viewModel.animateAndSwitchCard(1.5, userNo,
-                  direction: 'right')),
+              () => viewModel.animateAndSwitchCard(-1.5, userNo,
+                  direction: 'PING')),
         ],
       ),
     );
