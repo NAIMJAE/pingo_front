@@ -1,102 +1,107 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pingo_front/_core/utils/logger.dart';
 
-// 앱 설정 데이터 모델
+// 유저별 설정 프로바이더 (userNo 기반 관리)
+final settingsProvider =
+    StateNotifierProvider.family<SettingsNotifier, AppSettings, String>(
+  (ref, userId) => SettingsNotifier(userId),
+);
+
 class AppSettings {
   final int maxDistance;
   final String preferredGender;
-  final List<int> ageRange;
-  final int minProfileImages;
+  final RangeValues ageRange;
+  final bool autoAdjustDistance;
+  final bool autoAdjustAge;
+  final bool profileComplete;
 
   AppSettings({
     required this.maxDistance,
     required this.preferredGender,
     required this.ageRange,
-    required this.minProfileImages,
+    required this.autoAdjustDistance,
+    required this.autoAdjustAge,
+    required this.profileComplete,
   });
 
-  // ✅ 기존 상태를 새로운 값으로 변경하는 copyWith 메서드 추가 (불변성 유지)
+  // JSON 변환 (SharedPreferences 저장용)
+  Map<String, dynamic> toJson() => {
+        "maxDistance": maxDistance,
+        "preferredGender": preferredGender,
+        "ageRange": "${ageRange.start.toInt()},${ageRange.end.toInt()}",
+        "autoAdjustDistance": autoAdjustDistance,
+        "autoAdjustAge": autoAdjustAge,
+        "profileComplete": profileComplete,
+      };
+
+  // JSON → 객체 변환
+  static AppSettings fromJson(Map<String, dynamic> json) {
+    final ageParts = json["ageRange"].split(",");
+    return AppSettings(
+      maxDistance: json["maxDistance"] ?? 50,
+      preferredGender: json["preferredGender"] ?? "all",
+      ageRange:
+          RangeValues(double.parse(ageParts[0]), double.parse(ageParts[1])),
+      autoAdjustDistance: json["autoAdjustDistance"] ?? true,
+      autoAdjustAge: json["autoAdjustAge"] ?? false,
+      profileComplete: json["profileComplete"] ?? false,
+    );
+  }
+
+  // 일부 설정값 변경 (copyWith)
   AppSettings copyWith({
     int? maxDistance,
     String? preferredGender,
-    List<int>? ageRange,
-    int? minProfileImages,
+    RangeValues? ageRange,
+    bool? autoAdjustDistance,
+    bool? autoAdjustAge,
+    bool? profileComplete,
   }) {
     return AppSettings(
       maxDistance: maxDistance ?? this.maxDistance,
       preferredGender: preferredGender ?? this.preferredGender,
       ageRange: ageRange ?? this.ageRange,
-      minProfileImages: minProfileImages ?? this.minProfileImages,
+      autoAdjustDistance: autoAdjustDistance ?? this.autoAdjustDistance,
+      autoAdjustAge: autoAdjustAge ?? this.autoAdjustAge,
+      profileComplete: profileComplete ?? this.profileComplete,
     );
   }
 }
 
-// ✅ SharedPreferences를 활용한 상태 관리 Notifier
-class AppSettingsNotifier extends StateNotifier<AppSettings> {
-  AppSettingsNotifier()
+class SettingsNotifier extends StateNotifier<AppSettings> {
+  final String userId; // 유저별 설정 저장을 위한 ID
+
+  SettingsNotifier(this.userId)
       : super(AppSettings(
           maxDistance: 50,
           preferredGender: "all",
-          ageRange: [20, 40],
-          minProfileImages: 3,
+          ageRange: RangeValues(18, 32),
+          autoAdjustDistance: true,
+          autoAdjustAge: false,
+          profileComplete: false,
         )) {
-    _loadSettings(); // 초기값 로드
+    _loadSettings();
   }
 
-  // ✅ SharedPreferences에서 설정값 불러오기
+  // 유저별 키 생성
+  String _getUserKey() => "${userId}_app_settings";
+
+  // SharedPreferences에서 설정 불러오기
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_getUserKey());
 
-    final maxDistance = prefs.getInt("max_distance") ?? 50;
-    final preferredGender = prefs.getString("preferred_gender") ?? "all";
-    final ageString = prefs.getString("age_range") ?? "20,40";
-    final ageParts = ageString.split(",");
-    final ageRange = [int.parse(ageParts[0]), int.parse(ageParts[1])];
-    final minProfileImages = prefs.getInt("min_profile_images") ?? 3;
-
-    state = AppSettings(
-      maxDistance: maxDistance,
-      preferredGender: preferredGender,
-      ageRange: ageRange,
-      minProfileImages: minProfileImages,
-    );
-
-    logger.i("✅ 앱 설정 로드 완료: $state");
+    if (jsonString != null) {
+      state = AppSettings.fromJson(json.decode(jsonString));
+    }
   }
 
-  // ✅ 설정값 변경 및 SharedPreferences 저장
-  Future<void> updateSettings({
-    int? maxDistance,
-    String? preferredGender,
-    List<int>? ageRange,
-    int? minProfileImages,
-  }) async {
+  // 설정 변경 및 SharedPreferences 저장
+  Future<void> updateSettings(AppSettings newSettings) async {
+    state = newSettings;
     final prefs = await SharedPreferences.getInstance();
-
-    if (maxDistance != null) await prefs.setInt("max_distance", maxDistance);
-    if (preferredGender != null)
-      await prefs.setString("preferred_gender", preferredGender);
-    if (ageRange != null) {
-      await prefs.setString("age_range", "${ageRange[0]},${ageRange[1]}");
-    }
-    if (minProfileImages != null)
-      await prefs.setInt("min_profile_images", minProfileImages);
-
-    // ✅ 상태 업데이트
-    state = state.copyWith(
-      maxDistance: maxDistance,
-      preferredGender: preferredGender,
-      ageRange: ageRange,
-      minProfileImages: minProfileImages,
-    );
-
-    logger.i("✅ 설정 변경됨: $state");
+    await prefs.setString(_getUserKey(), json.encode(newSettings.toJson()));
   }
 }
-
-// ✅ Provider 등록
-final appSettingsProvider =
-    StateNotifierProvider<AppSettingsNotifier, AppSettings>((ref) {
-  return AppSettingsNotifier();
-});
