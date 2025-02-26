@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/models/community_model/dating_guide.dart';
 import 'package:pingo_front/data/models/community_model/dating_guide_search.dart';
 import 'package:pingo_front/data/view_models/community_view_model/dating_guide_view_model.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/components/dating_guide_view_page.dart';
 import 'package:pingo_front/ui/pages/community_page/components/dating_guide_write_page.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';

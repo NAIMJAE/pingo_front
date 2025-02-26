@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/user_view_model/user_view_model.dart';
 import 'package:pingo_front/ui/widgets/appbar/user_appbar.dart';
-import '../../../data/models/user_model/mypage_menu.dart';
 import 'components/myinfo_box.dart';
-import 'components/mypage_box.dart';
 import 'components/profile_photo_box.dart';
 
 class UserPage extends ConsumerStatefulWidget {

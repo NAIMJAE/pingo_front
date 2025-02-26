@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/models/user_model/user_image.dart';
 import 'package:pingo_front/data/models/user_model/user_mypage_info.dart';
+import 'package:pingo_front/data/models/user_model/users.dart';
 import 'package:pingo_front/data/repository/user_repository/user_repository.dart';
-import 'package:image_picker/image_picker.dart';
 
 class UserViewModel extends Notifier<UserMypageInfo> {
   final UserRepository _repository;
@@ -19,16 +17,29 @@ class UserViewModel extends Notifier<UserMypageInfo> {
 
   Future<void> fetchMyPageInfo(String userNo) async {
     try {
+      logger.i('1111');
       final userInfo = await _repository.fetchMyPageInfo(userNo);
+
+      logger.i(userInfo);
       state = userInfo;
     } catch (e) {
       logger.e('Failed to fetch user info: $e');
     }
   }
 
-  // 개인 정보 수정 완료 후 서버 전송
-  Future<void> submitUpdateInfo(Map<String, dynamic> updateInfo) async {
-    await _repository.fetchSubmitUpdateInfo(updateInfo);
+  // 유저 정보 수정
+  Future<void> submitUpdateInfo(UserMypageInfo updateInfo) async {
+    try {
+      bool isSuccess =
+          await _repository.fetchSubmitUpdateInfo(updateInfo.toJson());
+
+      if (isSuccess) {
+        await fetchMyPageInfo(updateInfo.users!.userNo!);
+        logger.i("유저 정보 수정 성공");
+      }
+    } catch (e) {
+      logger.e("submitUpdateInfo에서 오류 발생: $e");
+    }
   }
 
   // 대표 이미지 변경 기능 추가

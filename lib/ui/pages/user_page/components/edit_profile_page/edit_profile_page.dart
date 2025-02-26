@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pingo_front/data/models/user_model/user_info.dart';
 import 'package:pingo_front/ui/pages/user_page/components/edit_profile_page/components/edit_user_keyword_box.dart';
 import '../../../../../data/models/user_model/user_mypage_info.dart';
-import '../../../../../data/view_models/signup_view_model/signin_view_model.dart';
+import '../../../../../data/view_models/sign_view_model/signin_view_model.dart';
 import '../../../../../data/view_models/user_view_model/user_view_model.dart';
 import 'components/edit_profile_appbar.dart';
 import 'components/edit_personal_information_box.dart';
@@ -31,9 +30,15 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
   // 수정 완료 버튼 눌렀을때 실행되는 함수
   void _submitUserInfo() async {
+    print(copyUserInfo.userIntroduction); // 여기서 JSON 데이터를 확인
+
     await ref
         .read(userViewModelProvider.notifier)
-        .submitUpdateInfo(copyUserInfo.toJson());
+        .submitUpdateInfo(copyUserInfo);
+
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -59,14 +64,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               EditUserKeywordBox(copyUserInfo.myKeywordList!,
                   copyUserInfo.favoriteKeywordList!),
               const SizedBox(height: 8.0),
-              EditSelfIntroductionBox(
-                copyUserInfo.userIntroduction,
-                onIntroductionChanged: (newIntro) {
-                  setState(() {
-                    copyUserInfo.userIntroduction = newIntro;
-                  });
-                },
-              ),
+              EditSelfIntroductionBox(copyUserInfo),
               const SizedBox(height: 8.0),
             ],
           ),

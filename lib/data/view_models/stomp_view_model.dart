@@ -10,7 +10,7 @@ import 'package:pingo_front/data/repository/chat_repository/chat_repository.dart
 import 'package:pingo_front/data/repository/root_url.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/notification_view_model.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class StompViewModel extends Notifier<bool> {
@@ -134,7 +134,7 @@ class StompViewModel extends Notifier<bool> {
             .matchNotification(matchUserMap);
 
         ref.read(chatProvider.notifier).updateChatRoomState(chatRoomUserMap);
-        logger.i('매칭 성공후 chatRoomUserMap의 값은? : $chatRqoomUserMap');
+        logger.i('매칭 성공후 chatRoomUserMap의 값은? : $chatRoomUserMap');
       },
     );
   }

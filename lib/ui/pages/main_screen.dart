@@ -7,7 +7,7 @@ import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/models/match_model.dart';
 import 'package:pingo_front/data/view_models/main_view_model/main_page_viewmodel.dart';
 import 'package:pingo_front/data/view_models/notification_view_model.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/community_page.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
