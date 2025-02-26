@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});

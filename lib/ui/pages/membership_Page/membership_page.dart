@@ -6,7 +6,7 @@ import 'package:pingo_front/data/models/global_model/session_user.dart';
 import 'package:pingo_front/data/models/membership_model/membership.dart';
 import 'package:pingo_front/data/models/membership_model/user_membership.dart';
 import 'package:pingo_front/data/repository/membership_repository/membership_repository.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/membership_Page/payment_page.dart';
 
 class MembershipPage extends ConsumerStatefulWidget {

@@ -4,7 +4,7 @@ import 'package:pingo_front/data/models/community_model/place_review.dart';
 import 'package:pingo_front/data/models/community_model/place_review_search.dart';
 import 'package:pingo_front/data/models/community_model/review_search_result.dart';
 import 'package:pingo_front/data/view_models/community_view_model/place_review_search_view_model.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/components/place_box.dart';
 import 'package:pingo_front/ui/pages/community_page/components/place_write_page.dart';
 import 'package:pingo_front/ui/widgets/kakao_map_screen.dart';

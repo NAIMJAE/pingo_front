@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/view_models/keyword_view_model/keyword_view_model.dart';
-import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/widgets/appbar/keyword_appbar.dart';
 import '../../../data/models/keyword_model/keyword.dart';
 import '../../../data/models/keyword_model/keyword_group.dart';
