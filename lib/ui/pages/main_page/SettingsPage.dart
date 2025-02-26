@@ -49,7 +49,8 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              FocusScope.of(context).unfocus(); // 키보드 숨기기
+              Navigator.pop(context, maxDistance.toInt());
             },
             child:
                 Text("완료", style: TextStyle(color: Colors.blue, fontSize: 16)),
@@ -58,7 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
         backgroundColor: Colors.black,
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // ✅ 로딩 화면 추가
+          ? Center(child: CircularProgressIndicator()) // 로딩 화면 추가
           : ListView(
               padding: EdgeInsets.all(16),
               children: [
@@ -69,7 +70,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   max: 50,
                   onChanged: (value) => setState(() {
                     maxDistance = value;
-                    SharedPrefsHelper.saveMaxDistance(value.toInt()); // ✅ 저장
+                    SharedPrefsHelper.saveMaxDistance(value.toInt()); // 저장
                   }),
                   label: "${maxDistance.toInt()}km",
                 ),
@@ -130,7 +131,7 @@ class _SettingsPageState extends State<SettingsPage> {
       onChanged: (String? newValue) {
         setState(() {
           preferredGender = newValue!;
-          SharedPrefsHelper.savePreferredGender(preferredGender); // ✅ 저장
+          SharedPrefsHelper.savePreferredGender(preferredGender); // 저장
         });
       },
       items: <String>["남성", "여성", "Beyond Binary", "all"]
