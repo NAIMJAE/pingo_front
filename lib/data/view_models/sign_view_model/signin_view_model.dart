@@ -96,7 +96,9 @@ class SigninViewModel extends Notifier<SessionUser> {
     state = SessionUser(
       userNo: userData['userNo'],
       userRole: userData['userRole'],
-      expDate: DateTime.parse(userData['expDate']),
+      expDate: userData['expDate'] != null
+          ? DateTime.parse(userData['expDate'])
+          : null,
       accessToken: userData['accessToken'],
       isLogin: true,
     );
