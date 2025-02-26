@@ -39,7 +39,6 @@ class _KeywordPageState extends ConsumerState<KeywordPage> {
     final groupList = ref.watch(KeywordViewModelProvider);
 
     return Scaffold(
-      appBar: keywordAppbar(context),
       body: ListView(
         children: [
           Padding(
