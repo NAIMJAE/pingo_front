@@ -49,7 +49,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
         (animationController.value + details.delta.dx / 500).clamp(-1.5, 1.5);
     posY = (posY + details.delta.dy / 500).clamp(-1.5, 1.5);
     _updateSwipeState();
-    // ✅ UI 갱신을 위해 강제 상태 업데이트
+    // UI 갱신을 위해 강제 상태 업데이트
     state = List<Profile>.from(state);
   }
 
@@ -158,7 +158,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
         .whenComplete(() {
       _moveToNextCard();
       if (direction != null && toUserNo != null) {
-        _sendSwipeData(direction, userNo, toUserNo); // ✅ 저장한 toUserNo 사용
+        _sendSwipeData(direction, userNo, toUserNo); // 저장한 toUserNo 사용
       }
     });
   }
