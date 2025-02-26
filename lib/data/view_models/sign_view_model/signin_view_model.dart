@@ -32,6 +32,8 @@ class SigninViewModel extends Notifier<SessionUser> {
 
     response = response['data'];
 
+    logger.d(response);
+
     if (response['message'] == '자동 로그인 성공') {
       // sendLocation에서 CustomDio를 사용중이기 때문에 토큰 설정후 위치전송(자동로그인)
       CustomDio.instance.setToken(accessToken);
@@ -46,6 +48,7 @@ class SigninViewModel extends Notifier<SessionUser> {
       state = SessionUser(
         userNo: response['userNo'],
         userRole: response['userRole'],
+        expDate: DateTime.parse(response['expDate']),
         accessToken: accessToken,
         isLogin: true,
       );
@@ -87,14 +90,13 @@ class SigninViewModel extends Notifier<SessionUser> {
     Map<String, dynamic> userData =
         await repository.fetchSendSignInData(loginData);
 
-    logger.d(userData);
-
     await secureStorage.write(
         key: 'accessToken', value: userData['accessToken']);
 
     state = SessionUser(
       userNo: userData['userNo'],
       userRole: userData['userRole'],
+      expDate: DateTime.parse(userData['expDate']),
       accessToken: userData['accessToken'],
       isLogin: true,
     );

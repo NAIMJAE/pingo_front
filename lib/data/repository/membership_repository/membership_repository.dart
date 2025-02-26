@@ -1,16 +1,27 @@
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/membership_model/membership.dart';
+import 'package:pingo_front/data/models/membership_model/user_membership.dart';
 import 'package:pingo_front/data/network/custom_dio.dart';
+import 'package:tuple/tuple.dart';
 
 class MembershipRepository {
   final CustomDio _customDio = CustomDio.instance;
 
-  Future<List<Membership>> fetchSelectMemberShip() async {
-    final response = await _customDio.get('/membership');
+  Future<Tuple2<UserMembership?, List<Membership>>> fetchSelectMemberShip(
+      String userNo) async {
+    final response =
+        await _customDio.get('/membership', query: {'userNo': userNo});
 
-    List<Membership> memberships =
-        (response as List).map((item) => Membership.fromJson(item)).toList();
+    logger.i(response);
 
-    return memberships;
+    UserMembership? userMembership = response['userMembership'] != null
+        ? UserMembership.fromJson(response['userMembership'])
+        : null;
+
+    List<Membership> memberships = (response['membership'] as List)
+        .map((item) => Membership.fromJson(item))
+        .toList();
+
+    return Tuple2(userMembership, memberships);
   }
 }

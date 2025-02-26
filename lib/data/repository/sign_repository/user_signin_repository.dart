@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/network/response_dto.dart';
 import 'package:pingo_front/data/repository/root_url.dart';
 
 class UserSigninRepository {
   final Dio _dio = Dio();
+  final CustomDio _customDio = CustomDio();
 
   // 로그인 체크
   Future<Map<String, dynamic>> loginWithToken(String accessToken) async {

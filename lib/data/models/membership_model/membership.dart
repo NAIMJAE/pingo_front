@@ -7,6 +7,11 @@ class Membership {
 
   Membership(this.msNo, this.title, this.period, this.contents, this.price);
 
+  @override
+  String toString() {
+    return 'Membership{msNo: $msNo, title: $title, period: $period, contents: $contents, price: $price}';
+  }
+
   Membership.fromJson(Map<String, dynamic> json)
       : msNo = json['msNo'],
         title = json['title'],

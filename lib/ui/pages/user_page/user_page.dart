@@ -65,12 +65,22 @@ class _UserPageState extends ConsumerState<UserPage> {
                     _menuBtn(
                       btnName: '결제',
                       btnIcon: Icon(Icons.payment),
-                      btnFunction: () {
-                        Navigator.push(
+                      btnFunction: () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => MembershipPage()),
                         );
+                        if (result['status'] == 'success') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text("결제가 성공적으로 완료되었습니다!"),
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
                       },
                     ),
                   ],
