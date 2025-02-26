@@ -1,47 +1,42 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:pingo_front/_core/utils/SharedPreference.dart';
-import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/data/models/setting_model/AppSettings.dart';
+import 'package:pingo_front/data/view_models/signup_view_model/signin_view_model.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends ConsumerStatefulWidget {
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
-  double maxDistance = 2.0;
-  RangeValues ageRange = RangeValues(18, 32);
-  bool autoAdjustDistance = true;
-  bool autoAdjustAge = false;
-  bool profileComplete = false;
-  bool isLoading = true; // ✅ 로딩 상태 추가
-  String preferredGender = "모두";
+class _SettingsPageState extends ConsumerState<SettingsPage> {
+  Timer? _debounceTimer;
+  late double _tempMaxDistance;
 
   @override
   void initState() {
     super.initState();
-    _loadPreferences();
-  }
 
-  // ✅ SharedPreferences에서 기존 설정 불러오기
-  Future<void> _loadPreferences() async {
-    maxDistance = (await SharedPrefsHelper.getMaxDistance()).toDouble();
-    preferredGender = await SharedPrefsHelper.getPreferredGender();
-    List<int> ageList = await SharedPrefsHelper.getAgeRange();
-    ageRange = RangeValues(ageList[0].toDouble(), ageList[1].toDouble());
+    // 세션 유저 정보 가져오기
+    final sessionUser = ref.read(sessionProvider);
+    final userId = sessionUser?.userNo ?? "guest";
 
-    setState(() {
-      isLoading = false; // ✅ 로딩 완료
+    // 유저별 설정 불러오기 & UI 값 반영
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final settings = ref.read(settingsProvider(userId));
+      setState(() {
+        _tempMaxDistance = settings.maxDistance.toDouble();
+      });
     });
-
-    // ✅ 설정된 값 로깅
-    logger.i("🔍 설정 불러오기 완료");
-    logger.i("➡️ 최대 거리: $maxDistance km");
-    logger.i("➡️ 보고 싶은 성별: $preferredGender");
-    logger.i("➡️ 연령대: ${ageRange.start.toInt()} - ${ageRange.end.toInt()} 세");
   }
 
   @override
   Widget build(BuildContext context) {
+    final sessionUser = ref.watch(sessionProvider);
+    final userId = sessionUser?.userNo ?? "guest";
+    final settings = ref.watch(settingsProvider(userId));
+    final settingsNotifier = ref.read(settingsProvider(userId).notifier);
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -49,7 +44,8 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              FocusScope.of(context).unfocus();
+              Navigator.pop(context, settings.maxDistance);
             },
             child:
                 Text("완료", style: TextStyle(color: Colors.blue, fontSize: 16)),
@@ -57,83 +53,120 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
         backgroundColor: Colors.black,
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator()) // ✅ 로딩 화면 추가
-          : ListView(
-              padding: EdgeInsets.all(16),
-              children: [
-                _buildSectionTitle("상대와의 최대 거리"),
-                _buildSlider(
-                  value: maxDistance,
-                  min: 1,
-                  max: 50,
-                  onChanged: (value) => setState(() {
-                    maxDistance = value;
-                    SharedPrefsHelper.saveMaxDistance(value.toInt()); // ✅ 저장
-                  }),
-                  label: "${maxDistance.toInt()}km",
-                ),
-                _buildSwitch("스와이프할 프로필이 없을 때 거리 조정", autoAdjustDistance,
-                    (value) => setState(() => autoAdjustDistance = value)),
-                SizedBox(height: 16),
-                _buildSectionTitle("보고 싶은 성별"),
-                _buildGenderSelection(),
-                SizedBox(height: 16),
-                _buildSectionTitle("상대의 연령대"),
-                RangeSlider(
-                  values: ageRange,
-                  min: 18,
-                  max: 60,
-                  divisions: 42,
-                  labels: RangeLabels(
-                      "${ageRange.start.toInt()}세", "${ageRange.end.toInt()}세"),
-                  onChanged: (values) {
-                    setState(() {
-                      ageRange = values;
-                      SharedPrefsHelper.saveAgeRange([
-                        ageRange.start.toInt(),
-                        ageRange.end.toInt()
-                      ]); // ✅ 저장
-                    });
-                  },
-                  activeColor: Colors.red,
-                ),
-                _buildSwitch("스와이프할 프로필이 없을 때 나이 범위 조정", autoAdjustAge,
-                    (value) => setState(() => autoAdjustAge = value)),
-                SizedBox(height: 16),
-                _buildPremiumSection(),
-                SizedBox(height: 16),
-                _buildSectionTitle("프로필 사진 최소 개수"),
-                _buildSlider(
-                  value: 1,
-                  min: 1,
-                  max: 6,
-                  onChanged: (value) {},
-                  label: "1",
-                ),
-                SizedBox(height: 16),
-                _buildSwitch("자기소개 완료", profileComplete,
-                    (value) => setState(() => profileComplete = value)),
-                _buildOptionTile("관심사"),
-                _buildOptionTile("내가 찾는 관계"),
-                _buildOptionTile("언어 추가하기"),
-              ],
+      body: ListView(
+        padding: EdgeInsets.all(16),
+        children: [
+          _buildSectionTitle("상대와의 최대 거리"),
+          _buildSmoothSlider(settingsNotifier,
+              settings), // UI 즉각 반영 + API 최적화 (변할때마다 계속 api 요청 쏘지않도록)
+          _buildSwitch("스와이프할 프로필이 없을 때 거리 조정", settings.autoAdjustDistance,
+              (value) {
+            settingsNotifier.updateSettings(
+              settings.copyWith(autoAdjustDistance: value),
+            );
+          }),
+          SizedBox(height: 16),
+          _buildSectionTitle("보고 싶은 성별"),
+          _buildGenderSelection(settings, settingsNotifier),
+          SizedBox(height: 16),
+          _buildSectionTitle("상대의 연령대"),
+          RangeSlider(
+            values: settings.ageRange,
+            min: 18,
+            max: 60,
+            divisions: 42,
+            labels: RangeLabels(
+              "${settings.ageRange.start.toInt()}세",
+              "${settings.ageRange.end.toInt()}세",
             ),
+            onChanged: (values) {
+              settingsNotifier.updateSettings(
+                settings.copyWith(ageRange: values),
+              );
+            },
+            activeColor: Colors.red,
+          ),
+          _buildSwitch("스와이프할 프로필이 없을 때 나이 범위 조정", settings.autoAdjustAge,
+              (value) {
+            settingsNotifier.updateSettings(
+              settings.copyWith(autoAdjustAge: value),
+            );
+          }),
+          SizedBox(height: 16),
+          _buildPremiumSection(),
+          SizedBox(height: 16),
+          _buildSectionTitle("프로필 사진 최소 개수"),
+          Slider(
+            value: 1,
+            min: 1,
+            max: 6,
+            divisions: 5,
+            onChanged: (value) {},
+            label: "1",
+          ),
+          SizedBox(height: 16),
+          _buildSwitch("자기소개 완료", settings.profileComplete, (value) {
+            settingsNotifier.updateSettings(
+              settings.copyWith(profileComplete: value),
+            );
+          }),
+          _buildOptionTile("관심사"),
+          _buildOptionTile("내가 찾는 관계"),
+          _buildOptionTile("언어 추가하기"),
+        ],
+      ),
     );
   }
 
-  Widget _buildGenderSelection() {
+  // UI 즉각 반영 + API 호출 최적화
+  Widget _buildSmoothSlider(
+      SettingsNotifier settingsNotifier, AppSettings settings) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Slider(
+          value: _tempMaxDistance, // UI 즉각 반영
+          min: 1,
+          max: 50,
+          divisions: 49,
+          label: "${_tempMaxDistance.toInt()}km",
+          onChanged: (newValue) {
+            setState(() {
+              _tempMaxDistance = newValue; // UI에 즉시 반영
+            });
+
+            // 기존 타이머 취소
+            _debounceTimer?.cancel();
+
+            // 0.5초 동안 변화가 없으면 API 요청
+            _debounceTimer = Timer(Duration(milliseconds: 500), () {
+              settingsNotifier.updateSettings(
+                settings.copyWith(maxDistance: newValue.toInt()),
+              );
+            });
+          },
+          activeColor: Colors.red,
+        ),
+        Text("${_tempMaxDistance.toInt()} km",
+            style: TextStyle(color: Colors.white, fontSize: 14)),
+      ],
+    );
+  }
+
+  Widget _buildGenderSelection(
+      AppSettings settings, SettingsNotifier settingsNotifier) {
     return DropdownButton<String>(
-      value: preferredGender.isNotEmpty ? preferredGender : "all", // 기본값 설정
+      value: settings.preferredGender,
       dropdownColor: Colors.black,
       icon: Icon(Icons.arrow_drop_down, color: Colors.white),
       onChanged: (String? newValue) {
-        setState(() {
-          preferredGender = newValue!;
-          SharedPrefsHelper.savePreferredGender(preferredGender); // ✅ 저장
-        });
+        if (newValue != null) {
+          settingsNotifier.updateSettings(
+            settings.copyWith(preferredGender: newValue),
+          );
+        }
       },
-      items: <String>["남성", "여성", "Beyond Binary", "all"]
+      items: ["남성", "여성", "Beyond Binary", "all"]
           .map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
@@ -147,29 +180,6 @@ class _SettingsPageState extends State<SettingsPage> {
     return Text(title,
         style: TextStyle(
             fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white));
-  }
-
-  Widget _buildSlider(
-      {required double value,
-      required double min,
-      required double max,
-      required Function(double) onChanged,
-      required String label}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Slider(
-          value: value,
-          min: min,
-          max: max,
-          divisions: (max - min).toInt(),
-          label: label,
-          onChanged: onChanged,
-          activeColor: Colors.red,
-        ),
-        Text(label, style: TextStyle(color: Colors.white, fontSize: 14)),
-      ],
-    );
   }
 
   Widget _buildSwitch(String title, bool value, Function(bool) onChanged) {
@@ -193,27 +203,21 @@ class _SettingsPageState extends State<SettingsPage> {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.yellow[700],
-        borderRadius: BorderRadius.circular(10),
-      ),
+          color: Colors.yellow[700], borderRadius: BorderRadius.circular(10)),
       child: Row(
         children: [
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
+                color: Colors.white, borderRadius: BorderRadius.circular(8)),
             child: Text("Tinder 골드",
                 style: TextStyle(
                     color: Colors.black, fontWeight: FontWeight.bold)),
           ),
           SizedBox(width: 10),
           Expanded(
-            child: Text(
-              "디스커버리 필터를 설정하면 원하는 프로필을 볼 수 있어요.",
-              style: TextStyle(color: Colors.black),
-            ),
+            child: Text("디스커버리 필터를 설정하면 원하는 프로필을 볼 수 있어요.",
+                style: TextStyle(color: Colors.black)),
           ),
         ],
       ),

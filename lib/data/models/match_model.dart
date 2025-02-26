@@ -1,21 +1,21 @@
 class MatchModel {
   final String? userName;
-  final String? userAge;
-  final String? userImage;
+  final String? userBirth;
+  final String? imageUrl;
 
   MatchModel({
     this.userName,
-    this.userAge,
-    this.userImage,
+    this.userBirth,
+    this.imageUrl,
   });
 
   MatchModel.fromJson(Map<String, dynamic> json)
       : userName = json['userName'] ?? '',
-        userAge = json['userAge'] ?? '',
-        userImage = json['userImage'] ?? '';
+        userBirth = json['userBirth'] ?? '',
+        imageUrl = json['imageUrl'] ?? '';
 
   @override
   String toString() {
-    return 'MatchModel{userName: $userName, userAge: $userAge, userImage: $userImage}';
+    return 'MatchModel{userName: $userName, userAge: $userBirth, userImage: $imageUrl}';
   }
 }

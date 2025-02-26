@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -29,11 +30,13 @@ class _MainScreenState extends ConsumerState<MainScreen>
   // Map<int, AppBar> indexTitle = {
   //   0: mainAppbar(context, ref),
   // };
+  String? userNo;
+  MatchModel? otherUser;
 
   @override
   void initState() {
     super.initState();
-    final userNo = ref.read(sessionProvider).userNo; // 내아이디
+    userNo = ref.read(sessionProvider).userNo; // 내아이디
 
     // STOMP 웹소캣 연결
     // 현재 코드 실행이 끝난 직후에 실행할 비동기 작업을 예약
@@ -91,11 +94,21 @@ class _MainScreenState extends ConsumerState<MainScreen>
   Widget build(BuildContext context) {
     Map<String, MatchModel> matchModel =
         ref.watch(notificationViewModelProvider);
+
+    // 내가 아닌 다른 매칭 유저의 정보 조건에 해당하는 첫번째 요소를 가져옴.
+    if (matchModel.isNotEmpty) {
+      otherUser =
+          matchModel.entries.firstWhere((entry) => entry.key != userNo).value;
+      logger.i('otherUser가 왜.. $otherUser');
+    } else {
+      logger.i('안됨');
+    }
+
     logger.i('match모델머임 ? : ${matchModel.toString()}');
     // 레이아웃이 모두 구성된 이후 호출하기
     if (matchModel.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        showMatchDialog(context, matchModel);
+        showMatchDialog(context, matchModel, otherUser!);
         ref
             .read(notificationViewModelProvider.notifier)
             .emptyNotification(); // 상태 초기화
@@ -146,8 +159,8 @@ class _MainScreenState extends ConsumerState<MainScreen>
   }
 
   // 다이얼로그 메서드
-  void showMatchDialog(
-      BuildContext context, Map<String, MatchModel> matchModel) {
+  void showMatchDialog(BuildContext context, Map<String, MatchModel> matchModel,
+      MatchModel otherUser) {
     showDialog(
       context: context,
       barrierDismissible: false, // 외부 클릭 시 닫히지 않도록 설정
@@ -200,7 +213,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
                     ),
                     SizedBox(height: 10),
                     Text(
-                      '${matchModel['toUserNo']?.userName ?? ''} 님과 매치되었어요!',
+                      '${otherUser.userName ?? ''}님과 매치되었어요!',
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                     SizedBox(height: 20),
@@ -209,11 +222,9 @@ class _MainScreenState extends ConsumerState<MainScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _buildProfileImage(
-                            matchModel['toUserNo']?.userImage ?? ''),
+                        _buildProfileImage(otherUser.imageUrl ?? ''),
                         SizedBox(width: 20),
-                        _buildProfileImage(
-                            matchModel['fromUserNo']?.userImage ?? ''),
+                        _buildProfileImage(matchModel[userNo]?.imageUrl ?? ''),
                       ],
                     ),
                     SizedBox(height: 20),

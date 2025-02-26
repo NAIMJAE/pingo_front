@@ -38,7 +38,7 @@ class _ProfileCardState extends State<ProfileCard> {
     final size = MediaQuery.of(context).size;
     return Stack(
       children: [
-        // 📌 프로필 이미지 (좌우 터치로 넘기기)
+        // 프로필 이미지 (좌우 터치로 넘기기)
         GestureDetector(
           onTapUp: (TapUpDetails details) {
             final tapPosition = details.globalPosition.dx;
@@ -60,7 +60,7 @@ class _ProfileCardState extends State<ProfileCard> {
                       .token(widget.profile.ImageList[currentImageIndex]),
                 ),
 
-                // 📌 하단 반투명 → 검정색 그라디언트 효과 추가
+                // 하단 반투명 → 검정색 그라디언트 효과 추가
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
@@ -79,7 +79,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   ),
                 ),
 
-                // 📌 이미지 인디케이터 (현재 사진 위치)
+                // 이미지 인디케이터 (현재 사진 위치)
                 Positioned(
                   top: 40,
                   left: 0,
@@ -103,7 +103,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   ),
                 ),
 
-                // 📌 프로필 정보 (하단)
+                // 프로필 정보 (하단)
                 Positioned(
                   bottom: 40,
                   left: 16,
@@ -159,8 +159,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   ),
                 ),
 
-                // 📌 상세 보기 버튼 (⬆️ 버튼)
-// 📌 상세 보기 버튼 (⬆️ 버튼)
+                // 상세 보기 버튼
                 Positioned(
                   bottom: 50,
                   right: 16,
