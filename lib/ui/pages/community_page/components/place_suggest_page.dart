@@ -44,11 +44,11 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
 
         ref
             .read(placeReviewSearchViewModelProvider.notifier)
-            .kakaoPlaceSearchApi(query, 1);
-
-        // API 호출이 완료된 후 setState 실행
-        setState(() {
-          _placeIndex = 1;
+            .kakaoPlaceSearchApi(query, 1)
+            .then((_) {
+          setState(() {
+            _placeIndex = 1;
+          });
         });
       } else {
         _onSearchCleared();
@@ -69,6 +69,7 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
 
   // place suggest 내의 index 변경 함수
   void changePlaceIndex(int newIndex) {
+    if (newIndex < 0 || newIndex >= 2) return;
     setState(() {
       _placeIndex = newIndex;
     });

@@ -25,7 +25,7 @@ class _PlaceListState extends ConsumerState<PlaceList> {
     ReviewSearchResult searchResult =
         widget.searchReviewState.reviewSearchResult;
 
-    List<PlaceReview> searchList =
+    List<PlaceReview>? searchList =
         widget.searchReviewState.reviewSearchResult.placeReviewList;
 
     final userNo = ref.read(sessionProvider).userNo;
@@ -33,7 +33,7 @@ class _PlaceListState extends ConsumerState<PlaceList> {
     return Column(
       children: [
         // cate
-        if (searchList.isNotEmpty)
+        if (searchList!.isNotEmpty)
           SizedBox(
             height: 90,
             child: ListView(
@@ -122,9 +122,11 @@ class _PlaceListState extends ConsumerState<PlaceList> {
                   ],
                 )
               : ListView.builder(
-                  itemCount: searchList.length,
+                  shrinkWrap: true,
+                  itemCount: searchList.length ?? 0,
                   itemBuilder: (context, index) => PlaceBox(
-                    placeReview: searchList[index],
+                    key: ValueKey(searchList[index].prNo),
+                    searchList[index],
                   ),
                 ),
         ),

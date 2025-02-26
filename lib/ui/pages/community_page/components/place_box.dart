@@ -5,8 +5,7 @@ import 'package:pingo_front/ui/widgets/custom_image.dart';
 class PlaceBox extends StatefulWidget {
   final PlaceReview placeReview;
 
-  const PlaceBox({Key? key, required this.placeReview}) : super(key: key);
-
+  const PlaceBox(this.placeReview, {super.key});
   @override
   State<PlaceBox> createState() => _PlaceBoxState();
 }

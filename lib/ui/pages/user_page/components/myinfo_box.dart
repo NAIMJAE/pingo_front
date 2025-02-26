@@ -64,7 +64,7 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
                 children: [
                   Row(
                     children: [
-                      Text(userMypageInfo.users.userName,
+                      Text(userMypageInfo.users?.userName ?? '',
                           style: Theme.of(context).textTheme.headlineLarge),
                       Text(
                         ' | ',
@@ -73,13 +73,13 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
                             .headlineLarge
                             ?.copyWith(color: Colors.grey),
                       ),
-                      Text(userMypageInfo.users.userNick,
+                      Text(userMypageInfo.users?.userNick ?? '',
                           style: Theme.of(context).textTheme.headlineLarge),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    userMypageInfo.userInfo.userAddress,
+                    userMypageInfo.userInfo?.userAddress ?? '',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 2),
@@ -87,7 +87,7 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
                     children: [
                       Flexible(
                         child: Text(
-                          '${userMypageInfo.userInfo.user1stJob}ㆍ${userMypageInfo.userInfo.user2ndJob}',
+                          '${userMypageInfo.userInfo?.user1stJob ?? ''}ㆍ${userMypageInfo.userInfo?.user2ndJob ?? ''}',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       ),
@@ -95,19 +95,22 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    userMypageInfo.userInfo.userBirth.toString().split(' ')[0],
+                    userMypageInfo.userInfo!.userBirth
+                            .toString()
+                            .split(' ')[0] ??
+                        '',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      Text(userMypageInfo.userInfo.userHeight.toString() + 'cm',
+                      Text('${userMypageInfo.userInfo!.userHeight ?? ''}cm',
                           style: Theme.of(context).textTheme.bodyLarge),
                       Text('ㆍ', style: Theme.of(context).textTheme.bodyLarge),
-                      Text(userMypageInfo.userInfo.userReligion,
+                      Text(userMypageInfo.userInfo!.userReligion ?? '',
                           style: Theme.of(context).textTheme.bodyLarge),
                       Text('ㆍ', style: Theme.of(context).textTheme.bodyLarge),
-                      Text(userMypageInfo.userInfo.userBloodType + '형',
+                      Text((userMypageInfo.userInfo!.userBloodType ?? '') + '형',
                           style: Theme.of(context).textTheme.bodyLarge),
                     ],
                   ),
@@ -115,10 +118,10 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
                   Row(
                     children: [
                       _buildUserDrinkingParse(
-                          userMypageInfo.userInfo.userDrinking),
+                          userMypageInfo.userInfo!.userDrinking ?? ''),
                       Text('ㆍ', style: Theme.of(context).textTheme.bodyLarge),
                       _buildUserSmokingParse(
-                          userMypageInfo.userInfo.userSmoking),
+                          userMypageInfo.userInfo!.userSmoking ?? ''),
                     ],
                   ),
                 ],
