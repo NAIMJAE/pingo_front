@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room.dart';
@@ -8,6 +9,7 @@ import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_mode
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
+import 'package:pingo_front/ui/pages/main_screen.dart';
 import 'package:pingo_front/ui/widgets/appbar/chat_appbar.dart';
 
 import 'components/chat_match.dart';
@@ -58,7 +60,7 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
   @override
   Widget build(BuildContext context) {
     final chatList = ref.watch(chatProvider); // 상태를 한번 읽어오기
-    ChatRoomViewModel chatRoomViewModel = ref.read(chatProvider.notifier);
+
     Map<String, ChatRoom> listChat = {};
     Map<String, ChatRoom> matchChat = {};
 
@@ -70,23 +72,19 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
       // 파싱처리
       List<ChatUser> filterUsers =
           chatRoom.chatUser.where((user) => user.userNo != myUserNo).toList();
+      showNotification(chatRoom.lastMessage, roomKey);
 
       if (chatRoom.lastMessage != '') {
         listChat[roomKey] = ChatRoom(
             chatUser: filterUsers,
             message: chatRoom.message,
             lastMessage: chatRoom.lastMessage);
-        logger.i('여기도 실행이 된다고?');
       } else {
         matchChat[roomKey] = ChatRoom(
             chatUser: filterUsers,
             message: chatRoom.message,
             lastMessage: chatRoom.lastMessage);
-        logger.i('왜 널이야? ${filterUsers}');
-        logger.i('여기실행됨? 안되어야함');
       }
-      logger.i('listChat ${listChat[roomKey]}');
-      logger.i('matchChat ${matchChat[roomKey]}');
     }
 
     // chatList의 List<ChatRoom> 안에 userNo가 아닌 ChatRoom List를 들고오기
@@ -126,6 +124,28 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> showNotification(String messageContent, String roomKey) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'chat_channel_id', // 채널 ID
+      '채팅 알림', // 채널 이름
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails details = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      roomKey as int, // 알림 ID
+      '새 메세지 도착', // 알림 제목
+      messageContent, // 메시지 내용
+      details,
+      payload: null,
     );
   }
 }

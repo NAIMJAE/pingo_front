@@ -4,9 +4,9 @@ import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class PlaceBox extends StatefulWidget {
   final PlaceReview placeReview;
+  final Function changePlaceShared;
 
-  const PlaceBox({Key? key, required this.placeReview}) : super(key: key);
-
+  const PlaceBox(this.placeReview, this.changePlaceShared, {super.key});
   @override
   State<PlaceBox> createState() => _PlaceBoxState();
 }
@@ -75,7 +75,9 @@ class _PlaceBoxState extends State<PlaceBox> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    widget.changePlaceShared(true, widget.placeReview);
+                  },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(Icons.ios_share_outlined,

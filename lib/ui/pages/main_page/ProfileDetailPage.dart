@@ -122,18 +122,18 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
 
   Widget _buildProfileDetails() {
     final details = [
-      ProfileDetail(
-          icon: Icons.person, title: "자기소개", value: widget.profile.status),
-      ProfileDetail(
-          icon: Icons.location_on, title: "거리", value: widget.profile.distance),
-      ProfileDetail(icon: Icons.school, title: "학력", value: "대학 졸업"),
-      ProfileDetail(icon: Icons.star, title: "성격 유형", value: "INTJ"),
-      ProfileDetail(icon: Icons.pets, title: "반려동물", value: "강아지 키움"),
-      ProfileDetail(icon: Icons.sports_soccer, title: "운동", value: "축구, 헬스"),
-      ProfileDetail(icon: Icons.music_note, title: "취미", value: "음악 감상, 피아노"),
-      ProfileDetail(icon: Icons.coffee, title: "좋아하는 음료", value: "아메리카노"),
-      ProfileDetail(icon: Icons.movie, title: "좋아하는 영화", value: "SF, 액션"),
-      ProfileDetail(icon: Icons.book, title: "관심 있는 책", value: "심리학 서적"),
+      // ProfileDetail(
+      //     icon: Icons.person, title: "자기소개", value: widget.profile.status),
+      // ProfileDetail(
+      //     icon: Icons.location_on, title: "거리", value: widget.profile.distance),
+      // ProfileDetail(icon: Icons.school, title: "학력", value: "대학 졸업"),
+      // ProfileDetail(icon: Icons.star, title: "성격 유형", value: "INTJ"),
+      // ProfileDetail(icon: Icons.pets, title: "반려동물", value: "강아지 키움"),
+      // ProfileDetail(icon: Icons.sports_soccer, title: "운동", value: "축구, 헬스"),
+      // ProfileDetail(icon: Icons.music_note, title: "취미", value: "음악 감상, 피아노"),
+      // ProfileDetail(icon: Icons.coffee, title: "좋아하는 음료", value: "아메리카노"),
+      // ProfileDetail(icon: Icons.movie, title: "좋아하는 영화", value: "SF, 액션"),
+      // ProfileDetail(icon: Icons.book, title: "관심 있는 책", value: "심리학 서적"),
     ];
 
     return Container(

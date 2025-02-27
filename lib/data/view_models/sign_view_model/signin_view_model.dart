@@ -129,6 +129,12 @@ class SigninViewModel extends Notifier<SessionUser> {
     CustomDio.instance.clearToken();
     Navigator.popAndPushNamed(mContext, '/signin');
   }
+
+  // 멤버쉽 정보 수정
+  void updateExpDate(String updateExpDate) {
+    state.expDate = DateTime.parse(updateExpDate);
+    logger.i(state.expDate);
+  }
 }
 
 final sessionProvider = NotifierProvider<SigninViewModel, SessionUser>(

@@ -90,8 +90,13 @@ class StompViewModel extends Notifier<bool> {
         // 채팅방 메세지 받는 페이지가 아니면!
 
         // 1. 마지막메세지 업데이트 + List<Message> 업데이트
-        ref.read(chatProvider.notifier).updateLastMessage(roomId!,
-            message.msgType == 'image' ? '이미지' : message.msgContent ?? '');
+        ref.read(chatProvider.notifier).updateLastMessage(
+            roomId!,
+            message.msgType == 'image'
+                ? '이미지'
+                : message.msgType == 'file'
+                    ? '파일'
+                    : message.msgContent ?? '');
         ref.read(chatProvider.notifier).addMessage(message, roomId);
 
         // completer.complete(message);
@@ -142,14 +147,15 @@ class StompViewModel extends Notifier<bool> {
   }
 
   // 서버로 채팅 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
-  void sendMessage(Message message, String roomId, File? image) async {
+  void sendMessage(
+      Message message, String roomId, File? chatFile, String? fileName) async {
     ChatRepository chatRepository = ChatRepository();
     String? msgContent = message.msgContent;
 
     // // 이미지일 때 먼저 서버에 업로드 후 그 값을 가져와서 /pub/msg/$roomId 주소로 보내야 한다.
-    if (message.msgType == 'image') {
-      String? uploadUrl =
-          await chatRepository.uploadImageToServer(message.roomId!, image!);
+    if (message.msgType == 'image' || message.msgType == 'file') {
+      String? uploadUrl = await chatRepository.uploadImageToServer(
+          message.roomId!, chatFile!, fileName);
       if (uploadUrl != null) {
         message.msgContent = uploadUrl;
       }

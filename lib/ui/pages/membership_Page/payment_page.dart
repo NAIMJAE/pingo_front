@@ -53,8 +53,8 @@ class _PaymentPageState extends State<PaymentPage> {
   Future<void> _launchExternalUrl(String url) async {
     final fallbackUrl = url.replaceAll("intent://", "https://");
     if (await canLaunchUrl(Uri.parse(fallbackUrl))) {
-      await launchUrl(Uri.parse(fallbackUrl),
-          mode: LaunchMode.externalApplication);
+      // await launchUrl(Uri.parse(fallbackUrl),
+      //     mode: LaunchMode.externalApplication);
     } else {
       debugPrint("URL을 열 수 없음: $url");
     }
@@ -110,7 +110,8 @@ class _PaymentPageState extends State<PaymentPage> {
       body: paymentUrl.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : WebViewWidget(
-              controller: _controller..loadRequest(Uri.parse(paymentUrl))),
+              controller: _controller..loadRequest(Uri.parse(paymentUrl)),
+            ),
     );
   }
 }

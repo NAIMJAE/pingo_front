@@ -3,7 +3,7 @@ import 'package:pingo_front/data/models/community_model/place_review.dart';
 class ReviewSearchResult {
   String? searchSort = 'popular';
   String? cateSort = '음식점';
-  List<PlaceReview> placeReviewList;
+  List<PlaceReview>? placeReviewList;
 
   ReviewSearchResult(this.placeReviewList);
 
@@ -14,8 +14,8 @@ class ReviewSearchResult {
 
   // 검색 결과 덮어쓰기
   void changePlaceReviewList(List<PlaceReview> newList) {
-    placeReviewList.clear();
-    placeReviewList.addAll(newList);
+    placeReviewList?.clear();
+    placeReviewList?.addAll(newList);
   }
 
   // SROT 변경
