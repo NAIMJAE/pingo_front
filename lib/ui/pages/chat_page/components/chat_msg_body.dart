@@ -17,16 +17,9 @@ import 'package:pingo_front/ui/widgets/custom_image.dart';
 // consumer 처리하기
 class ChatMsgBody extends ConsumerStatefulWidget {
   final String roomId;
-  final String userNo;
-  final ChatRoom chatRoom2;
   final String myUserNo;
 
-  ChatMsgBody(
-      {required this.userNo,
-      required this.chatRoom2,
-      required this.roomId,
-      required this.myUserNo,
-      super.key});
+  ChatMsgBody({required this.roomId, required this.myUserNo, super.key});
 
   @override
   _ChatMsgBodyState createState() => _ChatMsgBodyState();

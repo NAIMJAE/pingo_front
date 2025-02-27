@@ -1,5 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room.dart';
@@ -9,6 +11,8 @@ import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_mode
 import 'package:pingo_front/data/view_models/chat_view_model/chat_view_model.dart';
 import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
+import 'package:pingo_front/ui/pages/chat_page/chat_msg2_page.dart';
+import 'package:pingo_front/ui/pages/chat_page/components/chat_msg_body.dart';
 import 'package:pingo_front/ui/pages/main_screen.dart';
 import 'package:pingo_front/ui/widgets/appbar/chat_appbar.dart';
 
@@ -72,7 +76,12 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
       // 파싱처리
       List<ChatUser> filterUsers =
           chatRoom.chatUser.where((user) => user.userNo != myUserNo).toList();
-      showNotification(chatRoom.lastMessage, roomKey);
+      String userName = filterUsers
+          .map(
+            (e) => e.userName,
+          )
+          .toString();
+      // showNotification(chatRoom.lastMessage, roomKey, myUserNo!, userName);
 
       if (chatRoom.lastMessage != '') {
         listChat[roomKey] = ChatRoom(
@@ -126,28 +135,35 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
       ),
     );
   }
-
-  Future<void> showNotification(String messageContent, String roomKey) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-      'chat_channel_id', // 채널 ID
-      '채팅 알림', // 채널 이름
-      importance: Importance.high,
-      priority: Priority.high,
-    );
-
-    const NotificationDetails details = NotificationDetails(
-      android: androidDetails,
-    );
-
-    await flutterLocalNotificationsPlugin.show(
-      roomKey as int, // 알림 ID
-      '새 메세지 도착', // 알림 제목
-      messageContent, // 메시지 내용
-      details,
-      payload: null,
-    );
-  }
+  //
+  // Future<void> showNotification(String messageContent, String roomKey,
+  //     String myUserNo, String userName) async {
+  //   const AndroidNotificationDetails androidDetails =
+  //       AndroidNotificationDetails(
+  //     'chat_channel_id', // 채널 ID
+  //     '채팅 알림', // 채널 이름
+  //     importance: Importance.high,
+  //     priority: Priority.high,
+  //   );
+  //
+  //   const NotificationDetails details = NotificationDetails(
+  //     android: androidDetails,
+  //   );
+  //
+  //   ChatMsg2Page chatMsgBody = ChatMsg2Page(
+  //     roomId: roomKey,
+  //     chatRoomName: userName,
+  //     myUserNo: myUserNo,
+  //   );
+  //   String payloadData = jsonEncode(chatMsgBody.toJson());
+  //
+  //   await flutterLocalNotificationsPlugin.show(
+  //       roomKey.hashCode.abs(), // 알림 ID 정수형 Id로 변환..
+  //       '새 메세지 도착', // 알림 제목
+  //       messageContent, // 메시지 내용
+  //       details,
+  //       payload: payloadData); //Json으로 변환해서 전달 가능
+  // }
 }
 
 //리스트 뷰 자동으로 가로,세로 설정 됨

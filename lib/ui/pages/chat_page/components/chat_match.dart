@@ -63,8 +63,7 @@ class ChatMatch extends StatelessWidget {
             builder: (context) => ChatMsg2Page(
                 chatRoomName: otherUser.userName ?? '',
                 roomId: otherUser.roomId,
-                userNo: otherUser.userNo ?? '',
-                chatRoom: chatList[otherUser.roomId]!,
+                // chatRoom: chatList[otherUser.roomId]!,
                 myUserNo: myUserNo),
           ),
         );
