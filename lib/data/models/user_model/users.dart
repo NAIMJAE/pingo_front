@@ -7,6 +7,7 @@ class Users {
   String? userGender;
   String? userState;
   DateTime? userrDate;
+  String? userEmail;
 
   Users({
     this.userNo,
@@ -17,6 +18,7 @@ class Users {
     this.userGender,
     this.userState,
     this.userrDate,
+    this.userEmail,
   });
 
   Map<String, dynamic> toJson() {
@@ -29,6 +31,7 @@ class Users {
       "userGender": userGender,
       "userState": userState,
       "userrDate": userrDate?.toIso8601String(), // DateTime 변환 필요
+      "userEmail": userEmail,
     };
   }
 
@@ -42,10 +45,13 @@ class Users {
         userState = json['userState'],
         userrDate = json['userrDate'] != null
             ? DateTime.parse(json['userrDate'])
-            : null;
+            : null,
+        userEmail = json['userEmail'];
 
   @override
   String toString() {
-    return 'Users{userNo: $userNo, userId: $userId, userPw: $userPw, userName: $userName, userNick: $userNick, userGender: $userGender, userState: $userState, userrDate: $userrDate}';
+    return 'Users{userNo: $userNo, userId: $userId, userPw: $userPw,'
+        'userName: $userName, userNick: $userNick, userGender: $userGender,'
+        'userState: $userState, userrDate: $userrDate, userEmail: $userEmail}';
   }
 }
