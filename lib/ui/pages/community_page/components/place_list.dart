@@ -12,7 +12,9 @@ import 'package:pingo_front/ui/widgets/kakao_map_screen.dart';
 class PlaceList extends ConsumerStatefulWidget {
   final PlaceReviewSearch searchReviewState;
   final PlaceReviewSearchViewModel searchReviewProvider;
-  const PlaceList(this.searchReviewState, this.searchReviewProvider,
+  final Function changePlaceShared;
+  const PlaceList(
+      this.searchReviewState, this.searchReviewProvider, this.changePlaceShared,
       {super.key});
 
   @override
@@ -127,6 +129,7 @@ class _PlaceListState extends ConsumerState<PlaceList> {
                   itemBuilder: (context, index) => PlaceBox(
                     key: ValueKey(searchList[index].prNo),
                     searchList[index],
+                    widget.changePlaceShared,
                   ),
                 ),
         ),

@@ -318,7 +318,7 @@ Widget _buildText(Message message, String? userNo) {
     return Container(
       constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
       padding: EdgeInsets.only(left: 16),
-      child: _msgFileBox(),
+      child: _msgPlaceBox(message),
     );
   }
 
@@ -392,6 +392,35 @@ Widget _msgFileBox() {
             "다운로드",
             style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
           ),
+        ),
+      ],
+    ),
+  );
+}
+
+// 첨부파일 박스
+Widget _msgPlaceBox(Message message) {
+  return Container(
+    constraints: BoxConstraints(maxWidth: 250), // 메시지 최대 너비 제한
+    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border.all(width: 0.5, color: Colors.blueAccent),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 4),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                message.msgContent ?? '',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ],
     ),
