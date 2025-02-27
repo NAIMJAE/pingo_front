@@ -110,6 +110,9 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
   Future<dynamic> crawlingPlaceImage(String placeUrl) async {
     return await _repository.fetchCrawlingPlaceImage(placeUrl);
   }
+
+  // 장소 공유 채팅 조회
+  Future<void> searchPlaceForChat() async {}
 }
 
 final placeReviewSearchViewModelProvider =
