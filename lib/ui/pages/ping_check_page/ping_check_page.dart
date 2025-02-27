@@ -45,7 +45,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
                     Icon(Icons.supervisor_account_outlined),
                     const SizedBox(width: 12),
                     Text(
-                      '내가 받은 슈퍼핑 볼 수 있습니다~',
+                      '내가 받은 슈퍼핑을 확인할 수 있어요!',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ],
@@ -57,7 +57,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
                     Icon(Icons.security_outlined),
                     const SizedBox(width: 12),
                     Text(
-                      '내가 받은 핑을 볼 수 있습니다. \n 모두 확인하려면 유료 결제 하쇼',
+                      '내가 받은 핑을 확인할 수 있어요.\n모두 확인하려면 유료 결제가 필요합니다.',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ],

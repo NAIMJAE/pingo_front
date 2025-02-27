@@ -50,7 +50,7 @@ AppBarTheme appBarTheme() {
 // Bottom NavigationBar Theme Setting
 BottomNavigationBarThemeData bottomNavigationBarTheme() {
   return const BottomNavigationBarThemeData(
-    selectedItemColor: Color(0xFF694F8E),
+    selectedItemColor: Color(0xFF906FB7),
     unselectedItemColor: Color(0xFFB7B7B7), // 선택 안된 아이템 색상
     showUnselectedLabels: true, // 선택 안된 라벨 표시 여부 설정
   );

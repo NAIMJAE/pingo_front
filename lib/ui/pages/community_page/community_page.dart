@@ -67,15 +67,17 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
             border: BorderDirectional(
               bottom: BorderSide(
                   width: 2,
-                  color:
-                      _currentIndex == index ? Colors.redAccent : Colors.white),
+                  color: _currentIndex == index
+                      ? Color(0xFF906FB7)
+                      : Colors.white),
             ),
           ),
           child: Text(
             text,
             style: Theme.of(buildContext).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: _currentIndex == index ? Colors.red : Colors.black),
+                color:
+                    _currentIndex == index ? Color(0xFF906FB7) : Colors.black),
             textAlign: TextAlign.center,
           ),
         ),

@@ -51,6 +51,21 @@ class PlaceReviewSearchRepository {
     return response.map((json) => PlaceReview.fromJson(json)).toList();
   }
 
+  // 서버에서 장소 리뷰 조회 with location
+  Future<List<PlaceReview>> fetchSearchPlaceReviewWithLocation(
+      {required String? cateSort,
+      required double latitude,
+      required double longitude}) async {
+    List<dynamic> response = await _customDio.get('/community/place/location',
+        query: {
+          'cateSort': cateSort,
+          'latitude': latitude,
+          'longitude': longitude
+        });
+
+    return response.map((json) => PlaceReview.fromJson(json)).toList();
+  }
+
   // 카카오 API 검색
   Future<Map<String, dynamic>> fetchSearchKaKaoLocation(String keyword,
       {int page = 1, int size = 10}) async {
