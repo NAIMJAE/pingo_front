@@ -397,13 +397,14 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     logger.i(message);
     logger.i(message.fileName);
     List<String>? placeInfo = message.fileName?.split('@#');
-    logger.i(placeInfo);
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PlaceMap(),
+            builder: (context) => PlaceMap(
+                placeName: placeInfo?[0] ?? '',
+                placeAddress: placeInfo?[1] ?? ''),
           ),
         );
       },
@@ -425,20 +426,26 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                 ),
               ),
             ),
-            Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      placeInfo?[0] ?? '',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    placeInfo?[0] ?? '',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                  Text(
+                    placeInfo?[1] ?? '',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: Colors.black54),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

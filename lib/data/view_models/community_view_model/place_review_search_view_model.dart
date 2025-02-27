@@ -112,7 +112,10 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
   }
 
   // 장소 공유 채팅 조회
-  Future<void> searchPlaceForChat() async {}
+  Future<PlaceReview> searchPlaceForChat(
+      String placeName, String placeAddress) async {
+    return await _repository.fetchSearchPlaceForChat(placeName, placeAddress);
+  }
 }
 
 final placeReviewSearchViewModelProvider =

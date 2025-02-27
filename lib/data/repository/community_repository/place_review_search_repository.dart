@@ -86,4 +86,15 @@ class PlaceReviewSearchRepository {
 
     return response;
   }
+
+  // 장소 공유 채팅 조회
+  Future<PlaceReview> fetchSearchPlaceForChat(
+      String placeName, String placeAddress) async {
+    dynamic response = await _customDio.get(
+      '/community/chat',
+      query: {'placeName': placeName, 'placeAddress': placeAddress},
+    );
+
+    return PlaceReview.fromJson(response);
+  }
 }

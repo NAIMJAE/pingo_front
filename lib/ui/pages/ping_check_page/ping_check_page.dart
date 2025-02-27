@@ -28,7 +28,9 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
         ref.watch(pingCheckViewModelProvider);
 
     SessionUser sessionUser = ref.watch(sessionProvider);
-    isMembership = sessionUser.expDate!.isAfter(DateTime.now());
+    if (sessionUser.expDate != null) {
+      isMembership = sessionUser.expDate!.isAfter(DateTime.now());
+    }
 
     return Scaffold(
       body: ListView(
