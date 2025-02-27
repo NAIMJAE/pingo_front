@@ -7,6 +7,7 @@ import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/view_models/ping_check_view_model/ping_check_view_model.dart';
 import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/keyword_page/keyword_page.dart';
+import 'package:pingo_front/ui/pages/ping_check_page/ping_detail_page.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class PingCheckPage extends ConsumerStatefulWidget {
@@ -103,30 +104,43 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
   }
 
   Widget _superUser({required double cntWidth, required Profile user}) {
-    return SizedBox(
-      width: cntWidth * 0.75,
+    return Container(
+      width: cntWidth * 0.7,
       height: cntWidth * 0.55,
+      margin: EdgeInsets.only(right: 16, bottom: 16),
       child: Stack(
         children: [
-          Container(
-            width: cntWidth * 0.7,
-            height: cntWidth * 0.55,
-            margin: EdgeInsets.only(right: 16, bottom: 16),
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              image: DecorationImage(
-                image: CustomImage().provider(user.ImageList[0]),
-                fit: BoxFit.cover,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 4,
-                  spreadRadius: 2,
-                  offset: Offset(2, 2),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PingDetailPage(
+                    user: user,
+                    type: 'super',
+                  ),
                 ),
-              ],
+              );
+            },
+            child: Container(
+              width: cntWidth * 0.7,
+              height: cntWidth * 0.55,
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                image: DecorationImage(
+                  image: CustomImage().provider(user.ImageList[0]),
+                  fit: BoxFit.cover,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 4,
+                    spreadRadius: 2,
+                    offset: Offset(2, 2),
+                  ),
+                ],
+              ),
             ),
           ),
           Positioned(
@@ -135,7 +149,6 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
             right: 0,
             height: 50,
             child: Container(
-              margin: EdgeInsets.only(right: 20, bottom: 16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.vertical(bottom: Radius.circular(8)),
                 gradient: LinearGradient(
@@ -204,24 +217,37 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
   Widget normalUser({required double cntWidth, required Profile user}) {
     return Stack(
       children: [
-        Container(
-          width: cntWidth / 2 - 24,
-          height: cntWidth * 0.55,
-          padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            image: DecorationImage(
-              image: CustomImage().provider(user.ImageList[0]),
-              fit: BoxFit.cover,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 4,
-                spreadRadius: 2,
-                offset: Offset(2, 2),
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PingDetailPage(
+                  user: user,
+                  type: 'ping',
+                ),
               ),
-            ],
+            );
+          },
+          child: Container(
+            width: cntWidth / 2 - 24,
+            height: cntWidth * 0.55,
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              image: DecorationImage(
+                image: CustomImage().provider(user.ImageList[0]),
+                fit: BoxFit.cover,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 4,
+                  spreadRadius: 2,
+                  offset: Offset(2, 2),
+                ),
+              ],
+            ),
           ),
         ),
         Positioned(
