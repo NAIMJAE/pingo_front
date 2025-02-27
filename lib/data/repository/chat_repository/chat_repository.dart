@@ -47,7 +47,8 @@ class ChatRepository {
   }
 
   //서버에 이미지 전송 후 서버에 저장된 이미지의 주소를 String -> messageContent에 저장
-  Future<String?> uploadImageToServer(String roomId, File image) async {
+  Future<String?> uploadImageToServer(
+      String roomId, File image, String? fileName) async {
     //MultipartFile을 생성하여 multipart/form-data로 변환
     //MultipartFile --> 파일을 multipart/form-data 형식으로 변환할 수 있게 도와줌 즉 파일 데이터를
     // HTTP 요청에 맞는 형식으로 변환하는 역할을 한다.
@@ -62,16 +63,16 @@ class ChatRepository {
         jsonEncode(roomId),
         contentType: DioMediaType("application", "json"),
       ),
-      "chatImage": await MultipartFile.fromFile(
+      "chatFile": await MultipartFile.fromFile(
         image.path,
-        filename: "chatImage.jpg",
+        filename: fileName ?? '',
         contentType: DioMediaType.parse(mimeType),
       ),
     });
 
     // 3. 서버에 요청 보내기
     final response =
-        await _customDio.post('/chat/save/chatImage', data: formData);
+        await _customDio.post('/chat/save/chatFile', data: formData);
 
     // 4. 서버에 업로드된 이미지의 Url 반환(주소 String값)
     logger.i('반환된 이미지 주소 : $response');

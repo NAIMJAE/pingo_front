@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -134,7 +135,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                       );
                       logger.i('머머 $newMessage');
                       websocketProvider.sendMessage(
-                          newMessage, widget.roomId, null);
+                          newMessage, widget.roomId, null, null);
 
                       // 메시지 추가
 
@@ -185,7 +186,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
               leading: Icon(Icons.image, color: Colors.blue),
               title: Text("이미지 보내기"),
               onTap: () async {
-                File? image = await getImage(ImageSource.gallery);
+                File? chatFile = await getImage(ImageSource.gallery);
                 if (!mounted) return; // ✅ 위젯이 여전히 살아있는지 확인
                 logger.i('현재상태 $mounted');
                 final defaultMessage = Message(
@@ -198,7 +199,8 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                   userNo: widget.myUserNo,
                   msgTime: DateTime.now(),
                 );
-                websocketProvider.sendMessage(newMessage, widget.roomId, image);
+                websocketProvider.sendMessage(
+                    newMessage, widget.roomId, chatFile, null);
                 if (mounted) {
                   Future.microtask(() {
                     Navigator.pop(context);
@@ -210,7 +212,29 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
             ListTile(
               leading: Icon(Icons.attach_file, color: Colors.blue),
               title: Text("첨부파일 보내기"),
-              onTap: () {
+              onTap: () async {
+                logger.i('33333333333');
+                Map<String, dynamic>? chatFile = await getFile();
+                if (!mounted) return; // ✅ 위젯이 여전히 살아있는지 확인
+                logger.i('현재상태 $mounted');
+                final defaultMessage = Message(
+                  roomId: widget.roomId,
+                  isRead: false,
+                );
+                final newMessage = defaultMessage.copyWith(
+                  //msgContent: imagePath ?? '',
+                  msgType: 'file',
+                  userNo: widget.myUserNo,
+                  msgTime: DateTime.now(),
+                );
+                websocketProvider.sendMessage(newMessage, widget.roomId,
+                    chatFile?['file'], chatFile?['fileName']);
+
+                if (mounted) {
+                  Future.microtask(() {
+                    Navigator.pop(context);
+                  });
+                }
                 // 첨부파일 보내기 로직 추가
               },
             ),
@@ -233,7 +257,7 @@ Widget _buildMessageItem(
         // 로그인한 사람이 본인이면 오른쪽에 배치, 아니면 왼쪽에 배치
         message.userNo == userNo ? Alignment.centerRight : Alignment.centerLeft,
     child: Container(
-      margin: EdgeInsets.symmetric(vertical: 4),
+      margin: EdgeInsets.symmetric(vertical: 10),
       child: Row(
         mainAxisAlignment: message.userNo == userNo
             ? MainAxisAlignment.end
@@ -274,10 +298,24 @@ Widget _buildText(Message message, String? userNo) {
   if (message.msgType == 'image') {
     return Container(
       constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      padding: EdgeInsets.only(left: 16),
       child: CustomImage().token(
         message.msgContent ?? '',
       ),
+    );
+  }
+  if (message.msgType == 'file') {
+    return Container(
+      constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
+      padding: EdgeInsets.only(left: 16),
+      child: _msgFileBox(),
+    );
+  }
+  if (message.msgType == 'place') {
+    return Container(
+      constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
+      padding: EdgeInsets.only(left: 16),
+      child: _msgFileBox(),
     );
   }
 
@@ -315,54 +353,47 @@ String formatTime(DateTime? time) {
   return DateFormat('HH:mm').format(time);
 }
 
-// 모달 바텀시트 열기
-// Widget _showBottomSheet(BuildContext context) {
-//   return showModalBottomSheet(
-//     context: context,
-//     backgroundColor: Colors.white,
-//     shape: RoundedRectangleBorder(
-//       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-//     ),
-//     builder: (context) {
-//       return SafeArea(
-//         child: Container(
-//           height: 150,
-//           child: Column(
-//             children: [
-//               ListTile(
-//                 leading: Icon(Icons.image, color: Colors.blue),
-//                 title: Text("이미지 보내기"),
-//                 onTap: () async {
-//                   String? imagePath = await getImage(ImageSource.gallery);
-//                   final defaultMessage = Message(
-//                     roomId: widget.roomId, // 채팅방 번호는 고정
-//                     msgType: 'MessageType.image', // 메시지 타입
-//                     isRead: false, // 읽음 카운트
-//                   );
-//                   // 새 메시지 생성
-//                   final newMessage = defaultMessage.copyWith(
-//                     msgContent: imagePath ?? '', // 입력 필드에서 가져온 내용
-//                     userNo: widget.myUserNo, // 보낸 사람 ID (로그인한 사용자 ID)
-//                     msgTime: DateTime.now(), // 현재 시간
-//                   );
-//
-//                   // 이미지 보내기 로직 추가
-//                 },
-//               ),
-//               ListTile(
-//                 leading: Icon(Icons.attach_file, color: Colors.blue),
-//                 title: Text("첨부파일 보내기"),
-//                 onTap: () {
-//                   // 첨부파일 보내기 로직 추가
-//                 },
-//               ),
-//             ],
-//           ),
-//         ),
-//       );
-//     },
-//   );
-// }
+// 첨부파일 박스
+Widget _msgFileBox() {
+  return Container(
+    constraints: BoxConstraints(maxWidth: 250), // 메시지 최대 너비 제한
+    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border.all(width: 0.5, color: Colors.blueAccent),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                '파일이름',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Icon(Icons.insert_drive_file, color: Colors.blue),
+          ],
+        ),
+        SizedBox(height: 4),
+        Text(
+          "용량: 3333333",
+          style: TextStyle(color: Colors.grey, fontSize: 10),
+        ),
+        SizedBox(height: 8),
+        GestureDetector(
+          onTap: () {},
+          child: Text(
+            "다운로드",
+            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
 // 이미지 가져오는 함수 (imageSource = 갤러리 사진) 매개변수로 받아서 디코딩
 // 플러터 로컬 디바이스 전용 경로
@@ -378,4 +409,23 @@ Future<File?> getImage(ImageSource imageSource) async {
   }
 }
 
-// File
+// File (우선 1개만.. single로 처리)
+Future<Map<String, dynamic>?> getFile() async {
+  FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+  if (result != null && result.files.isNotEmpty) {
+    String fileName = result.files.single.name;
+    String? filePath = result.files.single.path;
+
+    if (filePath != null) {
+      File file = File(filePath);
+      return {
+        'file': file,
+        'fileName': fileName,
+      };
+    }
+  }
+
+  print('파일 선택 취소');
+  return null;
+}
