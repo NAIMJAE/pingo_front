@@ -90,8 +90,13 @@ class StompViewModel extends Notifier<bool> {
         // 채팅방 메세지 받는 페이지가 아니면!
 
         // 1. 마지막메세지 업데이트 + List<Message> 업데이트
-        ref.read(chatProvider.notifier).updateLastMessage(roomId!,
-            message.msgType == 'image' ? '이미지' : message.msgContent ?? '');
+        ref.read(chatProvider.notifier).updateLastMessage(
+            roomId!,
+            message.msgType == 'image'
+                ? '이미지'
+                : message.msgType == 'file'
+                    ? '파일'
+                    : message.msgContent ?? '');
         ref.read(chatProvider.notifier).addMessage(message, roomId);
 
         // completer.complete(message);
