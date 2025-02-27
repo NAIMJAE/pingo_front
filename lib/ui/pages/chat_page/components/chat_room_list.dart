@@ -50,7 +50,6 @@ class _ChatMessageListState extends State<ChatRoomList> {
                     user.userName ?? '',
                     chat.lastMessage ?? '',
                     roomId,
-                    user.userNo ?? '',
                     widget.myUserNo,
                   ));
             }).toList(),
@@ -61,7 +60,7 @@ class _ChatMessageListState extends State<ChatRoomList> {
   }
 
   Widget _chatList(BuildContext context, String imgUrl, String userName,
-      String lastMessage, String roomId, String userNo, String myUserNo) {
+      String lastMessage, String roomId, String myUserNo) {
     return ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 4.0),
         leading: CircleAvatar(
@@ -76,11 +75,7 @@ class _ChatMessageListState extends State<ChatRoomList> {
             context,
             MaterialPageRoute(
               builder: (context) => ChatMsg2Page(
-                  chatRoomName: userName,
-                  roomId: roomId,
-                  userNo: userNo,
-                  chatRoom: widget.chatList[roomId]!,
-                  myUserNo: myUserNo),
+                  chatRoomName: userName, roomId: roomId, myUserNo: myUserNo),
             ),
           );
         });
