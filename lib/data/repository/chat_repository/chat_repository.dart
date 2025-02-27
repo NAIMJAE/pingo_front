@@ -36,13 +36,13 @@ class ChatRepository {
   }
 
   //채팅방 메세지 조회
-  Future<List<Message>> selectMessage(String roomId) async {
+  Future<List<ChatMessage>> selectMessage(String roomId) async {
     final response =
         await _customDio.get('/select/message', query: {'roomId': roomId});
     logger.i('messageReponse : $response');
 
     return List<Map<String, dynamic>>.from(response)
-        .map((json) => Message.fromJson(json))
+        .map((json) => ChatMessage.fromJson(json))
         .toList();
   }
 

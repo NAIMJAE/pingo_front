@@ -215,7 +215,7 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
 
     return InkWell(
       onTap: () {
-        Message message = Message(
+        ChatMessage message = ChatMessage(
           isRead: false,
           msgContent: '${sharedPlace?.thumb}',
           fileName: '${sharedPlace?.placeName}@#${sharedPlace?.addressName}',

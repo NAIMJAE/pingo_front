@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:uuid/uuid.dart';
 
-class Message {
+class ChatMessage {
   String? msgId; //메세지 번호
   final String? roomId; // 채팅방 번호
   final String? userNo; // 보낸사람과 로그인한 사용자가 동일하면 오른쪽에 메세지 띄우기 / 우선 2면 상대방
@@ -12,7 +12,7 @@ class Message {
   final String? msgType; // 타입 enum
   final bool? isRead; // 읽음 여부를 나타내는 카운트 추가
 
-  Message({
+  ChatMessage({
     this.msgId,
     this.roomId,
     this.userNo,
@@ -24,7 +24,7 @@ class Message {
   }) {}
 
   // copyWith
-  Message copyWith({
+  ChatMessage copyWith({
     String? msgId,
     String? userNo,
     String? roomId,
@@ -34,7 +34,7 @@ class Message {
     String? msgType,
     bool? isRead,
   }) {
-    return Message(
+    return ChatMessage(
         msgId: msgId ?? this.msgId,
         userNo: userNo ?? this.userNo,
         roomId: roomId ?? this.roomId,
@@ -51,7 +51,7 @@ class Message {
   }
 
   // Json으로 받아온것을 객체로 변환
-  Message.fromJson(Map<String, dynamic> json)
+  ChatMessage.fromJson(Map<String, dynamic> json)
       : msgId = json['msgId'] ?? Uuid().v4(),
         roomId = json['roomId'],
         userNo = json['userNo'],
