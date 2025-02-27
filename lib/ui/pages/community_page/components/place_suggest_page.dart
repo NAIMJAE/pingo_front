@@ -217,7 +217,8 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
       onTap: () {
         Message message = Message(
           isRead: false,
-          msgContent: '${sharedPlace?.placeName}\n${sharedPlace?.addressName}',
+          msgContent: '${sharedPlace?.thumb}',
+          fileName: '${sharedPlace?.placeName}@#${sharedPlace?.addressName}',
           msgTime: DateTime.now(),
           msgType: 'place',
           roomId: roomId,
