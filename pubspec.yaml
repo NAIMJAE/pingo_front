@@ -59,7 +59,7 @@ dependencies:
   url_launcher: ^6.2.1
   tuple: ^2.0.1
   file_picker: ^8.0.0
-  flutter_local_notifications: ^16.3.0
+#  flutter_local_notifications: ^16.3.0
   permission_handler: ^11.1.0
 
 dev_dependencies:

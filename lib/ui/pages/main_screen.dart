@@ -2,7 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
@@ -20,9 +20,9 @@ import 'keyword_page/keyword_page.dart';
 import 'main_page/main_page.dart';
 import 'user_page/user_page.dart';
 
-// 상단 알림 초기화
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+// // 상단 알림 초기화
+// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//     FlutterLocalNotificationsPlugin();
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -44,10 +44,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
   void initState() {
     super.initState();
 
-    // 안드로이드 핸들러 초기화
-    _requestNotificationPermission();
-    // localNotification 초기화
-    _initialization();
+    // // 안드로이드 핸들러 초기화
+    // _requestNotificationPermission();
+    // // localNotification 초기화
+    // _initialization();
 
     userNo = ref.read(sessionProvider).userNo; // 내아이디
 
@@ -273,24 +273,24 @@ class _MainScreenState extends ConsumerState<MainScreen>
     );
   }
 
-  // 알람권한 핸들러 설정
-  Future<void> _requestNotificationPermission() async {
-    if (await Permission.notification.isDenied) {
-      await Permission.notification.request();
-    }
-  }
+  // // 알람권한 핸들러 설정
+  // Future<void> _requestNotificationPermission() async {
+  //   if (await Permission.notification.isDenied) {
+  //     await Permission.notification.request();
+  //   }
+  // }
 
-  // LocalNotificaion 설정
-  void _initialization() async {
-    AndroidInitializationSettings android = const AndroidInitializationSettings(
-        "@mipmap/ic_launcher"); //앱의 기본 아이콘 사용
-    DarwinInitializationSettings ios = const DarwinInitializationSettings(
-      requestSoundPermission: true,
-      requestBadgePermission: true,
-      requestAlertPermission: true,
-    );
-    InitializationSettings settings =
-        InitializationSettings(android: android, iOS: ios);
-    await flutterLocalNotificationsPlugin.initialize(settings);
-  }
+  // // LocalNotificaion 설정
+  // void _initialization() async {
+  //   AndroidInitializationSettings android = const AndroidInitializationSettings(
+  //       "@mipmap/ic_launcher"); //앱의 기본 아이콘 사용
+  //   DarwinInitializationSettings ios = const DarwinInitializationSettings(
+  //     requestSoundPermission: true,
+  //     requestBadgePermission: true,
+  //     requestAlertPermission: true,
+  //   );
+  //   InitializationSettings settings =
+  //       InitializationSettings(android: android, iOS: ios);
+  //   await flutterLocalNotificationsPlugin.initialize(settings);
+  // }
 }

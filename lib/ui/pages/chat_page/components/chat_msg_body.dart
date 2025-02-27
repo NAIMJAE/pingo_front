@@ -11,21 +11,15 @@ import 'package:pingo_front/data/models/chat_model/chat_room.dart';
 import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
+import 'package:pingo_front/ui/pages/chat_page/components/place_map.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 // consumer 처리하기
 class ChatMsgBody extends ConsumerStatefulWidget {
   final String roomId;
-  final String userNo;
-  final ChatRoom chatRoom2;
   final String myUserNo;
 
-  ChatMsgBody(
-      {required this.userNo,
-      required this.chatRoom2,
-      required this.roomId,
-      required this.myUserNo,
-      super.key});
+  ChatMsgBody({required this.roomId, required this.myUserNo, super.key});
 
   @override
   _ChatMsgBodyState createState() => _ChatMsgBodyState();
@@ -246,218 +240,245 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
       ),
     );
   }
-}
 
-// 메시지 내용 띄우는 위젯
-Widget _buildMessageItem(
-    Message message, String? userNo, List<ChatUser> totalUser) {
-  final ChatUser selectUser = totalUser.firstWhere(
-    (each) => each.userNo == message.userNo,
-  );
+  // 메시지 내용 띄우는 위젯
+  Widget _buildMessageItem(
+      Message message, String? userNo, List<ChatUser> totalUser) {
+    final ChatUser selectUser = totalUser.firstWhere(
+      (each) => each.userNo == message.userNo,
+    );
 
-  return Align(
-    alignment:
-        // 로그인한 사람이 본인이면 오른쪽에 배치, 아니면 왼쪽에 배치
-        message.userNo == userNo ? Alignment.centerRight : Alignment.centerLeft,
-    child: Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: message.userNo == userNo
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (message.userNo != userNo) //상대방일때
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: CustomImage().provider(selectUser.imageUrl!),
+    return Align(
+      alignment:
+          // 로그인한 사람이 본인이면 오른쪽에 배치, 아니면 왼쪽에 배치
+          message.userNo == userNo
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          mainAxisAlignment: message.userNo == userNo
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (message.userNo != userNo) //상대방일때
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: CustomImage().provider(selectUser.imageUrl!),
+              ),
+            Row(
+              // 정렬 변경
+
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: message.userNo != userNo
+                  ? [
+                      SizedBox(width: 5),
+                      _buildText(message, userNo),
+                      SizedBox(width: 5),
+                      _buildRead(message, userNo),
+                    ]
+                  : [
+                      SizedBox(width: 5),
+                      _buildRead(message, userNo),
+                      SizedBox(width: 5),
+                      _buildText(message, userNo),
+                    ],
             ),
-          Row(
-            // 정렬 변경
+          ],
+        ),
+      ),
+    );
+  }
 
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: message.userNo != userNo
-                ? [
-                    SizedBox(width: 5),
-                    _buildText(message, userNo),
-                    SizedBox(width: 5),
-                    _buildRead(message, userNo),
-                  ]
-                : [
-                    SizedBox(width: 5),
-                    _buildRead(message, userNo),
-                    SizedBox(width: 5),
-                    _buildText(message, userNo),
-                  ],
+// 메시지 내용 말풍선
+  Widget _buildText(Message message, String? userNo) {
+    if (message.msgType == 'image') {
+      return Container(
+        constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
+        padding: EdgeInsets.only(left: 16),
+        child: CustomImage().token(
+          message.msgContent ?? '',
+        ),
+      );
+    }
+    if (message.msgType == 'file') {
+      return Container(
+        constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
+        padding: EdgeInsets.only(left: 16),
+        child: _msgFileBox(),
+      );
+    }
+    if (message.msgType == 'place') {
+      return Container(
+        constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
+        padding: EdgeInsets.only(left: 16),
+        child: _msgPlaceBox(message),
+      );
+    }
+
+    return Container(
+      //wrap --> 길면 자를 수 있도록 설정할 수 있는 것
+      constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      decoration: BoxDecoration(
+        color: message.userNo == userNo ? Colors.blue : Colors.grey[300],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        '${message.msgContent}',
+        style: TextStyle(
+          color: message.userNo == userNo ? Colors.white : Colors.black,
+        ),
+      ),
+    );
+  }
+
+// 읽음 + 시간 풍선
+  Widget _buildRead(Message message, String? userNo) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('${message.isRead}'),
+        Text('${formatTime(message.msgTime)}'),
+      ],
+    );
+  }
+
+// 데이트타임 짜르는 메서드
+  String formatTime(DateTime? time) {
+    if (time == null) return '';
+    return DateFormat('HH:mm').format(time);
+  }
+
+// 첨부파일 박스
+  Widget _msgFileBox() {
+    return Container(
+      constraints: BoxConstraints(maxWidth: 250), // 메시지 최대 너비 제한
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(width: 0.5, color: Colors.blueAccent),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '파일이름',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Icon(Icons.insert_drive_file, color: Colors.blue),
+            ],
+          ),
+          SizedBox(height: 4),
+          Text(
+            "용량: 3333333",
+            style: TextStyle(color: Colors.grey, fontSize: 10),
+          ),
+          SizedBox(height: 8),
+          GestureDetector(
+            onTap: () {},
+            child: Text(
+              "다운로드",
+              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
-    ),
-  );
-}
-
-// 메시지 내용 말풍선
-Widget _buildText(Message message, String? userNo) {
-  if (message.msgType == 'image') {
-    return Container(
-      constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
-      padding: EdgeInsets.only(left: 16),
-      child: CustomImage().token(
-        message.msgContent ?? '',
-      ),
-    );
-  }
-  if (message.msgType == 'file') {
-    return Container(
-      constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
-      padding: EdgeInsets.only(left: 16),
-      child: _msgFileBox(),
-    );
-  }
-  if (message.msgType == 'place') {
-    return Container(
-      constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
-      padding: EdgeInsets.only(left: 16),
-      child: _msgPlaceBox(message),
     );
   }
 
-  return Container(
-    //wrap --> 길면 자를 수 있도록 설정할 수 있는 것
-    constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
-    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-    decoration: BoxDecoration(
-      color: message.userNo == userNo ? Colors.blue : Colors.grey[300],
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Text(
-      '${message.msgContent}',
-      style: TextStyle(
-        color: message.userNo == userNo ? Colors.white : Colors.black,
-      ),
-    ),
-  );
-}
-
-// 읽음 + 시간 풍선
-Widget _buildRead(Message message, String? userNo) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Text('${message.isRead}'),
-      Text('${formatTime(message.msgTime)}'),
-    ],
-  );
-}
-
-// 데이트타임 짜르는 메서드
-String formatTime(DateTime? time) {
-  if (time == null) return '';
-  return DateFormat('HH:mm').format(time);
-}
-
-// 첨부파일 박스
-Widget _msgFileBox() {
-  return Container(
-    constraints: BoxConstraints(maxWidth: 250), // 메시지 최대 너비 제한
-    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      border: Border.all(width: 0.5, color: Colors.blueAccent),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                '파일이름',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Icon(Icons.insert_drive_file, color: Colors.blue),
-          ],
-        ),
-        SizedBox(height: 4),
-        Text(
-          "용량: 3333333",
-          style: TextStyle(color: Colors.grey, fontSize: 10),
-        ),
-        SizedBox(height: 8),
-        GestureDetector(
-          onTap: () {},
-          child: Text(
-            "다운로드",
-            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+// 장소 공유 박스
+  Widget _msgPlaceBox(Message message) {
+    logger.i(message);
+    logger.i(message.fileName);
+    List<String>? placeInfo = message.fileName?.split('@#');
+    logger.i(placeInfo);
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlaceMap(),
           ),
+        );
+      },
+      child: Container(
+        constraints: BoxConstraints(maxWidth: 250), // 메시지 최대 너비 제한
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
         ),
-      ],
-    ),
-  );
-}
-
-// 첨부파일 박스
-Widget _msgPlaceBox(Message message) {
-  return Container(
-    constraints: BoxConstraints(maxWidth: 250), // 메시지 최대 너비 제한
-    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      border: Border.all(width: 0.5, color: Colors.blueAccent),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 4),
-        Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Text(
-                message.msgContent ?? '',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                overflow: TextOverflow.ellipsis,
+            Container(
+              width: double.infinity,
+              height: 140,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: CustomImage().provider(message.msgContent ?? ''),
+                  fit: BoxFit.cover,
+                ),
               ),
+            ),
+            Column(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      placeInfo?[0] ?? '',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 
 // 이미지 가져오는 함수 (imageSource = 갤러리 사진) 매개변수로 받아서 디코딩
 // 플러터 로컬 디바이스 전용 경로
 // 서버에서 해당 경로를 직접 접근할 수 없기때문에 multipart/form-data로 전송해야 한다.?
-Future<File?> getImage(ImageSource imageSource) async {
-  File? _image; // 이미지 담을 변수 선언
-  final ImagePicker picker = ImagePicker(); // 이미지픽커 초기화
-  final pickedFile = await picker.pickImage(source: imageSource);
+  Future<File?> getImage(ImageSource imageSource) async {
+    File? _image; // 이미지 담을 변수 선언
+    final ImagePicker picker = ImagePicker(); // 이미지픽커 초기화
+    final pickedFile = await picker.pickImage(source: imageSource);
 
-  if (pickedFile != null) {
-    _image = File(pickedFile.path);
-    return _image;
-  }
-}
-
-// File (우선 1개만.. single로 처리)
-Future<Map<String, dynamic>?> getFile() async {
-  FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-  if (result != null && result.files.isNotEmpty) {
-    String fileName = result.files.single.name;
-    String? filePath = result.files.single.path;
-
-    if (filePath != null) {
-      File file = File(filePath);
-      return {
-        'file': file,
-        'fileName': fileName,
-      };
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      return _image;
     }
   }
 
-  print('파일 선택 취소');
-  return null;
+// File (우선 1개만.. single로 처리)
+  Future<Map<String, dynamic>?> getFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null && result.files.isNotEmpty) {
+      String fileName = result.files.single.name;
+      String? filePath = result.files.single.path;
+
+      if (filePath != null) {
+        File file = File(filePath);
+        return {
+          'file': file,
+          'fileName': fileName,
+        };
+      }
+    }
+
+    print('파일 선택 취소');
+    return null;
+  }
 }
