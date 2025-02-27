@@ -11,6 +11,7 @@ import 'package:pingo_front/data/view_models/notification_view_model.dart';
 import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 import 'package:pingo_front/ui/pages/community_page/community_page.dart';
+import 'package:pingo_front/ui/pages/ping_check_page/signal_page.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
 import 'chat_page/chat_room_page.dart';
 import 'keyword_page/keyword_page.dart';
@@ -120,7 +121,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
           index: _selectedIndex,
           children: [
             MainPage(),
-            KeywordPage(changePageForKeyword),
+            SignalPage(changePageForKeyword),
             CommunityPage(),
             ChatRoomPage(),
             UserPage(),
