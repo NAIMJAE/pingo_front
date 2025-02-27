@@ -83,7 +83,7 @@ class StompViewModel extends Notifier<bool> {
       destination: '/topic/msg/$roomId',
       callback: (StompFrame frame) {
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
-        Message message = Message.fromJson(jsonData);
+        ChatMessage message = ChatMessage.fromJson(jsonData);
         final roomId = message.roomId;
         logger.i('receive로 메세지 받음 $message');
         // 채팅방 목록 뷰모델을 구독하고 바로 필요한 정보만 전달해버리기!! 로 수정!!!
@@ -147,8 +147,8 @@ class StompViewModel extends Notifier<bool> {
   }
 
   // 서버로 채팅 메시지 보내기/ 메세지 보낼 경로, 보내는 메세지 내용
-  void sendMessage(
-      Message message, String roomId, File? chatFile, String? fileName) async {
+  void sendMessage(ChatMessage message, String roomId, File? chatFile,
+      String? fileName) async {
     ChatRepository chatRepository = ChatRepository();
     String? msgContent = message.msgContent;
 

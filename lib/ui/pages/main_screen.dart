@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,6 +14,8 @@ import 'package:pingo_front/data/view_models/main_view_model/main_page_viewmodel
 import 'package:pingo_front/data/view_models/notification_view_model.dart';
 import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
+import 'package:pingo_front/ui/pages/chat_page/chat_msg2_page.dart';
+import 'package:pingo_front/ui/pages/chat_page/components/chat_msg_body.dart';
 import 'package:pingo_front/ui/pages/community_page/community_page.dart';
 import 'package:pingo_front/ui/pages/ping_check_page/signal_page.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
@@ -20,9 +24,9 @@ import 'keyword_page/keyword_page.dart';
 import 'main_page/main_page.dart';
 import 'user_page/user_page.dart';
 
-// // 상단 알림 초기화
-// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//     FlutterLocalNotificationsPlugin();
+// 상단 알림 초기화
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -44,10 +48,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
   void initState() {
     super.initState();
 
-    // // 안드로이드 핸들러 초기화
-    // _requestNotificationPermission();
-    // // localNotification 초기화
-    // _initialization();
+    // 안드로이드 핸들러 초기화
+    _requestNotificationPermission();
+    // localNotification 초기화
+    _initialization();
 
     userNo = ref.read(sessionProvider).userNo; // 내아이디
 
@@ -273,24 +277,49 @@ class _MainScreenState extends ConsumerState<MainScreen>
     );
   }
 
-  // // 알람권한 핸들러 설정
-  // Future<void> _requestNotificationPermission() async {
-  //   if (await Permission.notification.isDenied) {
-  //     await Permission.notification.request();
-  //   }
-  // }
+  // 알람권한 핸들러 설정
+  Future<void> _requestNotificationPermission() async {
+    if (await Permission.notification.isDenied) {
+      await Permission.notification.request();
+    }
+  }
 
-  // // LocalNotificaion 설정
-  // void _initialization() async {
-  //   AndroidInitializationSettings android = const AndroidInitializationSettings(
-  //       "@mipmap/ic_launcher"); //앱의 기본 아이콘 사용
-  //   DarwinInitializationSettings ios = const DarwinInitializationSettings(
-  //     requestSoundPermission: true,
-  //     requestBadgePermission: true,
-  //     requestAlertPermission: true,
-  //   );
-  //   InitializationSettings settings =
-  //       InitializationSettings(android: android, iOS: ios);
-  //   await flutterLocalNotificationsPlugin.initialize(settings);
-  // }
+  // LocalNotificaion 설정
+  void _initialization() async {
+    AndroidInitializationSettings android = const AndroidInitializationSettings(
+        "@mipmap/ic_launcher"); //앱의 기본 아이콘 사용
+    DarwinInitializationSettings ios = const DarwinInitializationSettings(
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
+    );
+    InitializationSettings settings =
+        InitializationSettings(android: android, iOS: ios);
+    await flutterLocalNotificationsPlugin.initialize(
+      settings,
+      // 클릭했을 때 여기로 들어옴
+      //onSelectNotification --> 최신버전에선 onDidReceiveNotificationResponse로 변경되었음
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        if (response.payload != null) {
+          Map<String, dynamic> data = jsonDecode(response.payload!);
+
+          navigateToChatScreen(
+              data['roomId'], data['chatRoomName'], data['myUserNo']);
+        }
+      },
+    );
+  }
+
+  void navigateToChatScreen(String roomId, String userNo, String myUserNo) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatMsg2Page(
+          chatRoomName: userNo,
+          roomId: roomId,
+          myUserNo: myUserNo,
+        ),
+      ),
+    );
+  }
 }
