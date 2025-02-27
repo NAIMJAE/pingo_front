@@ -130,6 +130,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                       final newMessage = defaultMessage.copyWith(
                         msgContent: _messageController.text, // 입력 필드에서 가져온 내용
                         msgType: 'text',
+                        fileName: null,
                         userNo: widget.myUserNo, // 보낸 사람 ID (로그인한 사용자 ID)
                         msgTime: DateTime.now(), // 현재 시간
                       );
@@ -196,6 +197,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                 final newMessage = defaultMessage.copyWith(
                   //msgContent: imagePath ?? '',
                   msgType: 'image',
+                  fileName: null,
                   userNo: widget.myUserNo,
                   msgTime: DateTime.now(),
                 );
@@ -223,6 +225,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                 );
                 final newMessage = defaultMessage.copyWith(
                   //msgContent: imagePath ?? '',
+                  fileName: chatFile?['fileName'],
                   msgType: 'file',
                   userNo: widget.myUserNo,
                   msgTime: DateTime.now(),

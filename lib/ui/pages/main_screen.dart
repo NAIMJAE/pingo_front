@@ -2,7 +2,9 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/models/match_model.dart';
@@ -17,6 +19,10 @@ import 'chat_page/chat_room_page.dart';
 import 'keyword_page/keyword_page.dart';
 import 'main_page/main_page.dart';
 import 'user_page/user_page.dart';
+
+// 상단 알림 초기화
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -37,6 +43,12 @@ class _MainScreenState extends ConsumerState<MainScreen>
   @override
   void initState() {
     super.initState();
+
+    // 안드로이드 핸들러 초기화
+    _requestNotificationPermission();
+    // localNotification 초기화
+    _initialization();
+
     userNo = ref.read(sessionProvider).userNo; // 내아이디
 
     // STOMP 웹소캣 연결
@@ -259,5 +271,26 @@ class _MainScreenState extends ConsumerState<MainScreen>
       radius: 40,
       backgroundImage: CustomImage().provider(imageUrl),
     );
+  }
+
+  // 알람권한 핸들러 설정
+  Future<void> _requestNotificationPermission() async {
+    if (await Permission.notification.isDenied) {
+      await Permission.notification.request();
+    }
+  }
+
+  // LocalNotificaion 설정
+  void _initialization() async {
+    AndroidInitializationSettings android = const AndroidInitializationSettings(
+        "@mipmap/ic_launcher"); //앱의 기본 아이콘 사용
+    DarwinInitializationSettings ios = const DarwinInitializationSettings(
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
+    );
+    InitializationSettings settings =
+        InitializationSettings(android: android, iOS: ios);
+    await flutterLocalNotificationsPlugin.initialize(settings);
   }
 }
