@@ -24,6 +24,7 @@ class SigninViewModel extends Notifier<SessionUser> {
   Future<void> checkLoginState() async {
     String? accessToken = await secureStorage.read(key: 'accessToken');
     if (accessToken == null) {
+      logger.d('토큰이 없어?');
       throw Exception('토큰 없음');
     }
 
@@ -48,7 +49,9 @@ class SigninViewModel extends Notifier<SessionUser> {
       state = SessionUser(
         userNo: response['userNo'],
         userRole: response['userRole'],
-        expDate: DateTime.parse(response['expDate']),
+        expDate: response['expDate'] != null
+            ? DateTime.parse(response['expDate'])
+            : null,
         accessToken: accessToken,
         isLogin: true,
       );

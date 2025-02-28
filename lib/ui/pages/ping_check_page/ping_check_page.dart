@@ -116,11 +116,13 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => PingDetailPage(
-                    user: user,
-                    type: 'super',
-                  ),
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      PingDetailPage(user: user, type: 'super'),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return child; // 왜인지 모르겠는데 Navigator의 애니메이션과 충돌해 앱이 꺼짐 (애니메이션 없이 이동)
+                  },
                 ),
               );
             },
