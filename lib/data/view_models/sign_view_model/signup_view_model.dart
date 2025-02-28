@@ -23,11 +23,30 @@ class SignupViewModel extends Notifier<UserSignup> {
     return UserSignup();
   }
 
-  // 이메일 인증
-  Future<bool> verifyEmail(String userEmail) async {
-    bool isSuccess = await _repository.fetchVerifyEmail(userEmail);
-    return isSuccess;
+  // 이메일 인증번호 발송
+  Future<int> verifyEmail(String userEmail) async {
+    final RegExp emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+
+    if (emailRegex.hasMatch(userEmail)) {
+      try {
+        bool isSuccess = await _repository.fetchVerifyEmail(userEmail);
+
+        if (isSuccess) {
+          return 1;
+        } else {
+          return 3;
+        }
+      } catch (e) {
+        logger.e('Failed to fetch verifyEmail: $e');
+        return 4;
+      }
+    } else {
+      return 2;
+    }
   }
+
+  // 이메일 인증번호 체크
 
   // 회원 정보 검증
   Future<int> validationIdPwStep(
@@ -51,6 +70,7 @@ class SignupViewModel extends Notifier<UserSignup> {
         r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,14}$');
     if (passwordRegex.hasMatch(userPw1)) {
       if (userPw1 == userPw2) {
+        state.users.userEmail = userEmail;
         state.users.userId = userId;
         state.users.userPw = userPw1;
         return 1;
@@ -60,8 +80,6 @@ class SignupViewModel extends Notifier<UserSignup> {
     } else {
       return 4;
     }
-
-    // 이메일 제약 걸어야 하고
   }
 
   // user 기본 정보 검증
