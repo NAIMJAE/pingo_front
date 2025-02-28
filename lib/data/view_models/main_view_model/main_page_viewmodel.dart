@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/data/models/keyword_model/keyword.dart';
 import 'package:pingo_front/data/models/main_model/Profile.dart';
+import 'package:pingo_front/data/models/main_model/ProfileDetail.dart';
+import 'package:pingo_front/data/models/user_model/user_info.dart';
 import 'package:pingo_front/data/repository/main_repository/main_repository.dart';
+import 'package:pingo_front/data/repository/user_repository/user_repository.dart';
 
 class MainPageViewModel extends StateNotifier<List<Profile>> {
   double posY = 0.0;
   int? highlightedButton;
   int? lastSwipedIndex;
   final MainRepository repository;
+  final UserRepository userRepository;
   int currentProfileIndex = 0; // 유저 리스트 num 관리
   bool noMoreUsers = false; // 인덱스가 끝
 
-  MainPageViewModel(this.repository) : super([]);
+  MainPageViewModel(this.repository, this.userRepository) : super([]);
 
   // 도장 관련 상태 추가
   String? stampText;
@@ -205,6 +210,37 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     noMoreUsers = users.isEmpty;
   }
 
+  Future<ProfileDetail> fetchMyDetail(String userNo) async {
+    try {
+      logger.i('Fetching user details...');
+
+      // UserMypageInfo 데이터 가져오기
+      final userMypageInfo = await userRepository.fetchMyPageInfo(userNo);
+
+      // userInfo 데이터 할당
+      UserInfo? userInfo = userMypageInfo.userInfo;
+
+      // myKeywordList를 Keyword 리스트로 변환 ***
+      List<Keyword>? userKeywords =
+          userMypageInfo.myKeywordList?.cast<Keyword>();
+
+      // ProfileDetail 객체 생성 및 데이터 매핑
+      ProfileDetail profileDetail = ProfileDetail(
+        userInfo,
+        userKeywords,
+        userMypageInfo.userIntroduction, // 기본값 설정 (필요 시 실제 데이터 적용)
+      );
+
+      logger.i("ProfileDetail 생성 완료: $profileDetail");
+      logger.i("ProfileDetail 생성 완료: $userKeywords");
+
+      return profileDetail;
+    } catch (e) {
+      logger.e('Failed to fetch user info: $e');
+      throw Exception('사용자 정보를 불러오는데 실패했습니다.');
+    }
+  }
+
   @override
   void dispose() {
     animationController.dispose();
@@ -216,8 +252,13 @@ final mainRepositoryProvider = Provider<MainRepository>((ref) {
   return MainRepository();
 });
 
+final userRepositoryProvider = Provider<UserRepository>((ref) {
+  return UserRepository();
+});
+
 final mainPageViewModelProvider =
     StateNotifierProvider<MainPageViewModel, List<Profile>>((ref) {
   final repository = ref.read(mainRepositoryProvider);
-  return MainPageViewModel(repository);
+  final userRepository = ref.read(userRepositoryProvider);
+  return MainPageViewModel(repository, userRepository);
 });

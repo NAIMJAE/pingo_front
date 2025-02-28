@@ -2,12 +2,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/global_model/session_user.dart';
 import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/view_models/ping_check_view_model/ping_check_view_model.dart';
 import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/keyword_page/keyword_page.dart';
-import 'package:pingo_front/ui/pages/ping_check_page/ping_detail_page.dart';
+import 'package:pingo_front/ui/pages/main_page/ProfileDetailPage.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class PingCheckPage extends ConsumerStatefulWidget {
@@ -19,6 +20,24 @@ class PingCheckPage extends ConsumerStatefulWidget {
 
 class _PingCheckPageState extends ConsumerState<PingCheckPage> {
   bool isMembership = false;
+
+  @override
+  @override
+  void initState() {
+    super.initState();
+    logger.i("핑체크");
+    initProcess();
+  }
+
+  Future<void> initProcess() async {
+    SessionUser sessionUser = ref.read(sessionProvider);
+
+    logger.i(sessionUser);
+
+    await ref
+        .read(pingCheckViewModelProvider.notifier)
+        .pingcheck(sessionUser.userNo!);
+  }
 
   @override
   Widget build(BuildContext buildContext) {
@@ -51,7 +70,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
                   ],
                 ),
                 _superPingBox(
-                    cntWidth: cntWidth, users: pingUsers['super'] ?? []),
+                    cntWidth: cntWidth, users: pingUsers['SUPERPING'] ?? []),
                 Row(
                   children: [
                     Icon(Icons.security_outlined),
@@ -62,7 +81,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
                     ),
                   ],
                 ),
-                _pingBox(cntWidth: cntWidth, users: pingUsers['ping'] ?? []),
+                _pingBox(cntWidth: cntWidth, users: pingUsers['PING'] ?? []),
               ],
             ),
           )
@@ -93,6 +112,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Wrap(
+        alignment: WrapAlignment.start,
         spacing: 16,
         runSpacing: 16,
         children: [
@@ -118,7 +138,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
                 context,
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
-                      PingDetailPage(user: user, type: 'super'),
+                      ProfileDetailPage(profile: user),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     return child; // 왜인지 모르겠는데 Navigator의 애니메이션과 충돌해 앱이 꺼짐 (애니메이션 없이 이동)
@@ -133,7 +153,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
-                  image: CustomImage().provider(user.ImageList[0]),
+                  image: CustomImage().provider(user.imageUrl!),
                   fit: BoxFit.cover,
                 ),
                 boxShadow: [
@@ -225,11 +245,13 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => PingDetailPage(
-                  user: user,
-                  type: 'ping',
-                ),
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    ProfileDetailPage(profile: user),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child; // 왜인지 모르겠는데 Navigator의 애니메이션과 충돌해 앱이 꺼짐 (애니메이션 없이 이동)
+                },
               ),
             );
           },
@@ -240,7 +262,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               image: DecorationImage(
-                image: CustomImage().provider(user.ImageList[0]),
+                image: CustomImage().provider(user.imageUrl!),
                 fit: BoxFit.cover,
               ),
               boxShadow: [
