@@ -60,20 +60,32 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
     });
   }
 
+  // 이메일 인증번호 발송
   void _certificationBtn() async {
     String userEmail = _userEmailController.text.trim();
-    if (userEmail.isEmpty) {
-      // 서버 보내기
-      bool result = widget.signupNotifier.verifyEmail(userEmail);
 
-      if (isCertification == 'prev' && result) {
-        setState(() {
-          isCertification = 'doing';
-        });
-      }
+    if (userEmail.isNotEmpty) {
+      // 서버 보내기
+      int result = await widget.signupNotifier.verifyEmail(userEmail);
+
+      setState(() {
+        if (result == 1) {
+          if (isCertification == 'prev' && result == 1) {
+            isCertification = 'doing';
+          }
+          information = '';
+        } else if (result == 2) {
+          information = 'example@email.com 형식만 가능합니다.';
+        } else if (result == 3) {
+          information = '이미 사용중인 중복된 이메일입니다.';
+        } else if (result == 4) {
+          information = '서버 오류';
+        }
+      });
     }
   }
 
+  // 이메일 인증번호 체크
   void _checkCodeBtn() {
     // 다른 로직 추가
 
@@ -88,8 +100,6 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
 
   @override
   Widget build(BuildContext context) {
-    logger.i(isCertification);
-
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 32.0),
       width: double.infinity,
@@ -179,6 +189,7 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
     );
   }
 
+  // 이메일 입력 위젯
   Widget _emailInputBox(String? title, String textHint, bool obscure,
       TextEditingController controller, String btnName, Function btnFunction) {
     return Column(

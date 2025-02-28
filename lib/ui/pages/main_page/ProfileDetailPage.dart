@@ -1,10 +1,18 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/main_model/Profile.dart';
 import 'package:pingo_front/data/models/main_model/ProfileDetail.dart';
+import 'package:pingo_front/data/models/user_model/user_mypage_info.dart';
+import 'package:pingo_front/data/view_models/main_view_model/main_page_viewmodel.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
+import 'package:pingo_front/data/view_models/user_view_model/user_view_model.dart';
 
 import '../../widgets/custom_image.dart';
 
-class ProfileDetailPage extends StatefulWidget {
+class ProfileDetailPage extends ConsumerStatefulWidget {
   final Profile profile;
 
   const ProfileDetailPage({required this.profile, Key? key}) : super(key: key);
@@ -13,8 +21,36 @@ class ProfileDetailPage extends StatefulWidget {
   _ProfileDetailPageState createState() => _ProfileDetailPageState();
 }
 
-class _ProfileDetailPageState extends State<ProfileDetailPage> {
+class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
   int currentImageIndex = 0; // 현재 표시 중인 이미지 인덱스
+  late String userNo;
+
+  @override
+  void initState() {
+    super.initState();
+    userNo = ref.read(sessionProvider).userNo!;
+    logger.i("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    logger.i(widget.profile);
+
+    // 비동기 데이터 로드 함수 호출
+    _loadProfileDetail();
+  }
+
+  Future<void> _loadProfileDetail() async {
+    try {
+      ProfileDetail profileDetail = await ref
+          .read(mainPageViewModelProvider.notifier)
+          .fetchMyDetail(userNo);
+
+      setState(() {
+        widget.profile.profileDetail = profileDetail;
+      });
+
+      logger.i("ProfileDetail 업데이트 완료: ${widget.profile.profileDetail}");
+    } catch (e) {
+      logger.e("ProfileDetail 로딩 실패: $e");
+    }
+  }
 
   void _showNextImage() {
     setState(() {
@@ -37,145 +73,180 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        children: [
-          _buildHeader(context),
-          _buildImageSection(),
-          Expanded(child: _buildProfileDetails()),
+      appBar: AppBar(
+        title: Text(widget.profile.name, style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.download, color: Colors.pinkAccent),
+            onPressed: () {},
+          )
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTapUp: (TapUpDetails details) {
+                final tapPosition = details.globalPosition.dx;
+                final screenWidth = MediaQuery.of(context).size.width;
+
+                if (tapPosition < screenWidth / 2) {
+                  _showPreviousImage();
+                } else {
+                  _showNextImage();
+                }
+              },
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  Container(
+                    height: 400,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: CustomImage().getImageProvider(
+                            widget.profile.ImageList[currentImageIndex]),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      widget.profile.ImageList.length,
+                      (index) => Container(
+                        width: 20,
+                        height: 5,
+                        margin: EdgeInsets.symmetric(horizontal: 3),
+                        decoration: BoxDecoration(
+                          color: index == currentImageIndex
+                              ? Colors.white
+                              : Colors.white.withOpacity(0.4),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "${widget.profile.name}, ${widget.profile.age}",
+                    style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    "📍 ${widget.profile.profileDetail?.userInfo?.userAddress ?? ''} • ${widget.profile.distance}",
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                  Divider(color: Colors.white24),
+                  _buildInfoRow(
+                      "생년월일",
+                      widget.profile.profileDetail?.userInfo?.userBirth
+                              ?.toLocal()
+                              .toString()
+                              .split(' ')[0] ??
+                          '정보 없음'),
+                  _buildInfoRow("키",
+                      "${widget.profile.profileDetail?.userInfo?.userHeight ?? '정보 없음'} cm"),
+                  _buildInfoRow(
+                      "주소",
+                      widget.profile.profileDetail?.userInfo?.userAddress ??
+                          '정보 없음'),
+                  _buildInfoRow(
+                      "1차 직업",
+                      widget.profile.profileDetail?.userInfo?.user1stJob ??
+                          '정보 없음'),
+                  _buildInfoRow(
+                      "2차 직업",
+                      widget.profile.profileDetail?.userInfo?.user2ndJob ??
+                          '정보 없음'),
+                  _buildInfoRow(
+                      "종교",
+                      widget.profile.profileDetail?.userInfo?.userReligion ??
+                          '정보 없음'),
+                  _buildInfoRow(
+                      "음주",
+                      widget.profile.profileDetail?.userInfo?.userDrinking ==
+                              'F'
+                          ? '하지 않음'
+                          : '가끔 마심'),
+                  _buildInfoRow(
+                      "흡연",
+                      widget.profile.profileDetail?.userInfo?.userSmoking == 'F'
+                          ? '비흡연'
+                          : '흡연'),
+                  Divider(color: Colors.white24),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Wrap(
+                spacing: 8,
+                children: [
+                  _buildTag("산책"),
+                  _buildTag("맛집"),
+                  _buildTag("자기 개발"),
+                  _buildTag("여행"),
+                  _buildTag("야구"),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildActionButton(Icons.close, Colors.pink, () {}),
+                _buildActionButton(Icons.star, Colors.blue, () {}),
+                _buildActionButton(Icons.favorite, Colors.green, () {}),
+              ],
+            ),
+            SizedBox(height: 30),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildInfoRow(String title, String value) {
     return Padding(
-      padding: const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 10),
+      padding: EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
-          Text(
-            '${widget.profile.name}, ${widget.profile.age}',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(width: 40),
+          Text(title, style: TextStyle(color: Colors.white70, fontSize: 16)),
+          Text(value, style: TextStyle(color: Colors.white, fontSize: 16)),
         ],
       ),
     );
   }
 
-  Widget _buildImageSection() {
-    return GestureDetector(
-      onTapUp: (TapUpDetails details) {
-        final tapPosition = details.globalPosition.dx;
-        final screenWidth = MediaQuery.of(context).size.width;
-
-        if (tapPosition < screenWidth / 2) {
-          _showPreviousImage();
-        } else {
-          _showNextImage();
-        }
-      },
-      child: Column(
-        children: [
-          SizedBox(height: 10),
-          Container(
-            height: 500,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: CustomImage().getImageProvider(
-                    widget.profile.ImageList[currentImageIndex]),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              widget.profile.ImageList.length,
-              (index) => Container(
-                width: 20,
-                height: 5,
-                margin: EdgeInsets.symmetric(horizontal: 3),
-                decoration: BoxDecoration(
-                  color: index == currentImageIndex
-                      ? Colors.white
-                      : Colors.white.withOpacity(0.4),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+  Widget _buildTag(String text) {
+    return Chip(
+      label: Text(text, style: TextStyle(color: Colors.white)),
+      backgroundColor: Colors.pinkAccent,
     );
   }
 
-  Widget _buildProfileDetails() {
-    final details = [
-      // ProfileDetail(
-      //     icon: Icons.person, title: "자기소개", value: widget.profile.status),
-      // ProfileDetail(
-      //     icon: Icons.location_on, title: "거리", value: widget.profile.distance),
-      // ProfileDetail(icon: Icons.school, title: "학력", value: "대학 졸업"),
-      // ProfileDetail(icon: Icons.star, title: "성격 유형", value: "INTJ"),
-      // ProfileDetail(icon: Icons.pets, title: "반려동물", value: "강아지 키움"),
-      // ProfileDetail(icon: Icons.sports_soccer, title: "운동", value: "축구, 헬스"),
-      // ProfileDetail(icon: Icons.music_note, title: "취미", value: "음악 감상, 피아노"),
-      // ProfileDetail(icon: Icons.coffee, title: "좋아하는 음료", value: "아메리카노"),
-      // ProfileDetail(icon: Icons.movie, title: "좋아하는 영화", value: "SF, 액션"),
-      // ProfileDetail(icon: Icons.book, title: "관심 있는 책", value: "심리학 서적"),
-    ];
-
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: ListView.builder(
-        itemCount: details.length,
-        itemBuilder: (context, index) {
-          final detail = details[index];
-          return _buildInfoSection(detail.icon, detail.title, detail.value);
-        },
-      ),
-    );
-  }
-
-  Widget _buildInfoSection(IconData icon, String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.white70, size: 22),
-          SizedBox(width: 8),
-          Text(
-            "$title: ",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
+  Widget _buildActionButton(
+      IconData icon, Color color, VoidCallback onPressed) {
+    return FloatingActionButton(
+      onPressed: onPressed,
+      backgroundColor: color,
+      child: Icon(icon, size: 30, color: Colors.white),
     );
   }
 }

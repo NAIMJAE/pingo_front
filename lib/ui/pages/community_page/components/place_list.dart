@@ -13,8 +13,9 @@ class PlaceList extends ConsumerStatefulWidget {
   final PlaceReviewSearch searchReviewState;
   final PlaceReviewSearchViewModel searchReviewProvider;
   final Function changePlaceShared;
-  const PlaceList(
-      this.searchReviewState, this.searchReviewProvider, this.changePlaceShared,
+  final Function _onSearchCleared;
+  const PlaceList(this.searchReviewState, this.searchReviewProvider,
+      this.changePlaceShared, this._onSearchCleared,
       {super.key});
 
   @override
@@ -98,13 +99,14 @@ class _PlaceListState extends ConsumerState<PlaceList> {
                                 borderRadius: BorderRadius.circular(4.0),
                               ),
                             ),
-                            onPressed: () {
-                              Navigator.push(
+                            onPressed: () async {
+                              await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => PlaceWritePage(
                                         widget.searchReviewProvider, userNo!)),
                               );
+                              widget._onSearchCleared();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,

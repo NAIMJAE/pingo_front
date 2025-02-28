@@ -82,7 +82,6 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
     logger.i('이곳은?1 : $chatRoom');
 
     final updatedMessage = [...chatRoom.message, messageList];
-    logger.i('업데이트메세지 $updatedMessage');
 
     // ✅ 상태가 바뀔 때만 업데이트
     if (!listEquals(chatRoom.message, updatedMessage)) {

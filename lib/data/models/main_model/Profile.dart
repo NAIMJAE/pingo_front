@@ -7,8 +7,9 @@ class Profile {
   final String name; // 이름
   final String age; // 나이
   final String status; // 상태
-  final String distance; // 거리
+  final String? distance; // 거리 (거리는 메인 렌더링만 들어가도록)
   final List<String> ImageList; // 여러 개의 이미지 리스트
+  final String? imageUrl;
   ProfileDetail? profileDetail;
 
   Profile({
@@ -17,9 +18,31 @@ class Profile {
     required this.age,
     required this.status,
     required this.distance,
-    required this.ImageList, // 리스트로 변경
-    this.profileDetail, // 리스트로 변경
+    required this.ImageList, // 전체 리스트로 변경
+    this.profileDetail,
+    this.imageUrl, // 대표이미지
   });
+
+  factory Profile.fromJson(Map<String, dynamic> json) {
+    return Profile(
+      userNo: json['userNo'] as String,
+      name: json['userName'] as String,
+      age: json['age'].toString(), // 정수일 가능성이 있어 문자열 변환
+      status: json['status'] as String? ?? 'Unknown', // 기본값 설정
+      distance: json['distance'] as String?,
+      ImageList: (json['ImageList'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      imageUrl: json['imageUrl'] as String?,
+      profileDetail: null,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'Profile{userNo: $userNo, name: $name, age: $age, status: $status, distance: $distance, ImageList: $ImageList, imageUrl: $imageUrl, profileDetail: $profileDetail}';
+  }
 }
 
 // 샘플 데이터
