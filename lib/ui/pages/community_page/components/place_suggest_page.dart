@@ -215,7 +215,7 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
 
     return InkWell(
       onTap: () {
-        Message message = Message(
+        ChatMessage message = ChatMessage(
           isRead: false,
           msgContent: '${sharedPlace?.thumb}',
           fileName: '${sharedPlace?.placeName}@#${sharedPlace?.addressName}',
@@ -258,10 +258,10 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
       style: TextStyle(fontSize: 16),
       decoration: InputDecoration(
         hintText: "장소 검색",
-        hintStyle: TextStyle(color: Colors.grey),
-        prefixIcon: Icon(Icons.search, color: Colors.grey, size: 24),
+        hintStyle: TextStyle(color: Color(0xFF4A4A4A)),
+        prefixIcon: Icon(Icons.search, color: Color(0xFF4A4A4A), size: 24),
         filled: true,
-        fillColor: Colors.black12,
+        fillColor: Color(0xFFE0E0E0),
         contentPadding: const EdgeInsets.symmetric(vertical: 6),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24.0),

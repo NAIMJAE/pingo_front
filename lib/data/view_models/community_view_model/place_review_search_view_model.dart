@@ -1,11 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/community_model/kakao_search.dart';
 import 'package:pingo_front/data/models/community_model/kakao_search_result.dart';
 import 'package:pingo_front/data/models/community_model/place_review.dart';
 import 'package:pingo_front/data/models/community_model/place_review_search.dart';
 import 'package:pingo_front/data/models/community_model/review_search_result.dart';
+import 'package:pingo_front/data/models/global_model/session_user.dart';
 import 'package:pingo_front/data/repository/community_repository/place_review_search_repository.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 
 class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
   final PlaceReviewSearchRepository _repository;
@@ -36,20 +39,35 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
 
   // 검색 정렬 기준 변경
   Future<void> changeSearchSort(newSort) async {
-    state.reviewSearchResult.changeSearchSort(newSort);
+    List<PlaceReview> response = [];
 
-    List<PlaceReview> response = await _repository.fetchSearchPlaceReview(
-        cateSort: state.reviewSearchResult.cateSort, searchSort: newSort);
+    if (newSort == 'location') {
+      SessionUser sessionUser = ref.read(sessionProvider);
 
+      Position? position = sessionUser.currentLocation;
+      if (position == null) {
+        return;
+      }
+      response = await _repository.fetchSearchPlaceReviewWithLocation(
+          cateSort: state.reviewSearchResult.cateSort,
+          latitude: position.latitude,
+          longitude: position.longitude);
+    } else {
+      response = await _repository.fetchSearchPlaceReview(
+          cateSort: state.reviewSearchResult.cateSort, searchSort: newSort);
+    }
     state.reviewSearchResult.changePlaceReviewList(response);
+    state.reviewSearchResult.changeSearchSort(newSort);
+    logger.i(state.reviewSearchResult.placeReviewList);
   }
 
   // 검색 카테고리 기준 변경
   Future<void> changeCateSort(newSort) async {
     state.reviewSearchResult.changeCateSort(newSort);
+    state.reviewSearchResult.changeSearchSort('popular');
 
     List<PlaceReview> response = await _repository.fetchSearchPlaceReview(
-        cateSort: newSort, searchSort: state.reviewSearchResult.searchSort);
+        cateSort: newSort, searchSort: 'popular');
 
     state.reviewSearchResult.changePlaceReviewList(response);
   }
@@ -112,7 +130,10 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
   }
 
   // 장소 공유 채팅 조회
-  Future<void> searchPlaceForChat() async {}
+  Future<PlaceReview> searchPlaceForChat(
+      String placeName, String placeAddress) async {
+    return await _repository.fetchSearchPlaceForChat(placeName, placeAddress);
+  }
 }
 
 final placeReviewSearchViewModelProvider =

@@ -93,7 +93,7 @@ class _PlaceListState extends ConsumerState<PlaceList> {
                           height: 50,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
+                              backgroundColor: Color(0xFF906FB7),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4.0),
                               ),
@@ -146,13 +146,15 @@ class _PlaceListState extends ConsumerState<PlaceList> {
             Icon(
               icon,
               size: 40,
-              color: cateIndex == text ? Colors.red : Colors.black,
+              color: cateIndex == text ? Color(0xFF906FB7) : Color(0xFF4A4A4A),
             ),
             const SizedBox(height: 8),
             Text(
               text,
               style: Theme.of(buildContext).textTheme.titleLarge?.copyWith(
-                    color: cateIndex == text ? Colors.red : Colors.black,
+                    color: cateIndex == text
+                        ? Color(0xFF906FB7)
+                        : Color(0xFF4A4A4A),
                   ),
             ),
           ],
@@ -172,7 +174,8 @@ class _PlaceListState extends ConsumerState<PlaceList> {
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           minimumSize: const Size(0, 0),
-          backgroundColor: sortIndex == index ? Colors.red : Colors.white,
+          backgroundColor:
+              sortIndex == index ? Color(0xFF906FB7) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -181,7 +184,12 @@ class _PlaceListState extends ConsumerState<PlaceList> {
           await widget.searchReviewProvider.changeSearchSort(index);
           setState(() {});
         },
-        child: Text(title, style: Theme.of(buildContext).textTheme.titleMedium),
+        child: Text(
+          title,
+          style: Theme.of(buildContext).textTheme.titleMedium?.copyWith(
+                color: sortIndex == index ? Colors.white : Colors.black,
+              ),
+        ),
       ),
     );
   }

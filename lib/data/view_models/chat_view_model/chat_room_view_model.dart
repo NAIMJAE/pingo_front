@@ -62,7 +62,7 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
   /// 메세지 ///
   // [1] 메세지 조회 - 채팅방을 클릭할 때
   Future<void> selectMessage(String roomId) async {
-    List<Message> messages = await _repository.selectMessage(roomId);
+    List<ChatMessage> messages = await _repository.selectMessage(roomId);
     if (messages == []) {
       logger.i('빈배열임당');
     } else {
@@ -72,12 +72,15 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
   }
 
   // 웹소캣에서 받아온 메세지 추가
-  void addMessage(Message messageList, String roomId) {
+  void addMessage(ChatMessage messageList, String roomId) {
     final chatRoom = state[roomId]!;
-    final updatedMessage = [...?chatRoom.message, messageList];
+    final updatedMessage = [...chatRoom.message, messageList];
+    logger.i('업데이트메세지 $updatedMessage');
     final updateChatRoom = chatRoom.copyWith(message: updatedMessage);
+    logger.i('state $state');
 
     state = {...state, roomId: updateChatRoom};
+    logger.i('state222 $state');
 
     // final updatedMessages = [...?chatUser.message, messageList];
     // final updateChatUser = chatUser.message.copyWith

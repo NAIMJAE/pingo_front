@@ -33,9 +33,9 @@ List<Profile> _generateProfiles() {
       status: '접속 중',
       distance: '1km 거리',
       ImageList: [
-        '/images/users/USec57c47a/UI7890bed5.jpeg',
-        '/images/users/US5dcc4adb/UI4c1857df.png',
-        '/images/users/USd30a4c47/UI1fc3bbce.jpeg'
+        '/images/users/US1d49ccfd/UI6aabdcd4.jpg',
+        '/images/users/US761293e0/UIbdefe04a.jpg',
+        '/images/users/US5f080b30/UI7e8f6be3.jpg'
       ],
       profileDetail: ProfileDetail(
         UserInfo(
@@ -73,9 +73,9 @@ List<Profile> _generateProfiles() {
       status: '5분 전 접속',
       distance: '3km 거리',
       ImageList: [
-        '/images/users/US5dcc4adb/UI4c1857df.png',
-        '/images/users/USec57c47a/UI7890bed5.jpeg',
-        '/images/users/USd30a4c47/UI1fc3bbce.jpeg'
+        '/images/users/US761293e0/UIbdefe04a.jpg',
+        '/images/users/US1d49ccfd/UI6aabdcd4.jpg',
+        '/images/users/US5f080b30/UI7e8f6be3.jpg'
       ],
       profileDetail: ProfileDetail(
         UserInfo(

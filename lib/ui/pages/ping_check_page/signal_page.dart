@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/ui/pages/keyword_page/keyword_page.dart';
 import 'package:pingo_front/ui/pages/ping_check_page/ping_check_page.dart';
+import 'package:pingo_front/ui/widgets/common_appbar_line.dart';
 
 class SignalPage extends ConsumerStatefulWidget {
   final Function changePageForKeyword;
@@ -18,7 +19,12 @@ class _SignalPageState extends ConsumerState<SignalPage> {
   Widget build(BuildContext buildContext) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('여기 이름 뭘로 하지'),
+        bottom: CommonAppbarLine(),
+        scrolledUnderElevation: 0,
+        title: Text(
+          '시그널',
+          style: TextStyle(fontSize: 20, color: Colors.black),
+        ),
       ),
       body: Column(
         children: [
@@ -28,7 +34,7 @@ class _SignalPageState extends ConsumerState<SignalPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildTabButton(buildContext, "핑체크?", 0),
+                _buildTabButton(buildContext, "핑목록", 0),
                 _buildTabButton(buildContext, "키워드", 1),
               ],
             ),
@@ -63,15 +69,17 @@ class _SignalPageState extends ConsumerState<SignalPage> {
             border: BorderDirectional(
               bottom: BorderSide(
                   width: 2,
-                  color:
-                      _currentIndex == index ? Colors.redAccent : Colors.white),
+                  color: _currentIndex == index
+                      ? Color(0xFF906FB7)
+                      : Colors.white),
             ),
           ),
           child: Text(
             text,
             style: Theme.of(buildContext).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: _currentIndex == index ? Colors.red : Colors.black),
+                color:
+                    _currentIndex == index ? Color(0xFF906FB7) : Colors.black),
             textAlign: TextAlign.center,
           ),
         ),

@@ -15,13 +15,6 @@ class ChatMsg2Page extends StatefulWidget {
     super.key,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'roomId': roomId,
-      'myUserNo': myUserNo,
-    };
-  }
-
   @override
   State<ChatMsg2Page> createState() => _ChatMsg2PageState();
 }

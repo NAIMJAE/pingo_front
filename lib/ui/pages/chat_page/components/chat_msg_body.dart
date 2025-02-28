@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
-import 'package:pingo_front/data/models/chat_model/chat_room.dart';
 import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
@@ -86,9 +85,9 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
           child: ListView.builder(
             controller: scroll,
             shrinkWrap: true,
-            itemCount: chatRoom?.message?.length,
+            itemCount: chatRoom?.message.length,
             itemBuilder: (context, index) {
-              final message = chatRoom?.message![index];
+              final message = chatRoom?.message[index];
               // final chatUser = chatUsers[index];
               return _buildMessageItem(message!, widget.myUserNo, totalUser!);
             },
@@ -116,7 +115,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                       EdgeInsets.symmetric(vertical: 10), // 커서 중앙 정렬
                   suffixIcon: IconButton(
                     onPressed: () {
-                      final defaultMessage = Message(
+                      final defaultMessage = ChatMessage(
                         roomId: widget.roomId, // 채팅방 번호는 고정
                         isRead: false, // 읽음 카운트
                       );
@@ -184,7 +183,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                 File? chatFile = await getImage(ImageSource.gallery);
                 if (!mounted) return; // ✅ 위젯이 여전히 살아있는지 확인
                 logger.i('현재상태 $mounted');
-                final defaultMessage = Message(
+                final defaultMessage = ChatMessage(
                   roomId: widget.roomId,
                   isRead: false,
                 );
@@ -213,7 +212,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                 Map<String, dynamic>? chatFile = await getFile();
                 if (!mounted) return; // ✅ 위젯이 여전히 살아있는지 확인
                 logger.i('현재상태 $mounted');
-                final defaultMessage = Message(
+                final defaultMessage = ChatMessage(
                   roomId: widget.roomId,
                   isRead: false,
                 );
@@ -243,7 +242,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
 
   // 메시지 내용 띄우는 위젯
   Widget _buildMessageItem(
-      Message message, String? userNo, List<ChatUser> totalUser) {
+      ChatMessage message, String? userNo, List<ChatUser> totalUser) {
     final ChatUser selectUser = totalUser.firstWhere(
       (each) => each.userNo == message.userNo,
     );
@@ -292,7 +291,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
   }
 
 // 메시지 내용 말풍선
-  Widget _buildText(Message message, String? userNo) {
+  Widget _buildText(ChatMessage message, String? userNo) {
     if (message.msgType == 'image') {
       return Container(
         constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
@@ -335,7 +334,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
   }
 
 // 읽음 + 시간 풍선
-  Widget _buildRead(Message message, String? userNo) {
+  Widget _buildRead(ChatMessage message, String? userNo) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -394,17 +393,18 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
   }
 
 // 장소 공유 박스
-  Widget _msgPlaceBox(Message message) {
+  Widget _msgPlaceBox(ChatMessage message) {
     logger.i(message);
     logger.i(message.fileName);
     List<String>? placeInfo = message.fileName?.split('@#');
-    logger.i(placeInfo);
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PlaceMap(),
+            builder: (context) => PlaceMap(
+                placeName: placeInfo?[0] ?? '',
+                placeAddress: placeInfo?[1] ?? ''),
           ),
         );
       },
@@ -426,20 +426,26 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                 ),
               ),
             ),
-            Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      placeInfo?[0] ?? '',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    placeInfo?[0] ?? '',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                  Text(
+                    placeInfo?[1] ?? '',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: Colors.black54),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
