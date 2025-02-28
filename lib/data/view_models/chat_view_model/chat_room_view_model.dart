@@ -74,10 +74,13 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
   // 웹소캣에서 받아온 메세지 추가
   void addMessage(ChatMessage messageList, String roomId) {
     final chatRoom = state[roomId]!;
-    final updatedMessage = [...?chatRoom.message, messageList];
+    final updatedMessage = [...chatRoom.message, messageList];
+    logger.i('업데이트메세지 $updatedMessage');
     final updateChatRoom = chatRoom.copyWith(message: updatedMessage);
+    logger.i('state $state');
 
     state = {...state, roomId: updateChatRoom};
+    logger.i('state222 $state');
 
     // final updatedMessages = [...?chatUser.message, messageList];
     // final updateChatUser = chatUser.message.copyWith
