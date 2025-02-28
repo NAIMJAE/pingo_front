@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
@@ -51,6 +54,8 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
   // [4] 마지막 메세지 상태 저장
   void updateLastMessage(String roomId, String newMessage) {
     state[roomId]?.lastMessage = newMessage;
+    logger.i('여긴? ');
+
     // state = state.map((chat) {
     //   if (chat.roomId == roomId) {
     //     return chat.copyWith(lastMessage: newMessage);
@@ -74,12 +79,18 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
   // 웹소캣에서 받아온 메세지 추가
   void addMessage(ChatMessage messageList, String roomId) {
     final chatRoom = state[roomId]!;
-    final updatedMessage = [...chatRoom.message, messageList];
-    final updateChatRoom = chatRoom.copyWith(message: updatedMessage);
-    logger.i('state $state');
+    logger.i('이곳은?1 : $chatRoom');
 
-    state = {...state, roomId: updateChatRoom};
-    logger.i('state222 $state');
+    final updatedMessage = [...chatRoom.message, messageList];
+
+    // ✅ 상태가 바뀔 때만 업데이트
+    if (!listEquals(chatRoom.message, updatedMessage)) {
+      state = {...state, roomId: chatRoom.copyWith(message: updatedMessage)};
+    }
+    // final updateChatRoom = chatRoom.copyWith(message: updatedMessage);
+    // logger.i('state $state');
+    //
+    // state = {...state, roomId: updateChatRoom};
 
     // final updatedMessages = [...?chatUser.message, messageList];
     // final updateChatUser = chatUser.message.copyWith
