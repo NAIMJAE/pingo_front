@@ -300,11 +300,19 @@ class _MainScreenState extends ConsumerState<MainScreen>
       // 클릭했을 때 여기로 들어옴
       //onSelectNotification --> 최신버전에선 onDidReceiveNotificationResponse로 변경되었음
       onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        print("✅ 알림 클릭됨");
+        logger.i('알람클릭됨');
         if (response.payload != null) {
           Map<String, dynamic> data = jsonDecode(response.payload!);
+          print("✅ 알림 클릭됨");
+          logger.i('채팅방 클릭했을 때 들어오는 곳');
+          logger.i('채팅방이름 : ${data['chatRoomName'].toString()}');
 
-          navigateToChatScreen(
-              data['roomId'], data['chatRoomName'], data['myUserNo']);
+          navigateToChatScreen(data['roomId'], data['chatRoomName'].toString(),
+              data['myUserNo']);
+        } else {
+          logger.i('채팅방 클릭 ');
+          print("✅ 알림 클릭 실패");
         }
       },
     );

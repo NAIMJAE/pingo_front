@@ -62,6 +62,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     // final myUserNo = sessionUser.userNo;
     final chatRoom = ref.watch(chatProvider)[
         widget.roomId]; // 상태값 꺼내오기(state = Map<String,ChatRoom> 꺼내오는거임)'
+    logger.i('이곳도 계속 찍히니? $chatRoom');
 
     //WidgetsBinding : 라이프사이클 관리
     // build() 완료 후 최하단으로 스크롤
@@ -394,8 +395,6 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
 
 // 장소 공유 박스
   Widget _msgPlaceBox(ChatMessage message) {
-    logger.i(message);
-    logger.i(message.fileName);
     List<String>? placeInfo = message.fileName?.split('@#');
     return InkWell(
       onTap: () {

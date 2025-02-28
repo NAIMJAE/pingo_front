@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // 유저별 설정 프로바이더 (userNo 기반 관리)
@@ -16,6 +17,7 @@ class AppSettings {
   final bool autoAdjustDistance;
   final bool autoAdjustAge;
   final bool profileComplete;
+  final Map<String, String> chatAlarms;
 
   AppSettings({
     required this.maxDistance,
@@ -24,6 +26,7 @@ class AppSettings {
     required this.autoAdjustDistance,
     required this.autoAdjustAge,
     required this.profileComplete,
+    required this.chatAlarms,
   });
 
   // JSON 변환 (SharedPreferences 저장용)
@@ -34,6 +37,7 @@ class AppSettings {
         "autoAdjustDistance": autoAdjustDistance,
         "autoAdjustAge": autoAdjustAge,
         "profileComplete": profileComplete,
+        "chatAlarms": chatAlarms,
       };
 
   // JSON → 객체 변환
@@ -47,6 +51,12 @@ class AppSettings {
       autoAdjustDistance: json["autoAdjustDistance"] ?? true,
       autoAdjustAge: json["autoAdjustAge"] ?? false,
       profileComplete: json["profileComplete"] ?? false,
+      chatAlarms: (json["chatAlarms"] as Map<String, dynamic>?)!.map(
+        (key, value) => MapEntry(
+          key,
+          value.toString(),
+        ),
+      ),
     );
   }
 
@@ -58,6 +68,7 @@ class AppSettings {
     bool? autoAdjustDistance,
     bool? autoAdjustAge,
     bool? profileComplete,
+    Map<String, String>? chatAlarms,
   }) {
     return AppSettings(
       maxDistance: maxDistance ?? this.maxDistance,
@@ -66,6 +77,7 @@ class AppSettings {
       autoAdjustDistance: autoAdjustDistance ?? this.autoAdjustDistance,
       autoAdjustAge: autoAdjustAge ?? this.autoAdjustAge,
       profileComplete: profileComplete ?? this.profileComplete,
+      chatAlarms: chatAlarms ?? this.chatAlarms,
     );
   }
 }
@@ -81,6 +93,7 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
           autoAdjustDistance: true,
           autoAdjustAge: false,
           profileComplete: false,
+          chatAlarms: {},
         )) {
     _loadSettings();
   }
@@ -100,8 +113,13 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
 
   // 설정 변경 및 SharedPreferences 저장
   Future<void> updateSettings(AppSettings newSettings) async {
+    logger.i('updateSettings ...... - 디비 저장 시작');
+    logger.i('updateSettings ...... - ${newSettings.chatAlarms}');
     state = newSettings;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_getUserKey(), json.encode(newSettings.toJson()));
+    logger.i('updateSettings ...... - 디비 저장 끝');
   }
+
+  // 알람 내용
 }

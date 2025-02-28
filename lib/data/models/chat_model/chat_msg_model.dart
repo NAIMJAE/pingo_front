@@ -52,7 +52,7 @@ class ChatMessage {
 
   // Json으로 받아온것을 객체로 변환
   ChatMessage.fromJson(Map<String, dynamic> json)
-      : msgId = json['msgId'] ?? Uuid().v4(),
+      : msgId = json['msgId'] ?? '정지현 바보',
         roomId = json['roomId'],
         userNo = json['userNo'],
         msgContent = json['msgContent'],
