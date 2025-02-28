@@ -14,11 +14,19 @@ import 'package:pingo_front/data/network/custom_dio.dart';
 class UserSignupRepository {
   final CustomDio _customDio = CustomDio();
 
-  // 이메일 인증
+  // 이메일 인증번호 발송
   Future<bool> fetchVerifyEmail(String userEmail) async {
-    final response = await _customDio.post('/permit/email', data: userEmail);
-    return response;
+    final response =
+        await _customDio.post('/permit/sendemail', data: userEmail);
+
+    if (response != null) {
+      return response as bool;
+    } else {
+      return false;
+    }
   }
+
+  // 이메일 인증번호 체크
 
   /// 아이디 중복 검증
   Future<bool> fetchValidateId(String userId) async {
