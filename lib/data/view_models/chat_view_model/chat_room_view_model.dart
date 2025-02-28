@@ -75,7 +75,6 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
   void addMessage(ChatMessage messageList, String roomId) {
     final chatRoom = state[roomId]!;
     final updatedMessage = [...chatRoom.message, messageList];
-    logger.i('업데이트메세지 $updatedMessage');
     final updateChatRoom = chatRoom.copyWith(message: updatedMessage);
     logger.i('state $state');
 
