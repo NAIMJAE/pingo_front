@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 
 // step2 아이디 비밀번호 입력
 class UserIdPwStep extends StatefulWidget {
@@ -17,6 +18,11 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _userPw1Controller = TextEditingController();
   final TextEditingController _userPw2Controller = TextEditingController();
+  final TextEditingController _userEmailController = TextEditingController();
+  final TextEditingController _certificationController =
+      TextEditingController();
+
+  String isCertification = 'prev'; // prev - 인증 전 / doing - 인증 중 / end - 인증 완료
   String information = '';
 
   // 입력된 아이디, 비밀번호의 유효성 검증 함수
@@ -24,8 +30,12 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
     String userId = _userIdController.text.trim();
     String userPw1 = _userPw1Controller.text.trim();
     String userPw2 = _userPw2Controller.text.trim();
+    String userEmail = _userEmailController.text.trim();
 
-    if (userId.isEmpty || userPw1.isEmpty || userPw2.isEmpty) {
+    if (userId.isEmpty ||
+        userPw1.isEmpty ||
+        userPw2.isEmpty ||
+        userEmail.isEmpty) {
       setState(() {
         information = '모든 항목을 입력해주세요.';
       });
@@ -33,7 +43,7 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
     }
 
     int result = await widget.signupNotifier
-        .validationIdPwStep(userId, userPw1, userPw2);
+        .validationIdPwStep(userId, userPw1, userPw2, userEmail);
 
     setState(() {
       if (result == 1) {
@@ -50,8 +60,36 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
     });
   }
 
+  void _certificationBtn() async {
+    String userEmail = _userEmailController.text.trim();
+    if (userEmail.isEmpty) {
+      // 서버 보내기
+      bool result = widget.signupNotifier.verifyEmail(userEmail);
+
+      if (isCertification == 'prev' && result) {
+        setState(() {
+          isCertification = 'doing';
+        });
+      }
+    }
+  }
+
+  void _checkCodeBtn() {
+    // 다른 로직 추가
+
+    bool result = true; // 서버에서 true 값 받아오도록 하고 나중에 이건 지워야함
+
+    if (isCertification == 'doing' && result) {
+      setState(() {
+        isCertification = 'end';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    logger.i(isCertification);
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 32.0),
       width: double.infinity,
@@ -60,6 +98,13 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          _emailInputBox('이메일', 'example@email.com', false,
+              _userEmailController, '인증', _certificationBtn),
+          const SizedBox(height: 4),
+          if (isCertification == 'doing')
+            _emailInputBox(null, '인증번호', false, _certificationController, '확인',
+                _checkCodeBtn),
+          const SizedBox(height: 20),
           _textInputBox('아이디', '영문+숫자 (6~12자리)', false, _userIdController),
           const SizedBox(height: 20),
           _textInputBox(
@@ -81,7 +126,7 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
             height: 50,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
+                backgroundColor: Colors.lightBlueAccent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0),
                 ),
@@ -129,6 +174,65 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
             hintStyle: TextStyle(color: Colors.grey),
           ),
           obscureText: obscure,
+        ),
+      ],
+    );
+  }
+
+  Widget _emailInputBox(String? title, String textHint, bool obscure,
+      TextEditingController controller, String btnName, Function btnFunction) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null)
+          Text(
+            title,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+        const SizedBox(height: 4.0),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey)),
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey)),
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: textHint,
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+                obscureText: obscure,
+              ),
+            ),
+            InkWell(
+              onTap: () => btnFunction(),
+              child: Container(
+                width: 60,
+                height: 50,
+                margin: const EdgeInsets.only(left: 10),
+                decoration: BoxDecoration(
+                  color: Colors.lightBlueAccent,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Center(
+                  child: Text(
+                    btnName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );

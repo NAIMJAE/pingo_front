@@ -23,9 +23,15 @@ class SignupViewModel extends Notifier<UserSignup> {
     return UserSignup();
   }
 
+  // 이메일 인증
+  Future<bool> verifyEmail(String userEmail) async {
+    bool isSuccess = await _repository.fetchVerifyEmail(userEmail);
+    return isSuccess;
+  }
+
   // 회원 정보 검증
   Future<int> validationIdPwStep(
-      String userId, String userPw1, String userPw2) async {
+      String userId, String userPw1, String userPw2, String userEmail) async {
     final RegExp idRegex = RegExp(r'^[a-zA-Z0-9]{6,12}$');
     if (idRegex.hasMatch(userId)) {
       try {
@@ -54,6 +60,8 @@ class SignupViewModel extends Notifier<UserSignup> {
     } else {
       return 4;
     }
+
+    // 이메일 제약 걸어야 하고
   }
 
   // user 기본 정보 검증

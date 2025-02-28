@@ -66,8 +66,9 @@ class _UserProfileStepState extends State<UserProfileStep> {
             height: 50,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    _profileImage == null ? Colors.grey : Colors.redAccent,
+                backgroundColor: _profileImage == null
+                    ? Colors.grey
+                    : Colors.lightBlueAccent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0),
                 ),

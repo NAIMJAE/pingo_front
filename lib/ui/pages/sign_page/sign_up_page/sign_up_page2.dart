@@ -142,7 +142,7 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
           Container(
             width: double.infinity,
             height: 4,
-            color: Colors.redAccent,
+            color: Colors.lightBlueAccent,
           ),
           Positioned(
             top: 12,
@@ -172,8 +172,9 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            color:
-                index > currentStep ? Colors.grey.shade200 : Colors.redAccent,
+            color: index > currentStep
+                ? Colors.grey.shade200
+                : Colors.lightBlueAccent,
             shape: BoxShape.circle,
           ),
           child: Icon(icon,
