@@ -115,7 +115,7 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
     bool result = await widget.kakaoSearchProvider.insertPlaceReview(data);
 
     if (result) {
-      // 작성 되었습니다 띄우고 네비게이션 스택 다 파괴하고 서치페이지에 뜨게하기?
+      FocusScope.of(context).unfocus();
       Navigator.pop(
         context,
       );

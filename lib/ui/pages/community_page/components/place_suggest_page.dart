@@ -70,13 +70,12 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
 
   // 검색창이 비었을 때 실행할 함수
   void _onSearchCleared() {
-    setState(() {
-      _placeIndex = 0;
-      ref
-          .read(placeReviewSearchViewModelProvider.notifier)
-          .searchLastPlaceReview();
-      FocusScope.of(context).unfocus();
-    });
+    _placeIndex = 0;
+    FocusScope.of(context).unfocus();
+    setState(() {});
+    ref
+        .read(placeReviewSearchViewModelProvider.notifier)
+        .searchLastPlaceReview();
   }
 
   // place suggest 내의 index 변경 함수
@@ -125,7 +124,7 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
                       index: _placeIndex,
                       children: [
                         PlaceList(searchReviewState, searchReviewProvider,
-                            changePlaceShared),
+                            changePlaceShared, _onSearchCleared),
                         PlaceSearch(searchReviewState, searchReviewProvider,
                             _onSearchCleared),
                       ],
