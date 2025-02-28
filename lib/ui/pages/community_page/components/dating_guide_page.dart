@@ -89,6 +89,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
           bottom: 20,
           right: 20,
           child: FloatingActionButton(
+            backgroundColor: Color(0xFF906FB7),
             onPressed: () => moveToWritePage(context),
             child: Icon(Icons.add),
           ),
@@ -132,7 +133,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
                             bottom: BorderSide(
                               width: 2,
                               color: guideGroup.sort == 'popular'
-                                  ? Colors.redAccent
+                                  ? Color(0xFF906FB7)
                                   : Colors.white,
                             ),
                           ),
@@ -141,7 +142,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
                           '인기순',
                           style: TextStyle(
                               color: guideGroup.sort == 'popular'
-                                  ? Colors.redAccent
+                                  ? Color(0xFF906FB7)
                                   : Colors.black,
                               fontWeight: guideGroup.sort == 'popular'
                                   ? FontWeight.bold
@@ -242,8 +243,11 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(datingGuide.title ?? '',
-                      style: Theme.of(context).textTheme.headlineMedium),
+                  Text(
+                    datingGuide.title ?? '',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
