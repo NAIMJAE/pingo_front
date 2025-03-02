@@ -33,6 +33,14 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
   late Map<String, String> chatAlarms;
   late String? msgContent;
 
+  String searchQuery = '';
+
+  void _updateSearchQuery(String query) {
+    setState(() {
+      searchQuery = query;
+    });
+  }
+
   // initState는 비동기를 직접 사용할 수 없음.
   @override
   void initState() {
@@ -71,9 +79,9 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
     logger.i('$chatList room process......0 - 시작');
 
     // 📌 데이터가 비어 있거나 아직 로딩 중일 경우, 로딩 표시 또는 빈 위젯 반환
-    if (chatList.isEmpty) {
-      return const Center(child: CircularProgressIndicator()); // 로딩 인디케이터
-    }
+    // if (chatList.isEmpty) {
+    //   return const Center(child: CircularProgressIndicator()); // 로딩 인디케이터
+    // }
 
     // 리스트, 매치로 구별하기 위한 빈 함수
     Map<String, ChatRoom> listChat = {};
@@ -103,6 +111,7 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
             message: chatRoom.message,
             lastMessage: chatRoom.lastMessage);
       }
+      logger.i('chatList : $chatList');
 
       // 메세지가 비어있으면 로직 중지
       if (chatRoom.message.isEmpty) {
@@ -178,14 +187,16 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
         padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: [
-            ChatSearchHeader(chatList),
+            ChatSearchHeader(
+                chatList: chatList, onSearchChanged: _updateSearchQuery),
             const SizedBox(height: 8),
             ChatMatch(
               chatList: matchChat,
               myUserNo: myUserNo!,
+              searchQuery: searchQuery,
             ),
             const SizedBox(height: 8),
-            ChatRoomList(listChat, myUserNo!),
+            ChatRoomList(listChat, myUserNo!, searchQuery),
           ],
         ),
       ),
