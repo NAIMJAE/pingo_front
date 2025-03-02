@@ -148,7 +148,7 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    "📍 ${widget.profile.profileDetail?.userInfo?.userAddress ?? ''} • ${widget.profile.distance}",
+                    "📍 ${widget.profile.profileDetail?.userInfo?.userAddress ?? ''}",
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                   Divider(color: Colors.white24),
