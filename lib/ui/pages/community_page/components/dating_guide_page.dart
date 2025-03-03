@@ -274,7 +274,7 @@ class _DatingGuidePageState extends ConsumerState<DatingGuidePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.thumb_up_outlined,
+                            CupertinoIcons.heart,
                             size: 20,
                             color: Colors.redAccent,
                           ),

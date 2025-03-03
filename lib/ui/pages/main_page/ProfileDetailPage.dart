@@ -24,6 +24,7 @@ class ProfileDetailPage extends ConsumerStatefulWidget {
 class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
   int currentImageIndex = 0; // 현재 표시 중인 이미지 인덱스
   late String userNo;
+  double _appBarOpacity = 0.0; // 앱바 배경 투명도
 
   @override
   void initState() {
@@ -40,7 +41,7 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
     try {
       ProfileDetail profileDetail = await ref
           .read(mainPageViewModelProvider.notifier)
-          .fetchMyDetail(userNo);
+          .fetchMyDetail(widget.profile.userNo);
 
       setState(() {
         widget.profile.profileDetail = profileDetail;
@@ -73,150 +74,154 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text(widget.profile.name, style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.download, color: Colors.pinkAccent),
-            onPressed: () {},
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTapUp: (TapUpDetails details) {
-                final tapPosition = details.globalPosition.dx;
-                final screenWidth = MediaQuery.of(context).size.width;
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTapUp: (TapUpDetails details) {
+                    final tapPosition = details.globalPosition.dx;
+                    final screenWidth = MediaQuery.of(context).size.width;
 
-                if (tapPosition < screenWidth / 2) {
-                  _showPreviousImage();
-                } else {
-                  _showNextImage();
-                }
-              },
-              child: Column(
-                children: [
-                  SizedBox(height: 10),
-                  Container(
-                    height: 400,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: CustomImage().getImageProvider(
-                            widget.profile.ImageList[currentImageIndex]),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      widget.profile.ImageList.length,
-                      (index) => Container(
-                        width: 20,
-                        height: 5,
-                        margin: EdgeInsets.symmetric(horizontal: 3),
+                    if (tapPosition < screenWidth / 2) {
+                      _showPreviousImage();
+                    } else {
+                      _showNextImage();
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 400,
+                        width: double.infinity,
                         decoration: BoxDecoration(
-                          color: index == currentImageIndex
-                              ? Colors.white
-                              : Colors.white.withOpacity(0.4),
-                          borderRadius: BorderRadius.circular(5),
+                          image: DecorationImage(
+                            image: CustomImage().getImageProvider(
+                                widget.profile.ImageList[currentImageIndex]),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                    ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          widget.profile.ImageList.length,
+                          (index) => Container(
+                            width: 20,
+                            height: 5,
+                            margin: EdgeInsets.symmetric(horizontal: 3),
+                            decoration: BoxDecoration(
+                              color: index == currentImageIndex
+                                  ? Colors.white
+                                  : Colors.white.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${widget.profile.name}, ${widget.profile.age}",
-                    style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${widget.profile.name}, ${widget.profile.age}",
+                        style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "📍 ${widget.profile.profileDetail?.userInfo?.userAddress ?? ''} • ${widget.profile.distance}",
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                      Divider(color: Colors.white24),
+                      _buildInfoRow(
+                          "생년월일",
+                          widget.profile.profileDetail?.userInfo?.userBirth
+                                  ?.toLocal()
+                                  .toString()
+                                  .split(' ')[0] ??
+                              '정보 없음'),
+                      _buildInfoRow("키",
+                          "${widget.profile.profileDetail?.userInfo?.userHeight ?? '정보 없음'} cm"),
+                      _buildInfoRow(
+                          "주소",
+                          widget.profile.profileDetail?.userInfo?.userAddress ??
+                              '정보 없음'),
+                      _buildInfoRow(
+                          "1차 직업",
+                          widget.profile.profileDetail?.userInfo?.user1stJob ??
+                              '정보 없음'),
+                      _buildInfoRow(
+                          "2차 직업",
+                          widget.profile.profileDetail?.userInfo?.user2ndJob ??
+                              '정보 없음'),
+                      _buildInfoRow(
+                          "종교",
+                          widget.profile.profileDetail?.userInfo
+                                  ?.userReligion ??
+                              '정보 없음'),
+                      _buildInfoRow(
+                          "음주",
+                          widget.profile.profileDetail?.userInfo
+                                      ?.userDrinking ==
+                                  'F'
+                              ? '하지 않음'
+                              : '가끔 마심'),
+                      _buildInfoRow(
+                          "흡연",
+                          widget.profile.profileDetail?.userInfo?.userSmoking ==
+                                  'F'
+                              ? '비흡연'
+                              : '흡연'),
+                      Divider(color: Colors.white24),
+                    ],
                   ),
-                  SizedBox(height: 5),
-                  Text(
-                    "📍 ${widget.profile.profileDetail?.userInfo?.userAddress ?? ''} • ${widget.profile.distance}",
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Wrap(
+                    spacing: 8,
+                    children: [
+                      ...List.generate(
+                        widget.profile.profileDetail?.userKeyword?.length ?? 0,
+                        (index) => _buildTag(
+                            '${widget.profile.profileDetail?.userKeyword?[index].kwName}'),
+                      )
+                    ],
                   ),
-                  Divider(color: Colors.white24),
-                  _buildInfoRow(
-                      "생년월일",
-                      widget.profile.profileDetail?.userInfo?.userBirth
-                              ?.toLocal()
-                              .toString()
-                              .split(' ')[0] ??
-                          '정보 없음'),
-                  _buildInfoRow("키",
-                      "${widget.profile.profileDetail?.userInfo?.userHeight ?? '정보 없음'} cm"),
-                  _buildInfoRow(
-                      "주소",
-                      widget.profile.profileDetail?.userInfo?.userAddress ??
-                          '정보 없음'),
-                  _buildInfoRow(
-                      "1차 직업",
-                      widget.profile.profileDetail?.userInfo?.user1stJob ??
-                          '정보 없음'),
-                  _buildInfoRow(
-                      "2차 직업",
-                      widget.profile.profileDetail?.userInfo?.user2ndJob ??
-                          '정보 없음'),
-                  _buildInfoRow(
-                      "종교",
-                      widget.profile.profileDetail?.userInfo?.userReligion ??
-                          '정보 없음'),
-                  _buildInfoRow(
-                      "음주",
-                      widget.profile.profileDetail?.userInfo?.userDrinking ==
-                              'F'
-                          ? '하지 않음'
-                          : '가끔 마심'),
-                  _buildInfoRow(
-                      "흡연",
-                      widget.profile.profileDetail?.userInfo?.userSmoking == 'F'
-                          ? '비흡연'
-                          : '흡연'),
-                  Divider(color: Colors.white24),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Wrap(
-                spacing: 8,
-                children: [
-                  _buildTag("산책"),
-                  _buildTag("맛집"),
-                  _buildTag("자기 개발"),
-                  _buildTag("여행"),
-                  _buildTag("야구"),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildActionButton(Icons.close, Colors.pink, () {}),
-                _buildActionButton(Icons.star, Colors.blue, () {}),
-                _buildActionButton(Icons.favorite, Colors.green, () {}),
+                ),
+                SizedBox(height: 150),
               ],
             ),
-            SizedBox(height: 30),
-          ],
-        ),
+          ),
+          Positioned(
+            bottom: 0,
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildActionButton(Icons.close, Colors.pink, () {}),
+                  _buildActionButton(Icons.star, Colors.blue, () {}),
+                  _buildActionButton(Icons.favorite, Colors.green, () {}),
+                ],
+              ),
+            ),
+          ),
+          // 앱바
+          _guideCustomAppbar(),
+        ],
       ),
     );
   }
@@ -236,8 +241,9 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
 
   Widget _buildTag(String text) {
     return Chip(
-      label: Text(text, style: TextStyle(color: Colors.white)),
-      backgroundColor: Colors.pinkAccent,
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+      label: Text('#$text', style: TextStyle(color: Colors.white)),
+      backgroundColor: Colors.black,
     );
   }
 
@@ -247,6 +253,45 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
       onPressed: onPressed,
       backgroundColor: color,
       child: Icon(icon, size: 30, color: Colors.white),
+    );
+  }
+
+  Widget _guideCustomAppbar() {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        height: 80,
+        padding: EdgeInsets.only(left: 16, right: 16, top: 30),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(_appBarOpacity),
+          boxShadow: _appBarOpacity > 0.1
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    spreadRadius: 2,
+                  )
+                ]
+              : [],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                FocusScope.of(context).unfocus();
+              },
+              child: Container(
+                padding: EdgeInsets.all(8),
+                child: Icon(Icons.arrow_back, color: Colors.black),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -57,8 +57,7 @@ class _MyinfoBoxState extends ConsumerState<MyinfoBox> {
               ),
             ),
             const SizedBox(width: 16),
-            SizedBox(
-              width: cntWidth / 2,
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

@@ -18,13 +18,20 @@ class ReviewSearchResult {
     placeReviewList?.addAll(newList);
   }
 
-  // SROT 변경
+  // SORT 변경
   void changeSearchSort(String? newSort) {
     searchSort = newSort;
   }
 
-  // SROT 변경
+  // SORT 변경
   void changeCateSort(String? newSort) {
     cateSort = newSort;
+  }
+
+  // 좋아요 처리
+  void changeHeart(String prNo, int num) {
+    PlaceReview? target =
+        placeReviewList?.firstWhere((each) => each.prNo == prNo);
+    target?.heart = target.heart! + num;
   }
 }

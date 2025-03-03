@@ -127,7 +127,16 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
     double cntWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: Text("추천 장소 등록")),
+      appBar: AppBar(
+        title: Text("추천 장소 등록"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            FocusScope.of(context).unfocus(); // 키보드 닫기
+            Navigator.of(context).pop(); // 뒤로 가기
+          },
+        ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(32.0),
@@ -136,7 +145,7 @@ class _PlaceWritePageState extends State<PlaceWritePage> {
               children: [
                 Text(
                   '다른 사용자를 위해 장소를 추천해보세요!',
-                  style: Theme.of(context).textTheme.headlineLarge,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 32),
                 _buildProfileBox(cntWidth),

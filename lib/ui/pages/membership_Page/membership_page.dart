@@ -54,7 +54,7 @@ class _PaymentPageState extends ConsumerState<MembershipPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text("결제하실 구독권을 선택해주세요."),
-          backgroundColor: Colors.red,
+          backgroundColor: Color(0xFF906FB7),
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.only(bottom: 80, left: 16, right: 16),
           duration: const Duration(seconds: 2),
@@ -149,9 +149,11 @@ class _PaymentPageState extends ConsumerState<MembershipPage> {
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            _explainRow('슈퍼핑 몇개?'),
+                            _explainRow('무제한 SUPER PING'),
                             const SizedBox(height: 8),
-                            _explainRow('되돌리기 무한?'),
+                            _explainRow('나를 PING한 사람 프로필 보기'),
+                            const SizedBox(height: 8),
+                            _explainRow('상대와의 최대거리 200KM'),
                           ],
                         ),
                       ),
@@ -186,7 +188,7 @@ class _PaymentPageState extends ConsumerState<MembershipPage> {
       height: 50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Color(0xFF906FB7),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.0),
           ),
@@ -221,7 +223,7 @@ class _PaymentPageState extends ConsumerState<MembershipPage> {
             margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
             decoration: BoxDecoration(
               color: membership.msNo == selectedMembership?.msNo
-                  ? Colors.red
+                  ? Color(0xFF906FB7)
                   : backColor,
               boxShadow: [
                 BoxShadow(
@@ -238,15 +240,19 @@ class _PaymentPageState extends ConsumerState<MembershipPage> {
               children: [
                 Text(
                   membership.title!,
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: membership.msNo == selectedMembership?.msNo
+                          ? Colors.black
+                          : Colors.black54),
                 ),
                 Text(
                   '${NumberFormat('#,###').format(membership.price)} 원',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: membership.msNo == selectedMembership?.msNo
+                          ? Colors.black
+                          : Colors.black54),
                 ),
               ],
             ),

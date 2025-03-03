@@ -227,6 +227,13 @@ class _PlaceSuggestPageState extends ConsumerState<PlaceSuggestPage>
         final stompViewModel = ref.read(stompViewModelProvider.notifier);
         stompViewModel.sendMessage(message, roomId, null, null);
         isShared = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('장소가 공유되었습니다.'),
+            duration: Duration(seconds: 2), // 스낵바 표시 시간
+          ),
+        );
       },
       child: Column(
         children: [

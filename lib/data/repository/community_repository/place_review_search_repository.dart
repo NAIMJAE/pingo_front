@@ -37,6 +37,18 @@ class PlaceReviewSearchRepository {
     return response;
   }
 
+  // 게시글 좋아요
+  Future<String> fetchClickThumbUp(String userNo, String prNo) async {
+    final response = await _customDio.post(
+      '/community/place/heart',
+      data: {
+        'userNo': userNo,
+        'prNo': prNo,
+      },
+    );
+    return response;
+  }
+
   // 서버에서 장소 리뷰 조회
   Future<List<PlaceReview>> fetchSearchPlaceReview(
       {required String? cateSort,

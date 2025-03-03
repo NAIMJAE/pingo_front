@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
@@ -17,6 +18,12 @@ void main() async {
   AuthRepository.initialize(
       appKey: dotenv.env['APP_KEY'] ?? '',
       baseUrl: dotenv.env['BASE_URL'] ?? '');
+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.white, // 하단 바 배경색 변경
+    systemNavigationBarIconBrightness:
+        Brightness.dark, // 아이콘 색상 (light or dark)
+  ));
 
   runApp(ProviderScope(child: PingoApp()));
 }
@@ -57,6 +64,7 @@ class _PingoAppState extends State<PingoApp> with WidgetsBindingObserver {
     return MaterialApp(
       navigatorKey: navigatorkey,
       debugShowCheckedModeBanner: false,
+      showSemanticsDebugger: false,
       theme: mTheme(),
       home: SafeArea(
         child: SplashPage(),

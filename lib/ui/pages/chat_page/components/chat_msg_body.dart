@@ -296,7 +296,9 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     if (message.msgType == 'image') {
       return Container(
         constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
-        padding: EdgeInsets.only(left: 16),
+        padding: message.userNo != userNo
+            ? EdgeInsets.only(right: 16)
+            : EdgeInsets.only(left: 16),
         child: CustomImage().token(
           message.msgContent ?? '',
         ),
@@ -305,14 +307,18 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     if (message.msgType == 'file') {
       return Container(
         constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
-        padding: EdgeInsets.only(left: 16),
+        padding: message.userNo != userNo
+            ? EdgeInsets.only(right: 16)
+            : EdgeInsets.only(left: 16),
         child: _msgFileBox(),
       );
     }
     if (message.msgType == 'place') {
       return Container(
         constraints: BoxConstraints(maxWidth: 250), // 너무 길면 알아서 자르기
-        padding: EdgeInsets.only(left: 16),
+        padding: message.userNo != userNo
+            ? EdgeInsets.only(right: 16)
+            : EdgeInsets.only(left: 16),
         child: _msgPlaceBox(message),
       );
     }
@@ -339,7 +345,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('${message.isRead}'),
+        //Text('${message.isRead}'),
         Text('${formatTime(message.msgTime)}'),
       ],
     );

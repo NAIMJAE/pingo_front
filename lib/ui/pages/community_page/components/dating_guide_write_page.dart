@@ -92,6 +92,13 @@ class _DatingGuideWritePageState extends ConsumerState<DatingGuideWritePage> {
               '데이팅 가이드 작성',
               style: TextStyle(fontSize: 16),
             ),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                FocusScope.of(context).unfocus(); // 키보드 닫기
+                Navigator.of(context).pop(); // 뒤로 가기
+              },
+            ),
           ),
           body: SingleChildScrollView(
             child: Padding(
@@ -240,9 +247,9 @@ class _DatingGuideWritePageState extends ConsumerState<DatingGuideWritePage> {
         },
         style: OutlinedButton.styleFrom(
           backgroundColor:
-              selectedCate == cateNo ? Colors.redAccent : Colors.white,
+              selectedCate == cateNo ? Color(0xFF906FB7) : Colors.white,
           side: BorderSide(
-              color: selectedCate == cateNo ? Colors.redAccent : Colors.grey,
+              color: selectedCate == cateNo ? Color(0xFF906FB7) : Colors.grey,
               width: 1),
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           shape: RoundedRectangleBorder(
@@ -266,7 +273,7 @@ class _DatingGuideWritePageState extends ConsumerState<DatingGuideWritePage> {
       height: 50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Color(0xFF906FB7),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.0),
           ),

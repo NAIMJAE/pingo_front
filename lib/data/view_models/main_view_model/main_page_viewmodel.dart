@@ -217,6 +217,8 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
       // UserMypageInfo 데이터 가져오기
       final userMypageInfo = await userRepository.fetchMyPageInfo(userNo);
 
+      logger.e(userMypageInfo);
+
       // userInfo 데이터 할당
       UserInfo? userInfo = userMypageInfo.userInfo;
 

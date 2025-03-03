@@ -1,27 +1,61 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/models/community_model/place_review.dart';
+import 'package:pingo_front/data/view_models/community_view_model/place_review_search_view_model.dart';
+import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
 
-class PlaceBox extends StatefulWidget {
+class PlaceBox extends ConsumerStatefulWidget {
   final PlaceReview placeReview;
   final Function changePlaceShared;
 
   const PlaceBox(this.placeReview, this.changePlaceShared, {super.key});
   @override
-  State<PlaceBox> createState() => _PlaceBoxState();
+  ConsumerState<PlaceBox> createState() => _PlaceBoxState();
 }
 
-class _PlaceBoxState extends State<PlaceBox> {
-  bool isExpanded = false; // 상태 유지
+class _PlaceBoxState extends ConsumerState<PlaceBox> {
+  bool isExpanded = false; // 크기 조절용
+  bool showText = false; // 텍스트 표시 여부
 
-  @override
-  void didUpdateWidget(covariant PlaceBox oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.placeReview != oldWidget.placeReview) {
+  void _toggleExpanded() {
+    if (isExpanded) {
+      // 축소할 때는 동시에 처리
       setState(() {
-        isExpanded = false; // 부모에서 placeReview 변경 시 자동 초기화
+        showText = false;
+        isExpanded = false;
+      });
+    } else {
+      // 확장할 때는 크기 변경 후 텍스트 표시
+      setState(() {
+        isExpanded = true;
+      });
+      Future.delayed(Duration(milliseconds: 300), () {
+        setState(() {
+          showText = true;
+        });
       });
     }
+  }
+
+  void _clickPlaceReviewHeart() async {
+    String? userNo = ref.read(sessionProvider).userNo;
+    String result = await ref
+        .read(placeReviewSearchViewModelProvider.notifier)
+        .clickThumbUp(userNo!, widget.placeReview.prNo!);
+    if (result == 'increase') {
+      ref
+          .read(placeReviewSearchViewModelProvider)
+          .reviewSearchResult
+          .changeHeart(widget.placeReview.prNo!, 1);
+    } else {
+      ref
+          .read(placeReviewSearchViewModelProvider)
+          .reviewSearchResult
+          .changeHeart(widget.placeReview.prNo!, -1);
+    }
+    setState(() {});
   }
 
   @override
@@ -29,14 +63,10 @@ class _PlaceBoxState extends State<PlaceBox> {
     double totalWidth = MediaQuery.of(context).size.width;
 
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          isExpanded = !isExpanded;
-        });
-      },
+      onTap: _toggleExpanded,
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 300), // 애니메이션 지속 시간
-        curve: Curves.easeInOut, // 부드러운 애니메이션 효과
+        duration: Duration(milliseconds: 400), // 크기 변경 애니메이션 지속 시간
+        curve: Curves.easeInOut,
         margin: EdgeInsets.only(bottom: 8.0),
         width: totalWidth * 0.9,
         height: isExpanded
@@ -68,10 +98,26 @@ class _PlaceBoxState extends State<PlaceBox> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    _clickPlaceReviewHeart();
+                  },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Icon(Icons.thumb_up, size: 20, color: Colors.white),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(CupertinoIcons.heart_fill,
+                            size: 20, color: Colors.white),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${widget.placeReview.heart}',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 GestureDetector(
@@ -120,32 +166,38 @@ class _PlaceBoxState extends State<PlaceBox> {
                         .bodyLarge
                         ?.copyWith(color: Colors.white),
                   ),
-                  // ✅ 추가 정보 (애니메이션 적용)
+                  // ✅ 크기 변경 후 텍스트가 나타나도록 수정
                   AnimatedOpacity(
                     duration: Duration(milliseconds: 400),
-                    curve: Curves.easeInExpo,
-                    opacity: isExpanded ? 1.0 : 0.0, // 클릭 시 투명도 조절
-                    child: Visibility(
-                      visible: isExpanded,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 8),
-                          Text(
-                            "🏷 ${widget.placeReview.userNick}",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
-                                ?.copyWith(color: Colors.white),
-                          ),
-                          Text(
-                            "💬 ${widget.placeReview.contents}",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
-                                ?.copyWith(color: Colors.white),
-                          ),
-                        ],
+                    curve: Curves.easeInOut, // 부드러운 이동
+                    opacity: showText ? 1.0 : 0.0,
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 400),
+                      curve: Curves.easeOutCubic, // 자연스럽게 멈추는 애니메이션
+                      transform: Matrix4.translationValues(
+                          0, showText ? 0 : 10, 0), // Y축 이동
+                      child: Visibility(
+                        visible: showText,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 8),
+                            Text(
+                              "🏷 ${widget.placeReview.userNick}",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(color: Colors.white),
+                            ),
+                            Text(
+                              "💬 ${widget.placeReview.contents}",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(color: Colors.white),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

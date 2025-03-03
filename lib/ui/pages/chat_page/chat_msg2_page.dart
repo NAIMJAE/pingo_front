@@ -24,6 +24,7 @@ class _ChatMsg2PageState extends State<ChatMsg2Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: Text(widget.chatRoomName),
       ),
       body: SafeArea(
