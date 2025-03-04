@@ -32,8 +32,7 @@ class _ChatSearchHeaderState extends State<ChatSearchHeader> {
               ),
               child: TextField(
                 onChanged: (value) {
-                  widget.onSearchChanged(value); // 🔥 부모에게 검색어 전달
-                  // _scrollToBottom11(); // 🔥 스크롤 최하단 이동
+                  widget.onSearchChanged(value); // 부모에게 검색어 전달
                 },
                 // controller: search, // 키보드의 서치버튼 클릭시 clear 처리
                 decoration: InputDecoration(
