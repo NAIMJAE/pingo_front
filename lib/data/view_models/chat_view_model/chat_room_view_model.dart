@@ -25,7 +25,7 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
     try {
       final Map<String, ChatRoom> chatRoomMap =
           await _repository.selectRoomId(userNo);
-      if (chatRoomMap == []) {
+      if (chatRoomMap.isEmpty) {
         logger.e('빈배열이다');
         return {};
       }
@@ -68,6 +68,7 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
   // [1] 메세지 조회 - 채팅방을 클릭할 때
   Future<void> selectMessage(String roomId) async {
     List<ChatMessage> messages = await _repository.selectMessage(roomId);
+    logger.i("메세지 리벌스 : $messages");
     if (messages == []) {
       logger.i('빈배열임당');
     } else {
