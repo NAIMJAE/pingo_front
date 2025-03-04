@@ -16,66 +16,11 @@ class SignupViewModel extends Notifier<UserSignup> {
   // 프로필 사진 저장용
   File? profileImage;
 
-  // 인증코드 세션
-  String? sessionId;
-
   @override
   UserSignup build() {
     // 이 view-model 생성시 빈 UserSignup 객체 생성해서
     // 회원가입 step 진행할 때마다 값 채움
     return UserSignup();
-  }
-
-  // 이메일 인증번호 발송
-  Future<int> verifyEmail(String userEmail) async {
-    final RegExp emailRegex =
-        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-
-    if (emailRegex.hasMatch(userEmail)) {
-      try {
-        String? sessionIdForCode =
-            await _repository.fetchVerifyEmail(userEmail);
-
-        if (sessionIdForCode != null) {
-          sessionId = sessionIdForCode;
-          logger.d("세션 ID 저장됨: $sessionId");
-          return 1;
-        } else {
-          return 3;
-        }
-      } catch (e) {
-        logger.e('Failed to fetch verifyEmail: $e');
-        return 4;
-      }
-    } else {
-      return 2;
-    }
-  }
-
-  // 이메일 인증번호 체크
-  Future<int> verifyCode(String userEmail, String code) async {
-    try {
-      if (sessionId == null) {
-        logger.e("세션 ID 없음");
-        return 3;
-      }
-
-      Map<String, dynamic> requestData = {
-        "userEmail": userEmail,
-        "code": code,
-        "sessionId": sessionId // 세션 ID 함께 전송
-      };
-
-      bool isSuccess = await _repository.fetchVerifyCode(requestData);
-      if (isSuccess) {
-        return 1; // 인증 성공
-      } else {
-        return 2; // 인증번호 불일치
-      }
-    } catch (e) {
-      logger.e('Failed to fetch verifyCode: $e');
-      return 3; // 서버 오류
-    }
   }
 
   // 회원 정보 검증
@@ -97,7 +42,7 @@ class SignupViewModel extends Notifier<UserSignup> {
     }
 
     final RegExp passwordRegex = RegExp(
-        r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,14}$');
+        r'^[A-Z](?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{7,13}$');
     if (passwordRegex.hasMatch(userPw1)) {
       if (userPw1 == userPw2) {
         state.users.userEmail = userEmail;
@@ -113,19 +58,18 @@ class SignupViewModel extends Notifier<UserSignup> {
   }
 
   // user 기본 정보 검증
-  int validationBasicInfo(
-      userName, userBirth, userGender, userNick, userAddress, userHeight) {
+  Future<int> validationBasicInfo(userName, userBirth, userGender, userNick,
+      userAddress, userHeight) async {
     final RegExp nameRegex = RegExp(r'^[가-힣]{2,10}$');
     if (!nameRegex.hasMatch(userName)) {
       return 1;
     }
 
     try {
-      print(userBirth);
       final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
       DateTime birthDate = dateFormat.parseStrict(userBirth);
-      print(birthDate);
 
+      // 생일
       if (birthDate.isAfter(DateTime.now())) {
         return 2;
       }
@@ -134,19 +78,33 @@ class SignupViewModel extends Notifier<UserSignup> {
       return 3;
     }
 
+    logger.i(userNick);
+    // 닉네임
     final RegExp nickRegex = RegExp(r'^[a-zA-Z가-힣]{2,10}$');
-    if (!nickRegex.hasMatch(userNick)) {
+    if (nickRegex.hasMatch(userNick)) {
+      try {
+        bool result = await _repository.fetchValidateNick(userNick);
+        if (!result) {
+          return 5;
+        }
+      } catch (e) {
+        logger.e('Failed to fetch validationIdPwStep: $e');
+        return 6;
+      }
+    } else {
       return 4;
     }
+
+    // 성별
     if (userGender == '남성') {
       userGender = 'M';
     } else {
       userGender = 'F';
     }
 
-    final RegExp heightRegex = RegExp(r'^(?:[1-9]?\d|[12]\d{2}|300)$');
-    if (!heightRegex.hasMatch(userHeight)) {
-      return 5;
+    // 신장
+    if (userHeight < 0 || userHeight > 300) {
+      return 7;
     }
 
     state.users.userName = userName;
@@ -154,7 +112,7 @@ class SignupViewModel extends Notifier<UserSignup> {
     state.users.userNick = userNick;
     state.userInfo.userAddress = userAddress;
     state.userInfo.userHeight = userHeight;
-    return 6;
+    return 8;
   }
 
   // user profile 검증

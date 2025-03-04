@@ -98,7 +98,7 @@ class _SelectUserKeywordBoxState extends ConsumerState<SelectUserKeywordBox> {
           borderRadius: BorderRadius.all(
             Radius.circular(8),
           ),
-          color: isSelected ? Colors.lightBlueAccent : Colors.white,
+          color: isSelected ? Color(0xFF906FB7) : Colors.white,
         ),
         child: Text(
           keyword.kwName!,

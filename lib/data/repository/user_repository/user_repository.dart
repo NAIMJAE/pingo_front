@@ -97,6 +97,37 @@ class UserRepository {
       return false;
     }
   }
+
+  // 이메일 인증번호 발송
+  Future<String?> fetchVerifyEmail(String userEmail) async {
+    final response =
+        await _customDio.post('/permit/sendemail', data: userEmail);
+
+    if (response != null && response is String) {
+      return response;
+    } else {
+      return null;
+    }
+  }
+
+  // 이메일 인증번호 체크
+  Future<bool> fetchVerifyCode(requestData) async {
+    if (!requestData.containsKey("sessionId")) {
+      logger.e("세션 ID 없음, 요청 중단");
+      return false;
+    }
+
+    final response = await _customDio.post(
+      '/permit/checkcode',
+      data: requestData,
+    );
+
+    if (response != null) {
+      return response as bool;
+    } else {
+      return false;
+    }
+  }
 }
 /**
  * 서버에서 객체로 return

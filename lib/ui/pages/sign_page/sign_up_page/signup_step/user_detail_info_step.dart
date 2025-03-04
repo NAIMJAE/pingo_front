@@ -172,7 +172,7 @@ class _UserDetailInfoStepState extends State<UserDetailInfoStep> {
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                       color: _selected1stJob != null && _selected2ndJob != null
-                          ? Colors.red
+                          ? Color(0xFF906FB7)
                           : Colors.grey),
                 ),
                 border: OutlineInputBorder(
@@ -218,9 +218,9 @@ class _UserDetailInfoStepState extends State<UserDetailInfoStep> {
                   margin: EdgeInsets.symmetric(horizontal: 4.0),
                   decoration: BoxDecoration(
                     border: Border.all(
-                        color: isSelected ? Colors.redAccent : Colors.grey),
+                        color: isSelected ? Color(0xFF906FB7) : Colors.grey),
                     borderRadius: BorderRadius.circular(8.0),
-                    color: isSelected ? Colors.redAccent : Colors.white,
+                    color: isSelected ? Color(0xFF906FB7) : Colors.white,
                   ),
                   alignment: Alignment.center,
                   child: Text(
