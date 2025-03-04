@@ -13,15 +13,6 @@ AppBar communityAppbar(context) {
         ),
       ],
     ),
-    actions: [
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.settings),
-        ),
-      ),
-    ],
     backgroundColor: Colors.white,
   );
 }

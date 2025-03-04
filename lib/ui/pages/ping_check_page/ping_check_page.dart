@@ -77,14 +77,14 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
                     Icon(Icons.security_outlined),
                     const SizedBox(width: 12),
                     Text(
-                      isMembership
+                      !isMembership
                           ? '내가 받은 핑을 확인할 수 있어요.\n모두 확인하려면 유료 결제가 필요합니다.'
                           : '내가 받은 핑을 확인할 수 있어요.',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ],
                 ),
-                if (isMembership) _paymentBox(),
+                if (!isMembership) _paymentBox(),
                 _pingBox(cntWidth: cntWidth, users: pingUsers['PING'] ?? []),
               ],
             ),
@@ -357,7 +357,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
             ],
           ),
         ),
-        if (isMembership)
+        if (!isMembership)
           Positioned(
             top: 0,
             left: 0,

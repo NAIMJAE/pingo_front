@@ -90,10 +90,18 @@ class _ProfilePhotoBoxState extends ConsumerState<ProfilePhotoBox> {
           child: Container(
             width: 24,
             height: 24,
-            decoration:
-                BoxDecoration(shape: BoxShape.circle, color: Colors.black),
             child: Center(
-              child: Icon(Icons.star_rounded, color: Colors.yellow),
+              child: Icon(
+                Icons.star_rounded,
+                color: Colors.yellow,
+                shadows: [
+                  Shadow(
+                    offset: Offset(1, 1),
+                    blurRadius: 8,
+                    color: Colors.black87,
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -135,13 +143,21 @@ class _ProfilePhotoBoxState extends ConsumerState<ProfilePhotoBox> {
             child: Container(
               width: 24,
               height: 24,
-              decoration:
-                  BoxDecoration(shape: BoxShape.circle, color: Colors.black),
               child: Center(
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  icon: Icon(CupertinoIcons.ellipsis,
-                      size: 20, color: Colors.white),
+                  icon: Icon(
+                    CupertinoIcons.ellipsis,
+                    size: 20,
+                    color: Colors.white,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 8,
+                        color: Colors.black87,
+                      )
+                    ],
+                  ),
                   onPressed: () {
                     showDialog(
                       context: context,

@@ -30,6 +30,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
   final ScrollController scroll = ScrollController();
   late StompViewModel websocketProvider; // 웹소캣 객체를 저장(메세지를 보내기 위한)
   final RefreshController _refreshController = RefreshController();
+  String? previousDate; // 날짜 저장
 
   // 선언하고 initState()에서 ref.read를 사용해서 초기화를 했기때문에 build 안에서 사용가능함!
 
@@ -107,6 +108,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
               itemCount: chatRoom?.message.length,
               itemBuilder: (context, index) {
                 final message = chatRoom?.message[index];
+
                 // final chatUser = chatUsers[index];
                 return _buildMessageItem(message!, widget.myUserNo, totalUser!);
               },
@@ -266,47 +268,70 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     final ChatUser selectUser = totalUser.firstWhere(
       (each) => each.userNo == message.userNo,
     );
+    DateTime? dateTime = message.msgTime;
+    String currentDate = DateFormat('yyyy-MM-dd').format(dateTime!);
+    bool isNewDate = previousDate == null || previousDate != currentDate;
+    previousDate = currentDate;
 
-    return Align(
-      alignment:
-          // 로그인한 사람이 본인이면 오른쪽에 배치, 아니면 왼쪽에 배치
-          message.userNo == userNo
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          mainAxisAlignment: message.userNo == userNo
-              ? MainAxisAlignment.end
-              : MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (message.userNo != userNo) //상대방일때
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: CustomImage().provider(selectUser.imageUrl!),
+    return Column(
+      children: [
+        if (isNewDate)
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            margin: EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.all(
+                Radius.circular(8),
               ),
-            Row(
-              // 정렬 변경
-
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: message.userNo != userNo
-                  ? [
-                      SizedBox(width: 5),
-                      _buildText(message, userNo),
-                      SizedBox(width: 5),
-                      _buildRead(message, userNo),
-                    ]
-                  : [
-                      SizedBox(width: 5),
-                      _buildRead(message, userNo),
-                      SizedBox(width: 5),
-                      _buildText(message, userNo),
-                    ],
             ),
-          ],
+            child: Text(
+              currentDate,
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        Align(
+          alignment:
+              // 로그인한 사람이 본인이면 오른쪽에 배치, 아니면 왼쪽에 배치
+              message.userNo == userNo
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: message.userNo == userNo
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (message.userNo != userNo) //상대방일때
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage:
+                        CustomImage().provider(selectUser.imageUrl!),
+                  ),
+                Row(
+                  // 정렬 변경
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: message.userNo != userNo
+                      ? [
+                          SizedBox(width: 5),
+                          _buildText(message, userNo),
+                          SizedBox(width: 5),
+                          _buildRead(message, userNo),
+                        ]
+                      : [
+                          SizedBox(width: 5),
+                          _buildRead(message, userNo),
+                          SizedBox(width: 5),
+                          _buildText(message, userNo),
+                        ],
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 

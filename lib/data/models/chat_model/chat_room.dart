@@ -19,6 +19,8 @@ class ChatRoom {
             [], //  `null`이면 빈 리스트 반환
         message = (json['message'] as List?)
                 ?.map((e) => ChatMessage.fromJson(e as Map<String, dynamic>))
+                .toList()
+                .reversed
                 .toList() ??
             [], // `null`이면 빈 리스트 반환
         lastMessage = json['lastMessage'] ?? ''; //`null`이면 빈 문자열 반환
