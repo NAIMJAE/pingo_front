@@ -8,8 +8,10 @@ import 'package:pingo_front/ui/widgets/custom_image.dart';
 class ChatRoomList extends StatefulWidget {
   final Map<String, ChatRoom> chatList;
   final String myUserNo;
+  final String searchQuery;
 
-  const ChatRoomList(this.chatList, this.myUserNo, {super.key});
+  const ChatRoomList(this.chatList, this.myUserNo, this.searchQuery,
+      {super.key});
 
   @override
   State<ChatRoomList> createState() => _ChatMessageListState();
@@ -40,19 +42,48 @@ class _ChatMessageListState extends State<ChatRoomList> {
             SizedBox(height: 10),
             // Map 이라서 펼치기
             // expend : 리스트 안의 요소를 하나의 리스트로 펼쳐줌
-            ...widget.chatList.entries.expand((entry) {
-              final chat = entry.value; // chatRoom 객체를 가져오기
-              final roomId = entry.key; // roomId 가져오기
 
-              return chat.chatUser.map((user) => _chatList(
-                    context,
-                    user.imageUrl ?? '',
-                    user.userName ?? '',
-                    chat.lastMessage ?? '',
-                    roomId,
-                    widget.myUserNo,
-                  ));
-            }).toList(),
+            widget.chatList.isEmpty //
+                ? Center(
+                    child: Text(
+                      '현재 대화중인 채팅이 없습니다.',
+                      style: TextStyle(fontSize: 15),
+                    ),
+                  ) //
+                : Column(
+                    children: widget.chatList.entries.expand((entry) {
+                      final chat = entry.value;
+                      final roomId = entry.key;
+
+                      final filterUsers = widget.searchQuery.isEmpty
+                          ? chat.chatUser
+                          : chat.chatUser
+                              .where((user) =>
+                                  user.userName != null &&
+                                  user.userName!.toLowerCase().contains(
+                                        widget.searchQuery.toLowerCase(),
+                                      ))
+                              .toList(); // 다 소문자로 바궈서 contain값 확인하기
+
+                      return filterUsers.isNotEmpty
+                          ? filterUsers.map(
+                              (user) => _chatList(
+                                context,
+                                user.imageUrl ?? '',
+                                user.userName ?? '',
+                                chat.lastMessage ?? '',
+                                roomId ?? '',
+                                widget.myUserNo,
+                              ),
+                            )
+                          : [
+                              Text(
+                                '검색된 사용자가 없습니다.',
+                                style: TextStyle(fontSize: 15),
+                              )
+                            ];
+                    }).toList(),
+                  ),
           ],
         ),
       ),
