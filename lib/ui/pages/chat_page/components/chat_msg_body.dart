@@ -12,6 +12,7 @@ import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_mode
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 import 'package:pingo_front/ui/pages/chat_page/components/place_map.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // consumer 처리하기
 class ChatMsgBody extends ConsumerStatefulWidget {
@@ -28,6 +29,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController scroll = ScrollController();
   late StompViewModel websocketProvider; // 웹소캣 객체를 저장(메세지를 보내기 위한)
+  final RefreshController _refreshController = RefreshController();
 
   // 선언하고 initState()에서 ref.read를 사용해서 초기화를 했기때문에 build 안에서 사용가능함!
 
@@ -83,15 +85,32 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     return Column(
       children: [
         Expanded(
-          child: ListView.builder(
-            controller: scroll,
-            shrinkWrap: true,
-            itemCount: chatRoom?.message.length,
-            itemBuilder: (context, index) {
-              final message = chatRoom?.message[index];
-              // final chatUser = chatUsers[index];
-              return _buildMessageItem(message!, widget.myUserNo, totalUser!);
+          child: SmartRefresher(
+            controller: _refreshController, // RefreshController 추가
+            enablePullDown: true, // 위에서 아래로 스크롤할 때 실행 (과거 메시지 불러오기)
+            enablePullUp: false,
+            onRefresh: () async {
+              bool aa = await ref
+                  .read(chatProvider.notifier)
+                  .loadOlderMessages(widget.roomId);
+              if (aa == false) {
+                logger.i('현재 aa : $aa');
+                _refreshController.loadNoData(); // 불러올 데이터가 없음
+                // 스낵바 추가 원할시 추가하기
+              }
+              logger.i('현재 aa : $aa');
+              _refreshController.refreshCompleted(); // 데이터를 불러와서 빙글빙글 돌아가는 거 없앰
             },
+            child: ListView.builder(
+              controller: scroll,
+              shrinkWrap: true,
+              itemCount: chatRoom?.message.length,
+              itemBuilder: (context, index) {
+                final message = chatRoom?.message[index];
+                // final chatUser = chatUsers[index];
+                return _buildMessageItem(message!, widget.myUserNo, totalUser!);
+              },
+            ),
           ),
         ),
         Row(
@@ -493,3 +512,36 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     return null;
   }
 }
+
+//1. 가장 상단에 스크롤을 더 했을 때
+// 2. 서버 요청 -> 불ㄹ러올 메세지가 없으면 스크롤 종료 //마지막 메세지 Id를 확인 -> 그거로부터 200개 // 서버에서 200개보다 이하일땐 나머지 모두 불러온다?
+// 불러올 메세지 있으면 state에 저장해서 띄우기
+
+// Future<void> loadOlderMessages(String roomId) async {
+//   if (!hasMoreMessages[roomId]!) {
+//     logger.i("⚠ 더 이상 불러올 메시지가 없음.");
+//     _refreshController.refreshCompleted(); // ✅ 로딩 종료
+//     return;
+//   }
+//
+//   String lastMessageId = state[roomId]!.first.id;  // ✅ 현재 가장 오래된 메시지 ID
+//   final response = await http.get(Uri.parse("$apiUrl?roomId=$roomId&beforeId=$lastMessageId"));
+//
+//   if (response.statusCode == 200) {
+//     final data = json.decode(response.body);
+//     List<ChatMessage> olderMessages = (data['messages'] as List)
+//         .map((e) => ChatMessage.fromJson(e))
+//         .toList();
+//
+//     if (olderMessages.isEmpty) {
+//       hasMoreMessages[roomId] = false;  // ✅ 더 이상 불러올 메시지가 없으면 false
+//     } else {
+//       state = {
+//         ...state,
+//         roomId: [...olderMessages, ...state[roomId]!],  // ✅ 기존 메시지 위에 추가
+//       };
+//     }
+//   }
+//
+//   _refreshController.refreshCompleted(); // ✅ 로딩 완료
+// }

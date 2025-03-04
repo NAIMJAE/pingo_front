@@ -87,6 +87,7 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
     if (!listEquals(chatRoom.message, updatedMessage)) {
       state = {...state, roomId: chatRoom.copyWith(message: updatedMessage)};
     }
+
     // final updateChatRoom = chatRoom.copyWith(message: updatedMessage);
     // logger.i('state $state');
     //
@@ -101,6 +102,40 @@ class ChatRoomViewModel extends Notifier<Map<String, ChatRoom>> {
     // state == Map<String, ChatRoom>
     // state['값'] == ChatRoom
     // state['값']?.message.addAll(messageList);
+  }
+
+  // 채팅방 무한스크롤(이전 채팅목록 가져오기)
+  Future<bool> loadOlderMessages(String roomId) async {
+    bool check = true;
+    if (check == false) {
+      logger.i('불러올 메세지가 없음');
+      return false;
+    }
+
+    // 1. state에서 가장 오래된 아이디를 가지고 서버로 요청
+    String? lastMessageId = state[roomId]?.message.first.msgId;
+    logger.i('해당 state에 가장 마지막 메세지 $lastMessageId');
+
+    List<ChatMessage> oldChatMessageList =
+        await _repository.selectOldMessage(lastMessageId!, roomId);
+    logger.i('oldChatMessageList : $oldChatMessageList');
+
+    final updateOldMessage = [...oldChatMessageList, ...state[roomId]!.message];
+
+    // 비어있으면 더이상 요청할 데이터가 없음 false 반환 예정
+    if (oldChatMessageList.isEmpty || oldChatMessageList == null) {
+      check = false;
+      return false;
+      // 데이터가 있으면 state에 저장 , true 반환 예정
+    } else {
+      state = {
+        ...state,
+        roomId: state[roomId]!.copyWith(message: updateOldMessage)
+      };
+      logger.i('오래된 채팅메세지의 state : $state');
+      check = true;
+      return true;
+    }
   }
 }
 

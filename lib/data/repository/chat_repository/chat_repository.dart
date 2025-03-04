@@ -46,6 +46,18 @@ class ChatRepository {
         .toList();
   }
 
+  // 오래된 메세지 조회하기
+  Future<List<ChatMessage>> selectOldMessage(
+      String msgId, String roomId) async {
+    final response = await _customDio
+        .get('/select/oldMessage', query: {'msgId': msgId, 'roomId': roomId});
+    logger.i('oldMessageResponse : $response');
+
+    return List<Map<String, dynamic>>.from(response)
+        .map((json) => ChatMessage.fromJson(json))
+        .toList();
+  }
+
   //서버에 이미지 전송 후 서버에 저장된 이미지의 주소를 String -> messageContent에 저장
   Future<String?> uploadImageToServer(
       String roomId, File image, String? fileName) async {

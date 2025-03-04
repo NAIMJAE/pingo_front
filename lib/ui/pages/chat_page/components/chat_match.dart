@@ -9,8 +9,13 @@ class ChatMatch extends StatelessWidget {
   // final List<Chat> chatList;
   final Map<String, ChatRoom> chatList;
   final String myUserNo;
+  final String searchQuery;
   // Constructor
-  const ChatMatch({required this.myUserNo, required this.chatList, Key? key})
+  const ChatMatch(
+      {required this.myUserNo,
+      required this.chatList,
+      required this.searchQuery,
+      Key? key})
       : super(key: key);
 
   @override
@@ -34,18 +39,43 @@ class ChatMatch extends StatelessWidget {
           SizedBox(height: 8),
           SizedBox(
             height: 150,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  ...chatList.entries.map(
-                    (each) {
-                      return _newMatchChatItem(chatList[each.key]!, context);
-                    },
+            child: chatList.isEmpty
+                ? Center(
+                    child: Text(
+                      '매칭된 상대가 없습니다.',
+                      style: TextStyle(fontSize: 15),
+                    ),
                   )
-                ],
-              ),
-            ),
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: (() {
+                        final filteredChatList = chatList.entries
+                            .where((each) =>
+                                searchQuery.isEmpty ||
+                                each.value.chatUser.any((user) =>
+                                    user.userNo != null &&
+                                    user.userName!
+                                        .toLowerCase()
+                                        .contains(searchQuery.toLowerCase())))
+                            .toList();
+
+                        return filteredChatList.isNotEmpty
+                            ? filteredChatList
+                                .map((each) => _newMatchChatItem(
+                                    chatList[each.key]!, context))
+                                .toList()
+                            : [
+                                Center(
+                                  child: Text(
+                                    '검색된 사용자가 없습니다',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                              ];
+                      })(),
+                    ),
+                  ),
           ),
         ],
       ),

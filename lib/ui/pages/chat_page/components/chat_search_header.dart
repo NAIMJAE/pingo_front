@@ -4,16 +4,16 @@ import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 
 class ChatSearchHeader extends StatefulWidget {
   final Map<String, ChatRoom> chatList;
-  const ChatSearchHeader(this.chatList, {super.key});
+  final Function(String) onSearchChanged;
+  ChatSearchHeader(
+      {required this.chatList, required this.onSearchChanged, super.key});
 
   @override
   State<ChatSearchHeader> createState() => _ChatSearchHeaderState();
 }
 
 class _ChatSearchHeaderState extends State<ChatSearchHeader> {
-  TextEditingController search = TextEditingController();
-  final scroll = ScrollController();
-
+  // TextEditingController search = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,14 +30,11 @@ class _ChatSearchHeaderState extends State<ChatSearchHeader> {
                   bottom: BorderSide(color: Colors.grey, width: 1),
                 ),
               ),
-              child: TextFormField(
-                onTap: () async {
-                  print('dd');
-                  // 스크롤을 최하단으로 이동
-                  await Future.delayed(Duration(seconds: 2));
-                  scroll.jumpTo(scroll.position.maxScrollExtent);
+              child: TextField(
+                onChanged: (value) {
+                  widget.onSearchChanged(value); // 부모에게 검색어 전달
                 },
-                controller: search, // 키보드의 서치버튼 클릭시 clear 처리
+                // controller: search, // 키보드의 서치버튼 클릭시 clear 처리
                 decoration: InputDecoration(
                   focusedBorder: InputBorder.none,
                   // border: InputBorder.none, // 기본 테두리 제거
@@ -55,3 +52,6 @@ class _ChatSearchHeaderState extends State<ChatSearchHeader> {
     );
   }
 }
+
+//                  await Future.delayed(Duration(seconds: 2));
+//                   scroll.jumpTo(scroll.position.maxScrollExtent);
