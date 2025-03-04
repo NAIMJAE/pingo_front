@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
 import 'package:pingo_front/data/models/chat_model/chat_user.dart';
@@ -91,15 +93,15 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
             enablePullDown: true, // 위에서 아래로 스크롤할 때 실행 (과거 메시지 불러오기)
             enablePullUp: false,
             onRefresh: () async {
-              bool aa = await ref
+              bool lastMessageCheck = await ref
                   .read(chatProvider.notifier)
                   .loadOlderMessages(widget.roomId);
-              if (aa == false) {
-                logger.i('현재 aa : $aa');
+              if (lastMessageCheck == false) {
+                logger.i('현재 aa : $lastMessageCheck');
                 _refreshController.loadNoData(); // 불러올 데이터가 없음
                 // 스낵바 추가 원할시 추가하기
               }
-              logger.i('현재 aa : $aa');
+              logger.i('현재 aa : $lastMessageCheck');
               _refreshController.refreshCompleted(); // 데이터를 불러와서 빙글빙글 돌아가는 거 없앰
             },
             child: ListView.builder(
@@ -354,7 +356,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
         padding: message.userNo != userNo
             ? EdgeInsets.only(right: 16)
             : EdgeInsets.only(left: 16),
-        child: _msgFileBox(),
+        child: _msgFileBox(message.msgContent!, message.fileName!),
       );
     }
     if (message.msgType == 'place') {
@@ -402,7 +404,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
   }
 
 // 첨부파일 박스
-  Widget _msgFileBox() {
+  Widget _msgFileBox(String fileUrl, String fileName) {
     return Container(
       constraints: BoxConstraints(maxWidth: 250), // 메시지 최대 너비 제한
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -417,7 +419,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
             children: [
               Expanded(
                 child: Text(
-                  '파일이름',
+                  fileName,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -432,7 +434,10 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
           ),
           SizedBox(height: 8),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              fileDownload(fileUrl, fileName);
+              print('안녕');
+            },
             child: Text(
               "다운로드",
               style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
@@ -519,22 +524,56 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
 // File (우선 1개만.. single로 처리)
   Future<Map<String, dynamic>?> getFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
+    //FilePicker
 
     if (result != null && result.files.isNotEmpty) {
       String fileName = result.files.single.name;
       String? filePath = result.files.single.path;
+      int? fileSize = result.files.single.size;
 
       if (filePath != null) {
         File file = File(filePath);
-        return {
-          'file': file,
-          'fileName': fileName,
-        };
+        return {'file': file, 'fileName': fileName, 'fileSize': fileSize};
       }
     }
 
     print('파일 선택 취소');
     return null;
+  }
+
+  Future<void> fileDownload(String fileUrl, String fileName) async {
+    logger.i('ㅁㄴㅇㄻㅇㄹ ');
+    // 1. 다운로드할 경로 가져오기
+    String baseUrl = "http://13.125.102.57";
+    String savePath = await getDownloadPath();
+
+    String fileURL = "$baseUrl/${fileUrl.replaceAll(r'\', '/')}";
+
+    // 파일 이름 추출
+    String fileName = fileURL.split('/').last; // 마지막 `/` 이후 부분 추출
+    String filePath = "$savePath/$fileName";
+    logger.i('$filePath');
+    // 2. 파일 다운로드
+    try {
+      Dio dio = Dio();
+      await dio.download(fileURL, filePath);
+      logger.i('파일다운로드');
+    } catch (e) {
+      print('error');
+    }
+  }
+
+  // 다운로드 경로 추출하기
+  Future<String> getDownloadPath() async {
+    Directory? directory;
+    if (Platform.isAndroid) {
+      directory = await getExternalStorageDirectory(); // 앱 전용 외부 저장소
+      logger.i('directory : $directory');
+      if (directory != null) {
+        return "${directory.path}/Download";
+      }
+    }
+    return "/storage/emulated/0/Download";
   }
 }
 

@@ -76,7 +76,7 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider(myUserNo!));
     final chatList = ref.watch(chatProvider); // 상태를 한번 읽어오기
-    logger.i('$chatList room process......0 - 시작');
+    logger.i('room process......0 - 시작');
 
     // 리스트, 매치로 구별하기 위한 빈 함수
     Map<String, ChatRoom> listChat = {};
@@ -84,7 +84,7 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
 
     //키 별로 반복(맵을 우선 펼쳐서)
     for (var entry in chatList.entries) {
-      logger.i('$chatList room process......1 - for문 시작');
+      logger.i('room process......1 - for문 시작');
 
       String roomKey = entry.key;
       ChatRoom chatRoom = entry.value;
@@ -106,7 +106,6 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
             message: chatRoom.message,
             lastMessage: chatRoom.lastMessage);
       }
-      logger.i('chatList : $chatList');
 
       // 메세지가 비어있으면 로직 중지
       if (chatRoom.message.isEmpty) {
@@ -132,8 +131,6 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
       chatAlarms = alarm.chatAlarms;
       //   },
       // );
-      logger.i('chat room process...... - 3 ${chatAlarms[roomKey]}');
-      logger.i('chat room process...... - 3 ${lastMessage.msgId}');
 
       if (chatAlarms[roomKey] == lastMessage.msgId) {
         logger.i('chat room process...... - 이미 보낸 메세지 알림임');
