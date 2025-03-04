@@ -151,7 +151,7 @@ class _SignupCompleteStepState extends State<SignupCompleteStep> {
           height: 50,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: Color(0xFF906FB7),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4.0),
               ),

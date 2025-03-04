@@ -13,6 +13,9 @@ class UserViewModel extends Notifier<UserMypageInfo> {
   final UserRepository _repository;
   UserViewModel(this._repository);
 
+  // 인증코드 세션
+  String? sessionId;
+
   @override
   UserMypageInfo build() {
     return UserMypageInfo();
@@ -148,6 +151,58 @@ class UserViewModel extends Notifier<UserMypageInfo> {
           backgroundColor: Colors.red,
         ),
       );
+    }
+  }
+
+  // 이메일 인증번호 발송
+  Future<int> verifyEmail(String userEmail) async {
+    final RegExp emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+
+    if (emailRegex.hasMatch(userEmail)) {
+      try {
+        String? sessionIdForCode =
+            await _repository.fetchVerifyEmail(userEmail);
+
+        if (sessionIdForCode != null) {
+          sessionId = sessionIdForCode;
+          logger.d("세션 ID 저장됨: $sessionId");
+          return 1;
+        } else {
+          return 3;
+        }
+      } catch (e) {
+        logger.e('Failed to fetch verifyEmail: $e');
+        return 4;
+      }
+    } else {
+      return 2;
+    }
+  }
+
+  // 이메일 인증번호 체크
+  Future<int> verifyCode(String userEmail, String code) async {
+    try {
+      if (sessionId == null) {
+        logger.e("세션 ID 없음");
+        return 3;
+      }
+
+      Map<String, dynamic> requestData = {
+        "userEmail": userEmail,
+        "code": code,
+        "sessionId": sessionId // 세션 ID 함께 전송
+      };
+
+      bool isSuccess = await _repository.fetchVerifyCode(requestData);
+      if (isSuccess) {
+        return 1; // 인증 성공
+      } else {
+        return 2; // 인증번호 불일치
+      }
+    } catch (e) {
+      logger.e('Failed to fetch verifyCode: $e');
+      return 3; // 서버 오류
     }
   }
 }

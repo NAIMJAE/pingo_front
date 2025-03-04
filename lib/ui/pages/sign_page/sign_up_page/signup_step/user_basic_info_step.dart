@@ -63,8 +63,23 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
       return;
     }
 
+    // userHeight가 String이면 int로 변환
+    int? parsedHeight = int.tryParse(userHeight);
+    if (parsedHeight == null) {
+      setState(() {
+        information = '신장은 숫자 형식으로 입력해야 합니다.';
+      });
+      return;
+    }
+
     int result = await widget.signupNotifier.validationBasicInfo(
-        userName, userBirth, userGender, userNick, userAddress, userHeight);
+      userName,
+      userBirth,
+      userGender,
+      userNick,
+      userAddress,
+      parsedHeight,
+    );
 
     setState(() {
       switch (result) {
@@ -81,9 +96,15 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
           information = '닉네임은 2~10자의 한글 또는 영어만 입력 가능합니다.';
           break;
         case 5:
-          information = '신장을 300cm이하인 XXXcm 형태로 입력해 주세요.';
+          information = '이미 사용중인 닉네임입니다.';
           break;
         case 6:
+          information = '서버 오류';
+          break;
+        case 7:
+          information = '신장을 300cm이하인 XXXcm 형태로 입력해 주세요.';
+          break;
+        case 8:
           information = '';
           widget.nextStep();
           break;
@@ -120,7 +141,7 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: _selectBirth('성별'),
+                child: _selectSex('성별'),
               ),
             ],
           ),
@@ -247,8 +268,8 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
     );
   }
 
-  // 생년월일 입력을 위한 날짜 선택 위젯
-  Widget _selectBirth(String title) {
+  // 성별
+  Widget _selectSex(String title) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

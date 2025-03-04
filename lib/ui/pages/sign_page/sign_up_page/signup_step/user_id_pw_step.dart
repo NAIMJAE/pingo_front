@@ -6,8 +6,10 @@ class UserIdPwStep extends StatefulWidget {
   final Function nextStep;
   final dynamic userData;
   final dynamic signupNotifier;
+  final dynamic userNotifier;
 
-  const UserIdPwStep(this.nextStep, this.userData, this.signupNotifier,
+  const UserIdPwStep(
+      this.nextStep, this.userData, this.signupNotifier, this.userNotifier,
       {super.key});
 
   @override
@@ -22,8 +24,8 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
   final TextEditingController _userPw1Controller = TextEditingController();
   final TextEditingController _userPw2Controller = TextEditingController();
 
-  String isCertification = 'prev'; // prev - 인증 전 / doing - 인증 중 / end - 인증 완료
   String information = '';
+  String isCertification = 'prev'; // prev - 인증 전 / doing - 인증 중 / end - 인증 완료
 
   // 입력된 아이디, 비밀번호의 유효성 검증 함수
   void checkValidation() async {
@@ -53,7 +55,7 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
       } else if (result == 3) {
         information = '이미 사용중인 중복된 아이디입니다.';
       } else if (result == 4) {
-        information = '비밀번호는 8~14자리의 영문, 숫자, 특수문자만 가능합니다.';
+        information = '비밀번호는 8~14자리의 영문, 숫자, 특수문자만 가능하며 첫 글자는 대문자 알파벳이어야 합니다.';
       } else if (result == 5) {
         information = '입력한 비밀번호가 일치하지 않습니다.';
       }
@@ -65,7 +67,7 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
     String userEmail = _userEmailController.text.trim();
 
     if (userEmail.isNotEmpty) {
-      int result = await widget.signupNotifier.verifyEmail(userEmail);
+      int result = await widget.userNotifier.verifyEmail(userEmail);
 
       setState(() {
         if (result == 1) {
@@ -91,7 +93,7 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
 
     if (userEmail.isNotEmpty && verificationCode.isNotEmpty) {
       int result =
-          await widget.signupNotifier.verifyCode(userEmail, verificationCode);
+          await widget.userNotifier.verifyCode(userEmail, verificationCode);
 
       setState(() {
         if (isCertification == 'doing' && result == 1) {
@@ -125,11 +127,11 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
           const SizedBox(height: 20),
           _textInputBox('아이디', '영문+숫자 (6~12자리)', false, _userIdController),
           const SizedBox(height: 20),
-          _textInputBox(
-              '비밀번호', '영문+숫자+특수문자 (8~14자리)', true, _userPw1Controller),
+          _textInputBox('비밀번호', '첫 글자는 대문자 알파벳, 영문+숫자+특수문자 (8~14자리)', true,
+              _userPw1Controller),
           const SizedBox(height: 20),
-          _textInputBox(
-              '비밀번호 확인', '영문+숫자+특수문자 (8~14자리)', true, _userPw2Controller),
+          _textInputBox('비밀번호 확인', '첫 글자는 대문자 알파벳, 영문+숫자+특수문자 (8~14자리)', true,
+              _userPw2Controller),
           const SizedBox(height: 20),
           information.isNotEmpty
               ? Text(

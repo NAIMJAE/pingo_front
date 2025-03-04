@@ -143,9 +143,9 @@ class _UserMyKeywordStepState extends State<UserMyKeywordStep> {
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
               decoration: BoxDecoration(
                 border: Border.all(
-                    color: isSelected ? Colors.redAccent : Colors.grey),
+                    color: isSelected ? Color(0xFF906FB7) : Colors.grey),
                 borderRadius: BorderRadius.circular(8.0),
-                color: isSelected ? Colors.redAccent : Colors.white,
+                color: isSelected ? Color(0xFF906FB7) : Colors.white,
               ),
               alignment: Alignment.center,
               child: Text(

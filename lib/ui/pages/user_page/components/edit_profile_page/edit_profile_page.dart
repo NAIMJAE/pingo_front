@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pingo_front/ui/pages/user_page/components/edit_profile_page/components/edit_user_email.dart';
 import 'package:pingo_front/ui/pages/user_page/components/edit_profile_page/components/edit_user_keyword_box.dart';
 import '../../../../../data/models/user_model/user_mypage_info.dart';
 import '../../../../../data/view_models/sign_view_model/signin_view_model.dart';
@@ -43,8 +44,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final userViewModelNotifier =
-        ref.read(userViewModelProvider.notifier); // 읽기 전용
+    final userNotifier = ref.read(userViewModelProvider.notifier); // 읽기 전용
     final userMypageInfo =
         ref.watch(userViewModelProvider); // 계속해서 감시 (즉, 추적 관리, 구독)
 
@@ -58,6 +58,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           backgroundColor: Colors.black12,
           body: ListView(
             children: [
+              const SizedBox(height: 8.0),
+              EditUserEmail(copyUserInfo.users!.userEmail ?? '', userNotifier),
               const SizedBox(height: 8.0),
               EditPersonalInformationBox(copyUserInfo.userInfo!),
               const SizedBox(height: 8.0),
