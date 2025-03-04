@@ -156,6 +156,60 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
     });
   }
 
+  // 디테일 버튼 메서드
+  Future<void> sendSwipeRequest(String direction, String fromUserNo,
+      String toUserNo, BuildContext context,
+      {required bool isFromMainPage}) async {
+    try {
+      logger
+          .i("[sendSwipeRequest] 요청 시작: $direction ($fromUserNo -> $toUserNo)");
+
+      await _sendSwipeData(direction, fromUserNo, toUserNo);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle_outline, color: Colors.white),
+              SizedBox(width: 10),
+              Text(
+                direction == 'PING' ? "좋아요를 보냈습니다!" : "SUPERPING을 보냈습니다!",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.blueAccent,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          duration: Duration(seconds: 2),
+          action: SnackBarAction(
+            label: '확인',
+            textColor: Colors.white,
+            onPressed: () {
+              Navigator.pop(context); // 확인 버튼 누르면 페이지 닫기
+            },
+          ),
+        ),
+      );
+
+      logger.i("[sendSwipeRequest] 스와이프 요청 성공!");
+
+      // isFromMainPage을 파라미터로 받아 체크
+      if (isFromMainPage) {
+        _moveToNextCard(); // ✅ 다음 프로필로 이동
+      }
+    } catch (e) {
+      logger.e("[sendSwipeRequest] 스와이프 요청 실패: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("요청 실패. 다시 시도해주세요.")),
+      );
+    } finally {
+      await Future.delayed(Duration(seconds: 2));
+      Navigator.pop(context);
+    }
+  }
+
   // 스와이프 API 요청 메서드
   Future<void> _sendSwipeData(
       String direction, String fromUserNo, String toUserNo) async {
@@ -222,7 +276,7 @@ class MainPageViewModel extends StateNotifier<List<Profile>> {
       // userInfo 데이터 할당
       UserInfo? userInfo = userMypageInfo.userInfo;
 
-      // myKeywordList를 Keyword 리스트로 변환 ***
+      // myKeywordList를 Keyword 리스트로 변환
       List<Keyword>? userKeywords =
           userMypageInfo.myKeywordList?.cast<Keyword>();
 
