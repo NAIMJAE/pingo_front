@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pingo_front/data/models/sign_model/terms.dart';
 
 // step1 이용약관
 Widget userTermStep(BuildContext context, Function _nextStep, userData) {
@@ -19,7 +20,7 @@ Widget userTermStep(BuildContext context, Function _nextStep, userData) {
           ),
           child: SingleChildScrollView(
             child: Text(
-              '이용약관 내용',
+              terms(),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
