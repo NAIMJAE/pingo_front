@@ -30,14 +30,10 @@ class MainRepository {
   }
 
   // 스와이프 등록 요청
-  Future<bool> insertSwipe(Map<String, dynamic> reqData) async {
+  Future<void> insertSwipe(Map<String, dynamic> reqData) async {
     final response = await _customDio.post(
       '/insertSwipe',
       data: reqData,
     );
-
-    bool result = ResponseDTO.validation(response);
-
-    return result;
   }
 }

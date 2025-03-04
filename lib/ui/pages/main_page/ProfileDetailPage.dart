@@ -14,8 +14,11 @@ import '../../widgets/custom_image.dart';
 
 class ProfileDetailPage extends ConsumerStatefulWidget {
   final Profile profile;
+  final bool isFromMainPage; // 메인 페이지에서 온 경우 true, 핑체크에서 온 경우 false
 
-  const ProfileDetailPage({required this.profile, Key? key}) : super(key: key);
+  const ProfileDetailPage(
+      {required this.profile, this.isFromMainPage = false, Key? key})
+      : super(key: key);
 
   @override
   _ProfileDetailPageState createState() => _ProfileDetailPageState();
@@ -72,6 +75,7 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final sessionUser = ref.watch(sessionProvider);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -94,7 +98,7 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
                   child: Column(
                     children: [
                       Container(
-                        height: 400,
+                        height: 600,
                         width: double.infinity,
                         decoration: BoxDecoration(
                           image: DecorationImage(
@@ -140,7 +144,7 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
                       ),
                       SizedBox(height: 5),
                       Text(
-                        "📍 ${widget.profile.profileDetail?.userInfo?.userAddress ?? ''} • ${widget.profile.distance}",
+                        "📍 ${widget.profile.profileDetail?.userInfo?.userAddress ?? ''} • ${widget.profile.distance ?? ''}",
                         style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       Divider(color: Colors.white24),
@@ -212,9 +216,12 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildActionButton(Icons.close, Colors.pink, () {}),
-                  _buildActionButton(Icons.star, Colors.blue, () {}),
-                  _buildActionButton(Icons.favorite, Colors.green, () {}),
+                  _buildActionButton(Icons.close, Colors.pink, "PANG",
+                      sessionUser?.userNo ?? '', widget.isFromMainPage),
+                  _buildActionButton(Icons.star, Colors.blue, "SUPERPING",
+                      sessionUser?.userNo ?? '', widget.isFromMainPage),
+                  _buildActionButton(Icons.favorite, Colors.green, "PING",
+                      sessionUser?.userNo ?? '', widget.isFromMainPage),
                 ],
               ),
             ),
@@ -247,10 +254,14 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
     );
   }
 
-  Widget _buildActionButton(
-      IconData icon, Color color, VoidCallback onPressed) {
+  Widget _buildActionButton(IconData icon, Color color, String direction,
+      String myUserNo, bool isFromMainPage) {
     return FloatingActionButton(
-      onPressed: onPressed,
+      onPressed: () {
+        ref.read(mainPageViewModelProvider.notifier).sendSwipeRequest(
+            direction, myUserNo, widget.profile.userNo, context,
+            isFromMainPage: isFromMainPage);
+      },
       backgroundColor: color,
       child: Icon(icon, size: 30, color: Colors.white),
     );

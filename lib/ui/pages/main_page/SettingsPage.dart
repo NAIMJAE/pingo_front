@@ -60,12 +60,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           _buildSectionTitle("상대와의 최대 거리"),
           _buildSmoothSlider(settingsNotifier,
               settings), // UI 즉각 반영 + API 최적화 (변할때마다 계속 api 요청 쏘지않도록)
-          _buildSwitch("스와이프할 프로필이 없을 때 거리 조정", settings.autoAdjustDistance,
-              (value) {
-            settingsNotifier.updateSettings(
-              settings.copyWith(autoAdjustDistance: value),
-            );
-          }),
           SizedBox(height: 16),
           _buildSectionTitle("보고 싶은 성별"),
           _buildGenderSelection(settings, settingsNotifier),
@@ -87,12 +81,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             },
             activeColor: Colors.red,
           ),
-          _buildSwitch("스와이프할 프로필이 없을 때 나이 범위 조정", settings.autoAdjustAge,
-              (value) {
-            settingsNotifier.updateSettings(
-              settings.copyWith(autoAdjustAge: value),
-            );
-          }),
+
           SizedBox(height: 16),
           _buildPremiumSection(),
           SizedBox(height: 16),
@@ -113,7 +102,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           }),
           _buildOptionTile("관심사"),
           _buildOptionTile("내가 찾는 관계"),
-          _buildOptionTile("언어 추가하기"),
         ],
       ),
     );

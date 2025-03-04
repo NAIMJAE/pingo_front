@@ -45,9 +45,9 @@ class _ProfileCardState extends State<ProfileCard> {
             final screenWidth = size.width;
 
             if (tapPosition < screenWidth / 2) {
-              _showPreviousImage(); // ⬅️ 왼쪽 탭 → 이전 이미지
+              _showPreviousImage(); //  왼쪽 탭 → 이전 이미지
             } else {
-              _showNextImage(); // ➡️ 오른쪽 탭 → 다음 이미지
+              _showNextImage(); // 오른쪽 탭 → 다음 이미지
             }
           },
           child: Material(
@@ -147,7 +147,7 @@ class _ProfileCardState extends State<ProfileCard> {
                               color: Colors.white70, size: 16),
                           SizedBox(width: 4),
                           Text(
-                            '${widget.profile.distance}',
+                            '3.85km',
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 14,
@@ -172,7 +172,9 @@ class _ProfileCardState extends State<ProfileCard> {
                               Duration(milliseconds: 500), // 애니메이션 속도
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>
-                                  ProfileDetailPage(profile: widget.profile),
+                                  ProfileDetailPage(
+                                      profile: widget.profile,
+                                      isFromMainPage: true),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
                             var begin = Offset(0.0, 1.0); // 아래에서 올라오는 효과

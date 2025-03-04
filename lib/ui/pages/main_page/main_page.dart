@@ -193,7 +193,7 @@ class _MainPageState extends ConsumerState<MainPage>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildSwipeButton(Icons.replay, Colors.grey, -1, viewModel.undoSwipe),
+          // _buildSwipeButton(Icons.replay, Colors.grey, -1, viewModel.undoSwipe),
           _buildSwipeButton(
               Icons.close,
               Colors.pink,
