@@ -21,6 +21,7 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
   String? _selectedGender;
   final TextEditingController _userNickController = TextEditingController();
   final TextEditingController _userAddressController = TextEditingController();
+  final TextEditingController _userHeightController = TextEditingController();
 
   String information = '';
 
@@ -48,12 +49,14 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
     String? userGender = _selectedGender;
     String userNick = _userNickController.text.trim();
     String userAddress = _userAddressController.text.trim();
+    String userHeight = _userHeightController.text.trim();
 
     if (userName.isEmpty ||
         userBirth.isEmpty ||
         userGender == null ||
         userNick.isEmpty ||
-        userAddress.isEmpty) {
+        userAddress.isEmpty ||
+        userHeight.isEmpty) {
       setState(() {
         information = '모든 항목을 입력해주세요.';
       });
@@ -61,7 +64,7 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
     }
 
     int result = await widget.signupNotifier.validationBasicInfo(
-        userName, userBirth, userGender, userNick, userAddress);
+        userName, userBirth, userGender, userNick, userAddress, userHeight);
 
     setState(() {
       switch (result) {
@@ -78,6 +81,9 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
           information = '닉네임은 2~10자의 한글 또는 영어만 입력 가능합니다.';
           break;
         case 5:
+          information = '신장을 300cm이하인 XXXcm 형태로 입력해 주세요.';
+          break;
+        case 6:
           information = '';
           widget.nextStep();
           break;
@@ -121,6 +127,8 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
           const SizedBox(height: 20),
           _textInputBox('닉네임', '', false, _userNickController),
           const SizedBox(height: 20),
+          _textInputBox('신장', '', false, _userHeightController),
+          const SizedBox(height: 20),
           _addressBox('주소', '', false, _userAddressController),
           const SizedBox(height: 20),
           information.isNotEmpty
@@ -136,7 +144,7 @@ class _UserBasicInfoStepState extends State<UserBasicInfoStep> {
             height: 50,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlueAccent,
+                backgroundColor: Color(0xFF906FB7),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0),
                 ),

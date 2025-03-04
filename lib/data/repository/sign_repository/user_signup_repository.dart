@@ -15,9 +15,28 @@ class UserSignupRepository {
   final CustomDio _customDio = CustomDio();
 
   // 이메일 인증번호 발송
-  Future<bool> fetchVerifyEmail(String userEmail) async {
+  Future<String?> fetchVerifyEmail(String userEmail) async {
     final response =
         await _customDio.post('/permit/sendemail', data: userEmail);
+
+    if (response != null && response is String) {
+      return response;
+    } else {
+      return null;
+    }
+  }
+
+  // 이메일 인증번호 체크
+  Future<bool> fetchVerifyCode(requestData) async {
+    if (!requestData.containsKey("sessionId")) {
+      logger.e("세션 ID 없음, 요청 중단");
+      return false;
+    }
+
+    final response = await _customDio.post(
+      '/permit/checkcode',
+      data: requestData,
+    );
 
     if (response != null) {
       return response as bool;
@@ -25,8 +44,6 @@ class UserSignupRepository {
       return false;
     }
   }
-
-  // 이메일 인증번호 체크
 
   /// 아이디 중복 검증
   Future<bool> fetchValidateId(String userId) async {

@@ -26,15 +26,18 @@ class UserSigninRepository {
       Response response =
           await _dio.post('$rootURL/permit/signin', data: loginData);
 
-      // 토큰 추출 (일단 body에서 추출 나중에 헤더로 변경)
-
       dynamic userData = ResponseDTO.validation(response.data);
 
       logger.d(userData);
 
+      if (userData.containsKey('error')) {
+        return {"error": userData['error']}; // 에러 메시지 반환
+      }
+
       return userData;
     } catch (e) {
       logger.e(e.toString());
+      return {"error": "아이디 또는 비밀번호가 일치하지 않습니다."}; // 기본 에러 메시지 반환
     }
   }
 }

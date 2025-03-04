@@ -76,7 +76,7 @@ class _SignupCompleteStepState extends State<SignupCompleteStep> {
       children: [
         Icon(
           Icons.celebration,
-          color: Colors.lightBlueAccent,
+          color: Color(0xFF906FB7),
           size: 100,
         ),
         const SizedBox(height: 20),
@@ -99,7 +99,7 @@ class _SignupCompleteStepState extends State<SignupCompleteStep> {
           height: 50,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.lightBlueAccent,
+              backgroundColor: Color(0xFF906FB7),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4.0),
               ),

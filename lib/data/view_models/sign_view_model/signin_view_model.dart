@@ -77,43 +77,48 @@ class SigninViewModel extends Notifier<SessionUser> {
 
   // 로그인
   Future<void> login(String userId, String userPw) async {
-    // 현재 위치 가져오기 (기존 위치가 없으면 새로 요청)
-    Position? currentPosition = LocationService.lastPosition;
-    if (currentPosition == null) {
-      currentPosition = await LocationService.requestAndGetLocation();
+    try {
+      Position? currentPosition = LocationService.lastPosition;
+      if (currentPosition == null) {
+        currentPosition = await LocationService.requestAndGetLocation();
+      }
+
+      Map<String, dynamic> loginData = {
+        "userId": userId,
+        "userPw": userPw,
+        "latitude": currentPosition?.latitude,
+        "longitude": currentPosition?.longitude,
+      };
+
+      Map<String, dynamic> userData =
+          await repository.fetchSendSignInData(loginData);
+
+      if (userData.containsKey('error')) {
+        throw Exception(userData['error']); // 에러 메시지를 뷰로 전달
+      }
+
+      await secureStorage.write(
+          key: 'accessToken', value: userData['accessToken']);
+
+      state = SessionUser(
+        userNo: userData['userNo'],
+        userRole: userData['userRole'],
+        expDate: userData['expDate'] != null
+            ? DateTime.parse(userData['expDate'])
+            : null,
+        accessToken: userData['accessToken'],
+        isLogin: true,
+      );
+
+      CustomDio.instance.setToken(userData['accessToken']);
+
+      LocationService.startLocationTracking(state);
+      CustomImage().setToken(userData['accessToken']);
+
+      Navigator.popAndPushNamed(mContext, '/mainScreen');
+    } catch (e) {
+      throw Exception("아이디 또는 비밀번호가 일치하지 않습니다.");
     }
-
-    Map<String, dynamic> loginData = {
-      "userId": userId,
-      "userPw": userPw,
-      "latitude": currentPosition?.latitude,
-      "longitude": currentPosition?.longitude,
-    };
-
-    Map<String, dynamic> userData =
-        await repository.fetchSendSignInData(loginData);
-
-    await secureStorage.write(
-        key: 'accessToken', value: userData['accessToken']);
-
-    state = SessionUser(
-      userNo: userData['userNo'],
-      userRole: userData['userRole'],
-      expDate: userData['expDate'] != null
-          ? DateTime.parse(userData['expDate'])
-          : null,
-      accessToken: userData['accessToken'],
-      isLogin: true,
-    );
-    CustomDio.instance.setToken(userData['accessToken']);
-
-    // 로그인 시 위치 추적 시작
-    LocationService.startLocationTracking(state);
-
-    // 커스텀 이미지 조회 위젯에 토큰 저장
-    CustomImage().setToken(userData['accessToken']);
-
-    Navigator.popAndPushNamed(mContext, '/mainScreen');
   }
 
   // 로그아웃

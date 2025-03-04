@@ -16,6 +16,9 @@ class SignupViewModel extends Notifier<UserSignup> {
   // 프로필 사진 저장용
   File? profileImage;
 
+  // 인증코드 세션
+  String? sessionId;
+
   @override
   UserSignup build() {
     // 이 view-model 생성시 빈 UserSignup 객체 생성해서
@@ -30,9 +33,12 @@ class SignupViewModel extends Notifier<UserSignup> {
 
     if (emailRegex.hasMatch(userEmail)) {
       try {
-        bool isSuccess = await _repository.fetchVerifyEmail(userEmail);
+        String? sessionIdForCode =
+            await _repository.fetchVerifyEmail(userEmail);
 
-        if (isSuccess) {
+        if (sessionIdForCode != null) {
+          sessionId = sessionIdForCode;
+          logger.d("세션 ID 저장됨: $sessionId");
           return 1;
         } else {
           return 3;
@@ -47,6 +53,30 @@ class SignupViewModel extends Notifier<UserSignup> {
   }
 
   // 이메일 인증번호 체크
+  Future<int> verifyCode(String userEmail, String code) async {
+    try {
+      if (sessionId == null) {
+        logger.e("세션 ID 없음");
+        return 3;
+      }
+
+      Map<String, dynamic> requestData = {
+        "userEmail": userEmail,
+        "code": code,
+        "sessionId": sessionId // 세션 ID 함께 전송
+      };
+
+      bool isSuccess = await _repository.fetchVerifyCode(requestData);
+      if (isSuccess) {
+        return 1; // 인증 성공
+      } else {
+        return 2; // 인증번호 불일치
+      }
+    } catch (e) {
+      logger.e('Failed to fetch verifyCode: $e');
+      return 3; // 서버 오류
+    }
+  }
 
   // 회원 정보 검증
   Future<int> validationIdPwStep(
@@ -84,7 +114,7 @@ class SignupViewModel extends Notifier<UserSignup> {
 
   // user 기본 정보 검증
   int validationBasicInfo(
-      userName, userBirth, userGender, userNick, userAddress) {
+      userName, userBirth, userGender, userNick, userAddress, userHeight) {
     final RegExp nameRegex = RegExp(r'^[가-힣]{2,10}$');
     if (!nameRegex.hasMatch(userName)) {
       return 1;
@@ -114,11 +144,17 @@ class SignupViewModel extends Notifier<UserSignup> {
       userGender = 'F';
     }
 
+    final RegExp heightRegex = RegExp(r'^(?:[1-9]?\d|[12]\d{2}|300)$');
+    if (!heightRegex.hasMatch(userHeight)) {
+      return 5;
+    }
+
     state.users.userName = userName;
     state.users.userGender = userGender;
     state.users.userNick = userNick;
     state.userInfo.userAddress = userAddress;
-    return 5;
+    state.userInfo.userHeight = userHeight;
+    return 6;
   }
 
   // user profile 검증

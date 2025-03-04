@@ -33,9 +33,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   }
 
   // 로그인 버튼 클릭 시 실행되는 함수
-  void _onLoginPressed() {
+  void _onLoginPressed() async {
     setState(() {
-      // 입력값 확인 후 에러 메시지 설정
       _idError = _validateUserId(_userIdController.text.trim())
           ? null
           : "아이디는 영문 대소문자, 숫자로 6~12자여야 합니다.";
@@ -45,10 +44,16 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     });
 
     if (_idError == null && _pwError == null) {
-      ref.read(sessionProvider.notifier).login(
-            _userIdController.text.trim(),
-            _userPwController.text.trim(),
-          );
+      try {
+        await ref.read(sessionProvider.notifier).login(
+              _userIdController.text.trim(),
+              _userPwController.text.trim(),
+            );
+      } catch (e) {
+        setState(() {
+          _pwError = "아이디 또는 비밀번호가 일치하지 않습니다.";
+        });
+      }
     }
   }
 
@@ -114,7 +119,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                     height: 50,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightBlueAccent,
+                        backgroundColor: Color(0xFF906FB7),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4.0),
                         ),
