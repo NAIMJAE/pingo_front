@@ -53,18 +53,17 @@ class _EditSelfIntroductionBoxState extends State<EditSelfIntroductionBox> {
             const SizedBox(height: 4.0),
             TextSelectionTheme(
               data: TextSelectionThemeData(
-                cursorColor: Colors.lightBlueAccent, // 커서 색상 변경
-                selectionColor:
-                    Colors.lightBlueAccent.withOpacity(0.4), // 선택된 영역 색상
+                cursorColor: Color(0xFF906FB7), // 커서 색상 변경
+                selectionColor: Color(0xFF906FB7).withOpacity(0.4), // 선택된 영역 색상
                 selectionHandleColor:
-                    Colors.lightBlueAccent, // 선택 핸들러 색상 (커서 아래 둥근 점)
+                    Color(0xFF906FB7), // 선택 핸들러 색상 (커서 아래 둥근 점)
               ),
               child: TextField(
                 controller: _controller,
                 maxLines: 5,
                 maxLength: 1000,
                 keyboardType: TextInputType.text,
-                cursorColor: Colors.lightBlueAccent, // 커서 색상
+                cursorColor: Color(0xFF906FB7), // 커서 색상
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black12),
@@ -73,8 +72,8 @@ class _EditSelfIntroductionBoxState extends State<EditSelfIntroductionBox> {
                     borderSide: BorderSide(color: Colors.black12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.lightBlueAccent), // 포커스 시 테두리 색상 변경
+                    borderSide:
+                        BorderSide(color: Color(0xFF906FB7)), // 포커스 시 테두리 색상 변경
                   ),
                   hintText: '자기소개를 입력하세요',
                   contentPadding: EdgeInsets.all(8.0),

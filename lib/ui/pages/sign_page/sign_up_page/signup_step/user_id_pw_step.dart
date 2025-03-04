@@ -15,27 +15,27 @@ class UserIdPwStep extends StatefulWidget {
 }
 
 class _UserIdPwStepState extends State<UserIdPwStep> {
+  final TextEditingController _userEmailController = TextEditingController();
+  final TextEditingController _verificationCodeController =
+      TextEditingController();
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _userPw1Controller = TextEditingController();
   final TextEditingController _userPw2Controller = TextEditingController();
-  final TextEditingController _userEmailController = TextEditingController();
-  final TextEditingController _certificationController =
-      TextEditingController();
 
   String isCertification = 'prev'; // prev - 인증 전 / doing - 인증 중 / end - 인증 완료
   String information = '';
 
   // 입력된 아이디, 비밀번호의 유효성 검증 함수
   void checkValidation() async {
+    String userEmail = _userEmailController.text.trim();
     String userId = _userIdController.text.trim();
     String userPw1 = _userPw1Controller.text.trim();
     String userPw2 = _userPw2Controller.text.trim();
-    String userEmail = _userEmailController.text.trim();
 
-    if (userId.isEmpty ||
+    if (userEmail.isEmpty ||
+        userId.isEmpty ||
         userPw1.isEmpty ||
-        userPw2.isEmpty ||
-        userEmail.isEmpty) {
+        userPw2.isEmpty) {
       setState(() {
         information = '모든 항목을 입력해주세요.';
       });
@@ -61,11 +61,10 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
   }
 
   // 이메일 인증번호 발송
-  void _certificationBtn() async {
+  void _verificationBtn() async {
     String userEmail = _userEmailController.text.trim();
 
     if (userEmail.isNotEmpty) {
-      // 서버 보내기
       int result = await widget.signupNotifier.verifyEmail(userEmail);
 
       setState(() {
@@ -86,14 +85,23 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
   }
 
   // 이메일 인증번호 체크
-  void _checkCodeBtn() {
-    // 다른 로직 추가
+  void _checkVerificationCodeBtn() async {
+    String userEmail = _userEmailController.text.trim();
+    String verificationCode = _verificationCodeController.text.trim();
 
-    bool result = true; // 서버에서 true 값 받아오도록 하고 나중에 이건 지워야함
+    if (userEmail.isNotEmpty && verificationCode.isNotEmpty) {
+      int result =
+          await widget.signupNotifier.verifyCode(userEmail, verificationCode);
 
-    if (isCertification == 'doing' && result) {
       setState(() {
-        isCertification = 'end';
+        if (isCertification == 'doing' && result == 1) {
+          isCertification = 'end';
+          information = '';
+        } else if (isCertification == 'doing' && result == 2) {
+          information = '인증코드가 일치하지 않습니다.';
+        } else if (isCertification == 'doing' && result == 3) {
+          information = '서버 오류';
+        }
       });
     }
   }
@@ -109,11 +117,11 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           _emailInputBox('이메일', 'example@email.com', false,
-              _userEmailController, '인증', _certificationBtn),
+              _userEmailController, '인증', _verificationBtn),
           const SizedBox(height: 4),
           if (isCertification == 'doing')
-            _emailInputBox(null, '인증번호', false, _certificationController, '확인',
-                _checkCodeBtn),
+            _emailInputBox(null, '인증번호', false, _verificationCodeController,
+                '확인', _checkVerificationCodeBtn),
           const SizedBox(height: 20),
           _textInputBox('아이디', '영문+숫자 (6~12자리)', false, _userIdController),
           const SizedBox(height: 20),
@@ -136,14 +144,16 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
             height: 50,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlueAccent,
+                backgroundColor: Color(0xFF906FB7),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0),
                 ),
               ),
-              onPressed: _userIdController.text.trim() != '' &&
-                      _userPw1Controller.text.trim() != '' &&
-                      _userPw2Controller.text.trim() != ''
+              onPressed: _userEmailController.text.trim().isNotEmpty &&
+                      isCertification == 'end' &&
+                      _userIdController.text.trim().isNotEmpty &&
+                      _userPw1Controller.text.trim().isNotEmpty &&
+                      _userPw2Controller.text.trim().isNotEmpty
                   ? () => checkValidation()
                   : null,
               child: Text(
@@ -228,7 +238,7 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
                 height: 50,
                 margin: const EdgeInsets.only(left: 10),
                 decoration: BoxDecoration(
-                  color: Colors.lightBlueAccent,
+                  color: Color(0xFF906FB7),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Center(

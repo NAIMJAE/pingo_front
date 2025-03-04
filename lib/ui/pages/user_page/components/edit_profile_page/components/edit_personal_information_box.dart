@@ -249,7 +249,7 @@ class _EditPersonalInformationBoxState
           ),
           Icon(
             Icons.calendar_today,
-            color: Colors.lightBlueAccent,
+            color: Color(0xFF906FB7),
             size: 20,
           ),
         ],
@@ -275,18 +275,18 @@ class _EditPersonalInformationBoxState
   Widget _buildHeightInfo(userInfo) {
     return TextSelectionTheme(
       data: TextSelectionThemeData(
-        cursorColor: Colors.lightBlueAccent, // 커서 색상
-        selectionColor: Colors.lightBlueAccent.withOpacity(0.4), // 선택된 영역 색상
-        selectionHandleColor: Colors.lightBlueAccent, // 둥근 핸들러 색상
+        cursorColor: Color(0xFF906FB7), // 커서 색상
+        selectionColor: Color(0xFF906FB7).withOpacity(0.4), // 선택된 영역 색상
+        selectionHandleColor: Color(0xFF906FB7), // 둥근 핸들러 색상
       ),
       child: TextField(
         controller: _heightController,
         style: Theme.of(context).textTheme.headlineSmall,
-        cursorColor: Colors.lightBlueAccent, // 커서 색상
+        cursorColor: Color(0xFF906FB7), // 커서 색상
         decoration: InputDecoration(
           border: OutlineInputBorder(), // 기본 테두리
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.lightBlueAccent, width: 2.0),
+            borderSide: BorderSide(color: Color(0xFF906FB7), width: 2.0),
           ),
           hintText: '신장을 입력하세요',
           errorText: errorMessage, // 오류 메시지 적용
@@ -421,9 +421,9 @@ class _EditPersonalInformationBoxState
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.lightBlueAccent : Colors.white,
+          color: isSelected ? Color(0xFF906FB7) : Colors.white,
           border: Border.all(
-            color: isSelected ? Colors.lightBlueAccent : Colors.black12,
+            color: isSelected ? Color(0xFF906FB7) : Colors.black12,
           ),
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),

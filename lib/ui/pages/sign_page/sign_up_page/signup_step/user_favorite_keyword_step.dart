@@ -98,7 +98,7 @@ class _UserFavoriteKeywordStepState extends State<UserFavoriteKeywordStep> {
             height: 50,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlueAccent,
+                backgroundColor: Color(0xFF906FB7),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0),
                 ),

@@ -94,8 +94,7 @@ class _SelectUserKeywordBoxState extends ConsumerState<SelectUserKeywordBox> {
         padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
         decoration: BoxDecoration(
           border: Border.all(
-              color: isSelected ? Colors.lightBlueAccent : Colors.black12,
-              width: 1),
+              color: isSelected ? Color(0xFF906FB7) : Colors.black12, width: 1),
           borderRadius: BorderRadius.all(
             Radius.circular(8),
           ),
