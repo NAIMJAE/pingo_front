@@ -13,29 +13,6 @@ AppBar userAppbar(context, Function logout) {
         ),
       ],
     ),
-    actions: [
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            InkWell(
-              onTap: () {
-                logout();
-              },
-              child: Row(
-                children: [
-                  Icon(Icons.logout),
-                ],
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.settings),
-            ),
-          ],
-        ),
-      ),
-    ],
     backgroundColor: Colors.white,
   );
 }

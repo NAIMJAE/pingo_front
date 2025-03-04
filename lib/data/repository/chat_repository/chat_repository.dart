@@ -53,8 +53,11 @@ class ChatRepository {
         .get('/select/oldMessage', query: {'msgId': msgId, 'roomId': roomId});
     logger.i('oldMessageResponse : $response');
 
+    // 백에서 sort X -> reverse 처리
     return List<Map<String, dynamic>>.from(response)
         .map((json) => ChatMessage.fromJson(json))
+        .toList()
+        .reversed
         .toList();
   }
 

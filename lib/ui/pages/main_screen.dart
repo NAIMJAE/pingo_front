@@ -158,8 +158,9 @@ class _MainScreenState extends ConsumerState<MainScreen>
       },
       items: [
         BottomNavigationBarItem(label: '홈', icon: Icon(Icons.home_filled)),
-        BottomNavigationBarItem(label: '키워드', icon: Icon(Icons.dashboard)),
-        BottomNavigationBarItem(label: '매칭상태', icon: Icon(Icons.join_inner)),
+        BottomNavigationBarItem(label: '키워드', icon: Icon(Icons.electric_bolt)),
+        BottomNavigationBarItem(
+            label: '커뮤니티', icon: Icon(Icons.connected_tv_outlined)),
         BottomNavigationBarItem(label: '채팅', icon: Icon(Icons.chat)),
         BottomNavigationBarItem(label: '사용자', icon: Icon(Icons.person)),
       ],
