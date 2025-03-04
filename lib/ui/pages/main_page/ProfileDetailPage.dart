@@ -73,15 +73,23 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true, // 배경과 자연스럽게 연결
       appBar: AppBar(
-        title: Text(widget.profile.name, style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.download, color: Colors.pinkAccent),
-            onPressed: () {},
-          )
-        ],
+        backgroundColor: Colors.black.withOpacity(0.9), // 반투명 블랙 배경
+        elevation: 0, // 그림자 제거
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          widget.profile.name,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: true, // 타이틀 중앙 정렬
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -148,7 +156,7 @@ class _ProfileDetailPageState extends ConsumerState<ProfileDetailPage> {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    "📍 ${widget.profile.profileDetail?.userInfo?.userAddress ?? ''} • ${widget.profile.distance}",
+                    "📍 ${widget.profile.profileDetail?.userInfo?.userAddress ?? ''}",
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                   Divider(color: Colors.white24),
