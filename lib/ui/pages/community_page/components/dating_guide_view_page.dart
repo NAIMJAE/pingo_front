@@ -214,7 +214,10 @@ class _DatingGuideViewPageState extends ConsumerState<DatingGuideViewPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: () => Navigator.pop(context),
+              onTap: () {
+                Navigator.pop(context);
+                FocusScope.of(context).unfocus();
+              },
               child: Container(
                 padding: EdgeInsets.all(8),
                 child: Icon(Icons.arrow_back, color: Colors.black),

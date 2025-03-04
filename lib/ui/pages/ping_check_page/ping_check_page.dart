@@ -9,6 +9,7 @@ import 'package:pingo_front/data/view_models/ping_check_view_model/ping_check_vi
 import 'package:pingo_front/data/view_models/sign_view_model/signin_view_model.dart';
 import 'package:pingo_front/ui/pages/keyword_page/keyword_page.dart';
 import 'package:pingo_front/ui/pages/main_page/ProfileDetailPage.dart';
+import 'package:pingo_front/ui/pages/membership_Page/membership_page.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
 
 class PingCheckPage extends ConsumerStatefulWidget {
@@ -76,11 +77,14 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
                     Icon(Icons.security_outlined),
                     const SizedBox(width: 12),
                     Text(
-                      '내가 받은 핑을 확인할 수 있어요.\n모두 확인하려면 유료 결제가 필요합니다.',
+                      isMembership
+                          ? '내가 받은 핑을 확인할 수 있어요.\n모두 확인하려면 유료 결제가 필요합니다.'
+                          : '내가 받은 핑을 확인할 수 있어요.',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ],
                 ),
+                if (isMembership) _paymentBox(),
                 _pingBox(cntWidth: cntWidth, users: pingUsers['PING'] ?? []),
               ],
             ),
@@ -90,11 +94,44 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
     );
   }
 
+  Widget _paymentBox() {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MembershipPage(),
+          ),
+        );
+      },
+      child: SizedBox(
+        width: double.infinity,
+        child: Container(
+          margin: EdgeInsets.only(top: 8),
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          decoration: BoxDecoration(
+              color: Colors.orangeAccent,
+              borderRadius: BorderRadius.all(Radius.circular(8))),
+          child: Text(
+            'Pingo 구독권 결제하기',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _superPingBox(
       {required double cntWidth, required List<Profile> users}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: SizedBox(
+        width: double.infinity,
         height: cntWidth * 0.55,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
@@ -111,23 +148,26 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
   Widget _pingBox({required double cntWidth, required List<Profile> users}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 16),
-      child: Wrap(
-        alignment: WrapAlignment.start,
-        spacing: 16,
-        runSpacing: 16,
-        children: [
-          ...List.generate(
-            users.length,
-            (index) => normalUser(cntWidth: cntWidth, user: users[index]),
-          )
-        ],
+      child: SizedBox(
+        width: double.infinity,
+        child: Wrap(
+          alignment: WrapAlignment.start,
+          spacing: 16,
+          runSpacing: 16,
+          children: [
+            ...List.generate(
+              users.length,
+              (index) => normalUser(cntWidth: cntWidth, user: users[index]),
+            )
+          ],
+        ),
       ),
     );
   }
 
   Widget _superUser({required double cntWidth, required Profile user}) {
     return Container(
-      width: cntWidth * 0.7,
+      width: cntWidth * 0.8,
       height: cntWidth * 0.55,
       margin: EdgeInsets.only(right: 16, bottom: 16),
       child: Stack(
@@ -147,7 +187,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
               );
             },
             child: Container(
-              width: cntWidth * 0.7,
+              width: cntWidth * 0.8,
               height: cntWidth * 0.55,
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -195,7 +235,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
               children: [
                 Text(
                   user.name,
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
@@ -203,7 +243,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
                 const SizedBox(width: 8),
                 Text(
                   user.age,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
@@ -212,23 +252,20 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
             ),
           ),
           Positioned(
-            top: 18,
+            bottom: 56,
             left: 8,
-            child: Transform.rotate(
-              angle: -0.2,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.blueAccent,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  'SUPER PING',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Color(0xFF906FB7),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'SUPER PING',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -320,7 +357,7 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
             ],
           ),
         ),
-        if (!isMembership)
+        if (isMembership)
           Positioned(
             top: 0,
             left: 0,
@@ -335,21 +372,6 @@ class _PingCheckPageState extends ConsumerState<PingCheckPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     color: Colors.grey.withOpacity(0.2),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        bottom: 0,
-                        child: Container(
-                          width: 100,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: Colors.black54.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),

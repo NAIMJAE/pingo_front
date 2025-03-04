@@ -32,9 +32,13 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
 
     logger.i(response);
 
-    // 이 response는 PlaceReviewSearch의 reviewSearchResult의 List<PlaceReview>
     initData.reviewSearchResult.changePlaceReviewList(response);
     state = initData;
+  }
+
+  // 게시글 좋아요
+  Future<String> clickThumbUp(String userNo, String prNo) async {
+    return await _repository.fetchClickThumbUp(userNo, prNo);
   }
 
   // 검색 정렬 기준 변경
@@ -118,11 +122,6 @@ class PlaceReviewSearchViewModel extends Notifier<PlaceReviewSearch> {
     state =
         PlaceReviewSearch(KakaoSearchResult(newList), state.reviewSearchResult);
   }
-
-  // // 검색창 비었을 때 마지막 검색으로 갱신
-  // void renewalSearchResult() {
-  //   state.reviewSearchResult.changePlaceReviewList(lastSearch);
-  // }
 
   // 카카오 주소 기반 장소 이미지 크롤링
   Future<dynamic> crawlingPlaceImage(String placeUrl) async {
