@@ -120,6 +120,4 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     await prefs.setString(_getUserKey(), json.encode(newSettings.toJson()));
     logger.i('updateSettings ...... - 디비 저장 끝');
   }
-
-  // 알람 내용
 }
