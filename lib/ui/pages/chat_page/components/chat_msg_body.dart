@@ -10,9 +10,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
 import 'package:pingo_front/data/models/chat_model/chat_user.dart';
+import 'package:pingo_front/data/network/custom_dio.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/data/view_models/stomp_view_model.dart';
 import 'package:pingo_front/ui/pages/chat_page/components/place_map.dart';
+import 'package:pingo_front/ui/pages/main_screen.dart';
 import 'package:pingo_front/ui/widgets/custom_image.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -33,15 +35,44 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
   late StompViewModel websocketProvider; // 웹소캣 객체를 저장(메세지를 보내기 위한)
   final RefreshController _refreshController = RefreshController();
   String? previousDate; // 날짜 저장
+  double listHeight = 0;
+
+  bool _isLoadingOlderMessages = false; // 메시지 불러오는 중 여부 체크
+  bool lastMessageCheck = true; //불러올 메세지 있는지 없는 지여부
 
   // 선언하고 initState()에서 ref.read를 사용해서 초기화를 했기때문에 build 안에서 사용가능함!
 
   @override
   void initState() {
     super.initState();
+    disableNotifications();
     // 2. 메세지를 지속적으로 받아오면서 구독하고 receive 요청!
     websocketProvider =
         ref.read(stompViewModelProvider.notifier); // 웹소캣 창고 접근(메서드 사용하려고)
+
+    Future.microtask(() {
+      scroll.addListener(() async {
+        if (scroll.position.pixels <= scroll.position.minScrollExtent + 100) {
+          if (_isLoadingOlderMessages || !lastMessageCheck) return;
+
+          _isLoadingOlderMessages = true; // 로딩 시작
+          logger.i('이전 메시지 불러오기 시작');
+
+          listHeight = scroll.position.maxScrollExtent;
+
+          bool hasOlderMessages = await ref
+              .read(chatProvider.notifier)
+              .loadOlderMessages(widget.roomId);
+
+          if (!hasOlderMessages) {
+            lastMessageCheck = false; // 더 이상 불러올 데이터 없음
+            logger.i('이제 더 이상 불러올 메시지가 없음');
+          }
+
+          // _isLoadingOlderMessages = false; // 로딩 완료
+        }
+      });
+    });
 
     // websocketProvider.receive(widget.roomId);
   }
@@ -65,6 +96,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
   Widget build(BuildContext context) {
     // final sessionUser = ref.read(sessionProvider);
     // final myUserNo = sessionUser.userNo;
+
     final chatRoom = ref.watch(chatProvider)[
         widget.roomId]; // 상태값 꺼내오기(state = Map<String,ChatRoom> 꺼내오는거임)'
     logger.i('이곳도 계속 찍히니? $chatRoom');
@@ -73,8 +105,17 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     // build() 완료 후 최하단으로 스크롤
     //  Flutter의 프레임이 그려진 직후(즉, build()가 완료된 후)에 특정 코드를 실행하도록 예약하는 함수(한번만 실행)
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scroll.hasClients) {
+      double newHeight = scroll.position.maxScrollExtent;
+
+      if (scroll.hasClients && !_isLoadingOlderMessages) {
         scroll.jumpTo(scroll.position.maxScrollExtent);
+        logger.i('★★★★★★★★★★★★★★★');
+      } else {
+        logger.i('※※※※$newHeight');
+        logger.i('※※※※$listHeight');
+        scroll.jumpTo(
+            newHeight - listHeight - MediaQuery.of(context).size.height);
+        _isLoadingOlderMessages = false; // 로딩 완료
       }
     }); // logger.i('도달여부확인');
     // final List<Message> chatMessages =
@@ -88,35 +129,60 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
     return Column(
       children: [
         Expanded(
-          child: SmartRefresher(
-            controller: _refreshController, // RefreshController 추가
-            enablePullDown: true, // 위에서 아래로 스크롤할 때 실행 (과거 메시지 불러오기)
-            enablePullUp: false,
-            onRefresh: () async {
-              bool lastMessageCheck = await ref
-                  .read(chatProvider.notifier)
-                  .loadOlderMessages(widget.roomId);
-              if (lastMessageCheck == false) {
-                logger.i('현재 aa : $lastMessageCheck');
-                _refreshController.loadNoData(); // 불러올 데이터가 없음
-                // 스낵바 추가 원할시 추가하기
+          // child: SmartRefresher(
+          //   controller: _refreshController, // RefreshController 추가
+          //   enablePullDown: true, // 위에서 아래로 스크롤할 때 실행 (과거 메시지 불러오기)
+          //   enablePullUp: false,
+          //   header: CustomHeader(
+          //     builder: (context, mode) {
+          //       return Container(); // ✅ 오류 방지용 빈 컨테이너 유지
+          //     },
+          //   ),
+          //   onRefresh: () async {
+          //     _isLoadingOlderMessages = true;
+          //     // 현재 스크롤 위치 저장
+          //     // double currentScrollOffset = scroll.position.pixels;
+          //     listHeight = scroll.position.maxScrollExtent;
+          //
+          //     bool lastMessageCheck = await ref
+          //         .read(chatProvider.notifier)
+          //         .loadOlderMessages(widget.roomId);
+          //     if (lastMessageCheck == false) {
+          //       logger.i('현재 aa : $lastMessageCheck');
+          //       _refreshController.loadNoData(); // 불러올 데이터가 없음
+          //       // 스낵바 추가 원할시 추가하기
+          //     }
+          //     logger.i('현재 aa : $lastMessageCheck');
+          //     // WidgetsBinding.instance.addPostFrameCallback(() {
+          //     //   scroll.jumpTo(currentScrollOffset);
+          //     // });
+          //
+          //     _refreshController.refreshCompleted(); // 데이터를 불러와서 빙글빙글 돌아가는 거 없앰
+          //   },
+          child: ListView.builder(
+            controller: scroll,
+            shrinkWrap: true,
+            itemCount: chatRoom?.message.length,
+            itemBuilder: (context, index) {
+              final message = chatRoom?.message[index];
+              bool isSame = false;
+              if (index > 0) {
+                String? prevNo = chatRoom?.message[index - 1].userNo;
+                String? nowNo = chatRoom?.message[index].userNo;
+                int? prevTime = chatRoom?.message[index - 1].msgTime?.minute;
+                int? nowTime = chatRoom?.message[index].msgTime?.minute;
+                if (prevNo == nowNo && prevTime == nowTime) {
+                  isSame = true;
+                }
               }
-              logger.i('현재 aa : $lastMessageCheck');
-              _refreshController.refreshCompleted(); // 데이터를 불러와서 빙글빙글 돌아가는 거 없앰
-            },
-            child: ListView.builder(
-              controller: scroll,
-              shrinkWrap: true,
-              itemCount: chatRoom?.message.length,
-              itemBuilder: (context, index) {
-                final message = chatRoom?.message[index];
 
-                // final chatUser = chatUsers[index];
-                return _buildMessageItem(message!, widget.myUserNo, totalUser!);
-              },
-            ),
+              // final chatUser = chatUsers[index];
+              return _buildMessageItem(
+                  message!, widget.myUserNo, totalUser!, isSame);
+            },
           ),
         ),
+        // ),
         Row(
           children: [
             // + 버튼 (모달 열기)
@@ -265,8 +331,8 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
   }
 
   // 메시지 내용 띄우는 위젯
-  Widget _buildMessageItem(
-      ChatMessage message, String? userNo, List<ChatUser> totalUser) {
+  Widget _buildMessageItem(ChatMessage message, String? userNo,
+      List<ChatUser> totalUser, bool isSame) {
     final ChatUser selectUser = totalUser.firstWhere(
       (each) => each.userNo == message.userNo,
     );
@@ -299,32 +365,39 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
                   ? Alignment.centerRight
                   : Alignment.centerLeft,
           child: Container(
-            margin: EdgeInsets.symmetric(vertical: 10),
+            margin: isSame
+                ? EdgeInsets.symmetric(vertical: 2)
+                : EdgeInsets.only(
+                    top: 12,
+                    bottom: 2,
+                  ),
             child: Row(
               mainAxisAlignment: message.userNo == userNo
                   ? MainAxisAlignment.end
                   : MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (message.userNo != userNo) //상대방일때
+                if (message.userNo != userNo && !isSame) //상대방일때
                   CircleAvatar(
                     radius: 20,
                     backgroundImage:
                         CustomImage().provider(selectUser.imageUrl!),
                   ),
+                if (message.userNo != userNo && isSame) //상대방일때
+                  SizedBox(width: 40),
                 Row(
                   // 정렬 변경
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: message.userNo != userNo
                       ? [
                           SizedBox(width: 5),
                           _buildText(message, userNo),
                           SizedBox(width: 5),
-                          _buildRead(message, userNo),
+                          if (!isSame) _buildRead(message, userNo),
                         ]
                       : [
                           SizedBox(width: 5),
-                          _buildRead(message, userNo),
+                          if (!isSame) _buildRead(message, userNo),
                           SizedBox(width: 5),
                           _buildText(message, userNo),
                         ],
@@ -559,6 +632,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
       await dio.download(fileURL, filePath);
       logger.i('파일다운로드');
     } catch (e) {
+      logger.i('파일다운로드안됨');
       print('error');
     }
   }
@@ -574,6 +648,11 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
       }
     }
     return "/storage/emulated/0/Download";
+  }
+
+  void disableNotifications() {
+    // 알람을 무시하기 위해 알람을 등록하지 않음
+    flutterLocalNotificationsPlugin.cancelAll();
   }
 }
 
@@ -604,7 +683,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
 //         ...state,
 //         roomId: [...olderMessages, ...state[roomId]!],  // ✅ 기존 메시지 위에 추가
 //       };
-//     }
+//     }0
 //   }
 //
 //   _refreshController.refreshCompleted(); // ✅ 로딩 완료

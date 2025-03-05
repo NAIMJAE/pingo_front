@@ -98,6 +98,7 @@ class ChatMatch extends StatelessWidget {
                 roomId: otherUser.roomId,
                 // chatRoom: chatList[otherUser.roomId]!,
                 myUserNo: myUserNo),
+            settings: RouteSettings(name: 'chat_msg_body'),
           ),
         );
       },
