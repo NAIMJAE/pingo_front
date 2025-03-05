@@ -92,4 +92,35 @@ class UserSignupRepository {
     return response;
     // 서버 로직 완료 후 성공 실패 처리 남음
   }
+
+  // 이메일 인증번호 발송
+  Future<String?> fetchVerifyEmail(String userEmail) async {
+    final response =
+        await _customDio.post('/permit/sendemailforsignup', data: userEmail);
+
+    if (response != null && response is String) {
+      return response;
+    } else {
+      return null;
+    }
+  }
+
+  // 이메일 인증번호 체크
+  Future<bool> fetchVerifyCode(requestData) async {
+    if (!requestData.containsKey("sessionId")) {
+      logger.e("세션 ID 없음, 요청 중단");
+      return false;
+    }
+
+    final response = await _customDio.post(
+      '/permit/checkcode',
+      data: requestData,
+    );
+
+    if (response != null) {
+      return response as bool;
+    } else {
+      return false;
+    }
+  }
 }

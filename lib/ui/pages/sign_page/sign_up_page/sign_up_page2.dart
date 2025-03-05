@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/data/view_models/sign_view_model/signup_view_model.dart';
-import 'package:pingo_front/data/view_models/user_view_model/user_view_model.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/signup_complete_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_basic_info_step.dart';
 import 'package:pingo_front/ui/pages/sign_page/sign_up_page/signup_step/user_favorite_keyword_step.dart';
@@ -73,7 +72,6 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
   Widget build(BuildContext context) {
     final userData = ref.watch(signupViewModelProvider);
     final signupNotifier = ref.read(signupViewModelProvider.notifier);
-    final userNotifier = ref.read(userViewModelProvider.notifier);
 
     return Scaffold(
       body: SafeArea(
@@ -91,8 +89,8 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
                       position: _slideAnimation,
                       child: FadeTransition(
                         opacity: _fadeAnimation,
-                        child: _buildStepWidget(
-                            context, userData, signupNotifier, userNotifier),
+                        child:
+                            _buildStepWidget(context, userData, signupNotifier),
                       ),
                     ),
                   ),
@@ -112,13 +110,12 @@ class _SignUpPage2State extends ConsumerState<SignUpPage2>
   }
 
   // currentStep에 따라 화면 전환하는 위젯
-  Widget _buildStepWidget(
-      BuildContext context, userData, signupNotifier, userNotifier) {
+  Widget _buildStepWidget(BuildContext context, userData, signupNotifier) {
     switch (currentStep) {
       case 0:
         return userTermStep(context, _nextStep, userData);
       case 1:
-        return UserIdPwStep(_nextStep, userData, signupNotifier, userNotifier);
+        return UserIdPwStep(_nextStep, userData, signupNotifier);
       case 2:
         return UserBasicInfoStep(_nextStep, userData, signupNotifier);
       case 3:

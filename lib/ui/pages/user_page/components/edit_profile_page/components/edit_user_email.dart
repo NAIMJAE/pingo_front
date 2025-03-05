@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EditUserEmail extends StatefulWidget {
+class EditUserEmail extends ConsumerStatefulWidget {
   final String userEmail;
   final dynamic userNotifier;
+  final Function(bool) onCertified; // 인증 완료 여부 전달하는 콜백 추가
 
-  const EditUserEmail(this.userEmail, this.userNotifier, {super.key});
+  const EditUserEmail(this.userEmail, this.userNotifier,
+      {super.key, required this.onCertified});
 
   @override
-  State<EditUserEmail> createState() => _EditUserEmailState();
+  ConsumerState<EditUserEmail> createState() => _EditUserEmailState();
 }
 
-class _EditUserEmailState extends State<EditUserEmail> {
+class _EditUserEmailState extends ConsumerState<EditUserEmail> {
   final TextEditingController _userEmailController = TextEditingController();
   final TextEditingController _verificationCodeController =
       TextEditingController();
 
   String information = '';
-  String isCertification = 'prev'; // prev - 인증 전 / doing - 인증 중 / end - 인증 완료
+  String isCertification = 'prev';
+
+  @override
+  void initState() {
+    super.initState();
+    _userEmailController.text = widget.userEmail; // 초기값 설정
+  }
 
   // 이메일 인증번호 발송
   void _verificationBtn() async {
@@ -28,7 +36,7 @@ class _EditUserEmailState extends State<EditUserEmail> {
 
       setState(() {
         if (result == 1) {
-          if (isCertification == 'prev' && result == 1) {
+          if (isCertification == 'prev') {
             isCertification = 'doing';
           }
           information = '';
@@ -55,6 +63,8 @@ class _EditUserEmailState extends State<EditUserEmail> {
       setState(() {
         if (isCertification == 'doing' && result == 1) {
           isCertification = 'end';
+          widget.userNotifier.updateUserEmail(userEmail); // 변경된 이메일 적용
+          widget.onCertified(true); // 인증 성공 상태 전달
           information = '';
         } else if (isCertification == 'doing' && result == 2) {
           information = '인증코드가 일치하지 않습니다.';
@@ -74,15 +84,15 @@ class _EditUserEmailState extends State<EditUserEmail> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               '이메일',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 4.0),
-            _emailInputBox(widget.userEmail, 'example@email.com', false,
-                _userEmailController, '인증', _verificationBtn),
+            _emailInputBox(_userEmailController.text, 'example@email.com',
+                false, _userEmailController, '인증', _verificationBtn),
             const SizedBox(height: 4),
             if (isCertification == 'doing')
               _emailInputBox(null, '인증번호', false, _verificationCodeController,
@@ -96,57 +106,49 @@ class _EditUserEmailState extends State<EditUserEmail> {
   // 이메일 입력 위젯
   Widget _emailInputBox(String? initialValue, String textHint, bool obscure,
       TextEditingController controller, String btnName, Function btnFunction) {
-    // userEmail 값이 있으면 해당 값을 TextField에 설정
     if (initialValue != null && initialValue.isNotEmpty) {
       controller.text = initialValue;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: (initialValue == null || initialValue.isEmpty)
-                      ? textHint
-                      : null,
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
-                obscureText: obscure,
+        Expanded(
+          child: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey)),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey)),
+              filled: true,
+              fillColor: Colors.white,
+              hintText: (initialValue == null || initialValue.isEmpty)
+                  ? textHint
+                  : null,
+              hintStyle: TextStyle(color: Colors.grey),
+            ),
+            obscureText: obscure,
+          ),
+        ),
+        InkWell(
+          onTap: () => btnFunction(),
+          child: Container(
+            width: 60,
+            height: 50,
+            margin: const EdgeInsets.only(left: 10),
+            decoration: BoxDecoration(
+                color: Color(0xFF906FB7),
+                borderRadius: BorderRadius.circular(4)),
+            child: Center(
+              child: Text(
+                btnName,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
               ),
             ),
-            InkWell(
-              onTap: () => btnFunction(),
-              child: Container(
-                width: 60,
-                height: 50,
-                margin: const EdgeInsets.only(left: 10),
-                decoration: BoxDecoration(
-                  color: Color(0xFF906FB7),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Center(
-                  child: Text(
-                    btnName,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ],
     );

@@ -13,7 +13,7 @@ AppBar findPwAppBar(context) {
     backgroundColor: Colors.white,
     leading: IconButton(
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.popUntil(context, (route) => route.isFirst);
       },
       icon: Icon(Icons.arrow_back),
     ),

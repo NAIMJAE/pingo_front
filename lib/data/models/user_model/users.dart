@@ -7,7 +7,7 @@ class Users {
   String? userGender;
   String? userState;
   DateTime? userrDate;
-  String? userEmail;
+  String? userEmail; // ✅ 이메일 필드 존재
 
   Users({
     this.userNo,
@@ -30,8 +30,8 @@ class Users {
       "userNick": userNick,
       "userGender": userGender,
       "userState": userState,
-      "userrDate": userrDate?.toIso8601String(), // DateTime 변환 필요
-      "userEmail": userEmail,
+      "userrDate": userrDate?.toIso8601String(),
+      "userEmail": userEmail, // ✅ 이메일도 JSON으로 변환
     };
   }
 
@@ -46,12 +46,27 @@ class Users {
         userrDate = json['userrDate'] != null
             ? DateTime.parse(json['userrDate'])
             : null,
-        userEmail = json['userEmail'];
+        userEmail = json['userEmail']; // ✅ 이메일 변환
 
   @override
   String toString() {
     return 'Users{userNo: $userNo, userId: $userId, userPw: $userPw,'
         'userName: $userName, userNick: $userNick, userGender: $userGender,'
         'userState: $userState, userrDate: $userrDate, userEmail: $userEmail}';
+  }
+
+  // 이메일 변경을 위한 copyWith 추가
+  Users copyWith({String? userEmail}) {
+    return Users(
+      userNo: this.userNo,
+      userId: this.userId,
+      userPw: this.userPw,
+      userName: this.userName,
+      userNick: this.userNick,
+      userGender: this.userGender,
+      userState: this.userState,
+      userrDate: this.userrDate,
+      userEmail: userEmail ?? this.userEmail, // 변경할 이메일 적용
+    );
   }
 }
