@@ -66,10 +66,13 @@ class ChatMatch extends StatelessWidget {
                                     chatList[each.key]!, context))
                                 .toList()
                             : [
-                                Center(
-                                  child: Text(
-                                    '검색된 사용자가 없습니다',
-                                    style: TextStyle(fontSize: 15),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Center(
+                                    child: Text(
+                                      '검색된 사용자가 없습니다',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
                                   ),
                                 ),
                               ];

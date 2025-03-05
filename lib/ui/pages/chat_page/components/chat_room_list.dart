@@ -20,6 +20,22 @@ class ChatRoomList extends StatefulWidget {
 class _ChatMessageListState extends State<ChatRoomList> {
   @override
   Widget build(BuildContext context) {
+    final filterUsers = widget.chatList.entries.expand((entry) {
+      final chat = entry.value;
+      final roomId = entry.key;
+      return widget.searchQuery.isEmpty
+          ? chat.chatUser
+          : chat.chatUser
+              .where((user) =>
+                  user.userName != null &&
+                  user.userName!.toLowerCase().contains(
+                        widget.searchQuery.toLowerCase(),
+                      ))
+              .toList(); // 다 소문자로 바궈서 contain값 확인하기
+    });
+
+    logger.i(filterUsers.length);
+
     return Container(
       width: double.infinity,
       height: 500, // ♬ 나중에 더미 넣고 높이 수정
@@ -44,46 +60,41 @@ class _ChatMessageListState extends State<ChatRoomList> {
             // expend : 리스트 안의 요소를 하나의 리스트로 펼쳐줌
 
             widget.chatList.isEmpty //
-                ? Center(
-                    child: Text(
-                      '현재 대화중인 채팅이 없습니다.',
-                      style: TextStyle(fontSize: 15),
+                ? SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: Text(
+                        '현재 대화중인 채팅이 없습니다',
+                        style: TextStyle(fontSize: 16),
+                      ),
                     ),
                   ) //
-                : Column(
-                    children: widget.chatList.entries.expand((entry) {
-                      final chat = entry.value;
-                      final roomId = entry.key;
-
-                      final filterUsers = widget.searchQuery.isEmpty
-                          ? chat.chatUser
-                          : chat.chatUser
-                              .where((user) =>
-                                  user.userName != null &&
-                                  user.userName!.toLowerCase().contains(
-                                        widget.searchQuery.toLowerCase(),
-                                      ))
-                              .toList(); // 다 소문자로 바궈서 contain값 확인하기
-
-                      return filterUsers.isNotEmpty
-                          ? filterUsers.map(
-                              (user) => _chatList(
-                                context,
-                                user.imageUrl ?? '',
-                                user.userName ?? '',
-                                chat.lastMessage ?? '',
-                                roomId ?? '',
-                                widget.myUserNo,
-                              ),
-                            )
-                          : [
-                              Text(
-                                '검색된 사용자가 없습니다.',
-                                style: TextStyle(fontSize: 15),
-                              )
-                            ];
-                    }).toList(),
-                  ),
+                : filterUsers.isNotEmpty
+                    ? Column(
+                        children: [
+                          ...filterUsers.map((user) {
+                            ChatRoom? room =
+                                widget.chatList[user.roomId]; // ?? null 제거
+                            return _chatList(
+                              context,
+                              user.imageUrl ?? '',
+                              user.userName ?? '',
+                              room?.lastMessage ?? '',
+                              user.roomId ?? '',
+                              widget.myUserNo,
+                            );
+                          })
+                        ],
+                      )
+                    : SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Center(
+                          child: Text(
+                            '검색 결과가 없습니다',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
           ],
         ),
       ),
