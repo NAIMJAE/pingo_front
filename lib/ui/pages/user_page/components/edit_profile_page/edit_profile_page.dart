@@ -18,10 +18,9 @@ class EditProfilePage extends ConsumerStatefulWidget {
 
 class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   late String userNo;
-  // 유저 상세정보 복사본
   late UserMypageInfo copyUserInfo;
+  bool isEmailCertified = false; // 이메일 인증 여부 상태 추가
 
-  // stateful 위젯이 생성될 때 최초 1회만 실행하는 메서드
   @override
   void initState() {
     super.initState();
@@ -29,14 +28,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     ref.read(userViewModelProvider.notifier).fetchMyPageInfo(userNo);
   }
 
-  // 수정 완료 버튼 눌렀을때 실행되는 함수
+  // 수정 완료 버튼 눌렀을 때 실행되는 함수
   void _submitUserInfo() async {
-    print(copyUserInfo.userIntroduction); // 여기서 JSON 데이터를 확인
-
     await ref
         .read(userViewModelProvider.notifier)
         .submitUpdateInfo(copyUserInfo);
-
     if (context.mounted) {
       Navigator.pop(context);
     }
@@ -44,11 +40,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final userNotifier = ref.read(userViewModelProvider.notifier); // 읽기 전용
-    final userMypageInfo =
-        ref.watch(userViewModelProvider); // 계속해서 감시 (즉, 추적 관리, 구독)
+    final userNotifier = ref.read(userViewModelProvider.notifier);
+    final userMypageInfo = ref.watch(userViewModelProvider);
 
-    // 유저 상세 정보 깊은 복사 메서드
     copyUserInfo = UserMypageInfo().copyWith(userMypageInfo);
 
     return Scaffold(
@@ -59,7 +53,15 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           body: ListView(
             children: [
               const SizedBox(height: 8.0),
-              EditUserEmail(copyUserInfo.users!.userEmail ?? '', userNotifier),
+              EditUserEmail(
+                copyUserInfo.users!.userEmail ?? '',
+                userNotifier,
+                onCertified: (bool isCertified) {
+                  setState(() {
+                    isEmailCertified = isCertified; // 이메일 인증 상태 업데이트
+                  });
+                },
+              ),
               const SizedBox(height: 8.0),
               EditPersonalInformationBox(copyUserInfo.userInfo!),
               const SizedBox(height: 8.0),
@@ -80,17 +82,19 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   }
 
   Widget _submitButton() {
+    bool isButtonEnabled = isEmailCertified;
+
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF906FB7),
+          backgroundColor: isButtonEnabled ? Color(0xFF906FB7) : Colors.grey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.0),
           ),
         ),
-        onPressed: () => _submitUserInfo(),
+        onPressed: isButtonEnabled ? () => _submitUserInfo() : null,
         child: Text(
           '수정 완료',
           style: Theme.of(context)

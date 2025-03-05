@@ -6,10 +6,8 @@ class UserIdPwStep extends StatefulWidget {
   final Function nextStep;
   final dynamic userData;
   final dynamic signupNotifier;
-  final dynamic userNotifier;
 
-  const UserIdPwStep(
-      this.nextStep, this.userData, this.signupNotifier, this.userNotifier,
+  const UserIdPwStep(this.nextStep, this.userData, this.signupNotifier,
       {super.key});
 
   @override
@@ -67,7 +65,7 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
     String userEmail = _userEmailController.text.trim();
 
     if (userEmail.isNotEmpty) {
-      int result = await widget.userNotifier.verifyEmail(userEmail);
+      int result = await widget.signupNotifier.verifyEmail(userEmail);
 
       setState(() {
         if (result == 1) {
@@ -93,7 +91,7 @@ class _UserIdPwStepState extends State<UserIdPwStep> {
 
     if (userEmail.isNotEmpty && verificationCode.isNotEmpty) {
       int result =
-          await widget.userNotifier.verifyCode(userEmail, verificationCode);
+          await widget.signupNotifier.verifyCode(userEmail, verificationCode);
 
       setState(() {
         if (isCertification == 'doing' && result == 1) {

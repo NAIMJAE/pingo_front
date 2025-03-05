@@ -16,6 +16,9 @@ class UserViewModel extends Notifier<UserMypageInfo> {
   // 인증코드 세션
   String? sessionId;
 
+  // 유저 비밀번호 재설정용 userNo 저장
+  String? resetUserNo;
+
   @override
   UserMypageInfo build() {
     return UserMypageInfo();
@@ -23,13 +26,24 @@ class UserViewModel extends Notifier<UserMypageInfo> {
 
   Future<void> fetchMyPageInfo(String userNo) async {
     try {
-      logger.i('1111');
       final userInfo = await _repository.fetchMyPageInfo(userNo);
 
       logger.i(userInfo);
       state = userInfo;
     } catch (e) {
       logger.e('Failed to fetch user info: $e');
+    }
+  }
+
+  // 이메일 업데이트 기능 추가 (copyWith 사용)
+  void updateUserEmail(String newEmail) {
+    if (state.users != null) {
+      state = state.copyWith(
+        UserMypageInfo(
+          users: state.users!.copyWith(userEmail: newEmail),
+        ),
+      );
+      logger.d("이메일 변경됨: ${state.users!.userEmail}");
     }
   }
 
@@ -203,6 +217,86 @@ class UserViewModel extends Notifier<UserMypageInfo> {
     } catch (e) {
       logger.e('Failed to fetch verifyCode: $e');
       return 3; // 서버 오류
+    }
+  }
+
+// 유저 아이디 찾기
+  Future<Map<String, dynamic>> findUserId(
+      String userName, String userEmail) async {
+    final RegExp nameRegex = RegExp(r'^[가-힣]{2,10}$');
+
+    // 이름 유효성 검사
+    if (!nameRegex.hasMatch(userName)) {
+      return {"status": 2, "userId": null}; // 이름이 유효하지 않음
+    }
+
+    try {
+      Map<String, dynamic> requestData = {
+        "userName": userName,
+        "userEmail": userEmail,
+      };
+
+      String? foundUserID = await _repository.fetchFindUserId(requestData);
+
+      if (foundUserID != null) {
+        return {"status": 1, "userId": foundUserID}; // 정상적으로 아이디 찾음
+      } else {
+        return {"status": 3, "userId": null}; // 계정이 존재하지 않음
+      }
+    } catch (e) {
+      logger.e('Failed to fetch verifyCode: $e');
+      return {"status": 4, "userId": null}; // 서버 오류 발생
+    }
+  }
+
+  // 유저 비밀번호 재설정으로 이동
+  Future<int> findUserPw(String userId, String userEmail) async {
+    try {
+      Map<String, dynamic> requestData = {
+        "userId": userId,
+        "userEmail": userEmail,
+      };
+
+      String? userNo = await _repository.fetchFindUserPw(requestData);
+      if (userNo != null) {
+        resetUserNo = userNo;
+        return 1; // 계정 존재
+      } else {
+        return 2; // 계정 존재하지 않음
+      }
+    } catch (e) {
+      logger.e('Failed to fetch verifyCode: $e');
+      return 3; // 서버 오류
+    }
+  }
+
+  // 유저 비밀번호 재설정
+  Future<int> resetUserPw(String userPw1, String userPw2) async {
+    final RegExp passwordRegex = RegExp(
+        r'^[A-Z](?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{7,13}$');
+    if (passwordRegex.hasMatch(userPw1)) {
+      if (userPw1 == userPw2) {
+        try {
+          Map<String, dynamic> requestData = {
+            "userNo": resetUserNo,
+            "userPw": userPw1,
+          };
+
+          bool isSuccess = await _repository.fetchResetUserPw(requestData);
+          if (isSuccess) {
+            return 1; // 비밀번호 재설정 성공
+          } else {
+            return 4; // 비밀번호 재설정 실패
+          }
+        } catch (e) {
+          logger.e('Failed to fetch verifyCode: $e');
+          return 5; // 서버 오류
+        }
+      } else {
+        return 3; // userPw1 과 userPw2 가 불일치
+      }
+    } else {
+      return 2; // 비밀번호 형식에 맞지 않음
     }
   }
 }

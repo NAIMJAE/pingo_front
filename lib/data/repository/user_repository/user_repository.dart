@@ -128,6 +128,42 @@ class UserRepository {
       return false;
     }
   }
+
+  // 유저 아이디 찾기
+  Future<String?> fetchFindUserId(requestData) async {
+    final response =
+        await _customDio.get('/permit/finduserid', query: requestData);
+
+    if (response != null) {
+      return response;
+    } else {
+      return null;
+    }
+  }
+
+  // 유저 비밀번호 재설정으로 이동
+  Future<String?> fetchFindUserPw(requestData) async {
+    final response =
+        await _customDio.get('/permit/finduserpw', query: requestData);
+
+    if (response != null) {
+      return response;
+    } else {
+      return null;
+    }
+  }
+
+  // 유저 비밀번호 재설정
+  Future<bool> fetchResetUserPw(requestData) async {
+    final response =
+        await _customDio.dio.put('/permit/resetuserpw', data: requestData);
+
+    if (response.data["data"] != null) {
+      return response.data["data"];
+    } else {
+      return false;
+    }
+  }
 }
 /**
  * 서버에서 객체로 return
