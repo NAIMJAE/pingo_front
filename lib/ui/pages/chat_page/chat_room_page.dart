@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pingo_front/_core/utils/logger.dart';
+import 'package:pingo_front/_core/utils/navigator_observer.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room.dart';
 import 'package:pingo_front/data/models/chat_model/chat_user.dart';
 import 'package:pingo_front/data/models/chat_model/chat_msg_model.dart';
@@ -232,17 +233,19 @@ class _ChatPageState extends ConsumerState<ChatRoomPage> {
 
     logger.i('showNotification process......4 -');
 
-    await flutterLocalNotificationsPlugin.show(
-        roomKey.hashCode.abs(), // 알림 ID 정수형 Id로 변환..
+    // 특정 페이지 (chat_msg_body)에서는 알람을 띄우지 않도록 설정
+    if (routeObserver.currentRoute != 'chat_msg_body') {
+      await flutterLocalNotificationsPlugin.show(
+        roomKey.hashCode.abs(), // 알림 ID 정수형 Id로 변환
         '새 메세지 도착', // 알림 제목
         messageContent, // 메시지 내용
         details,
-        payload: payloadData); //Json으로 변환해서 전달 가능
-    logger.i('showNotification process......5 - 끝');
+        payload: payloadData, // Json으로 변환해서 전달 가능
+      );
+      logger.i('showNotification process......5 - 끝');
+    }
   }
-  // 메세지 알람 업데이트 위젯
 }
-
 //리스트 뷰 자동으로 가로,세로 설정 됨
 // // 내가 보낸게 아닌 메세지
 // List<ChatMessage> filterMessages =

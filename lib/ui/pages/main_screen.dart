@@ -285,7 +285,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
     }
   }
 
-  // LocalNotificaion 설정
+  // LocalNotificaion 설정(모든 페이지에서 알람을 받을 수 있도록 설정하는 역할)
   void _initialization() async {
     AndroidInitializationSettings android = const AndroidInitializationSettings(
         "@mipmap/ic_launcher"); //앱의 기본 아이콘 사용

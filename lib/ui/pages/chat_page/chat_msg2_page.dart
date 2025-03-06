@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pingo_front/_core/utils/logger.dart';
 import 'package:pingo_front/data/models/chat_model/chat_room.dart';
 import 'package:pingo_front/data/view_models/chat_view_model/chat_room_view_model.dart';
 import 'package:pingo_front/ui/pages/chat_page/components/chat_msg_body.dart';
@@ -20,6 +21,13 @@ class ChatMsg2Page extends StatefulWidget {
 }
 
 class _ChatMsg2PageState extends State<ChatMsg2Page> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final routeSettings = ModalRoute.of(context)?.settings;
+    logger.i('📍 ChatMsg2Page 감지됨: ${routeSettings?.name}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

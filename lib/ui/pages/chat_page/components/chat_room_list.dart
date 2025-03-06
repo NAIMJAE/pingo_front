@@ -118,6 +118,7 @@ class _ChatMessageListState extends State<ChatRoomList> {
             MaterialPageRoute(
               builder: (context) => ChatMsg2Page(
                   chatRoomName: userName, roomId: roomId, myUserNo: myUserNo),
+              settings: RouteSettings(name: 'chat_msg_body'), // 🔥 여기 추가!
             ),
           );
         });
