@@ -236,14 +236,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-          color: Colors.yellow[700], borderRadius: BorderRadius.circular(10)),
+          color: Colors.purple[300], borderRadius: BorderRadius.circular(10)),
       child: Row(
         children: [
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(8)),
-            child: Text("Tinder 골드",
+            child: Text("Pingo 구독",
                 style: TextStyle(
                     color: Colors.black, fontWeight: FontWeight.bold)),
           ),
