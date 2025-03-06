@@ -19,7 +19,7 @@ class RouteObserverService extends RouteObserver<PageRoute<dynamic>> {
       currentRoute = route.settings.name;
       logger.i('📍 현재 페이지 (PUSH): $currentRoute'); // 현재 페이지 로깅
     }
-    super.didPush(route, previousRoute);
+    // super.didPush(route, previousRoute);
   }
 
   @override
