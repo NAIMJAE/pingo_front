@@ -98,3 +98,4 @@ Pingo는 위치 기반으로 주변 사용자를 추천하고, 키워드 필터�
 - 예외 코드 및 메시지를 Enum으로 관리하여 유지보수성과 확장성을 높임
 
 **📌 자료**
+몽고DB 덤프 : [pingochat.chatMsg.json](https://github.com/user-attachments/files/19104292/pingochat.chatMsg.json)
