@@ -114,9 +114,10 @@ class StompViewModel extends Notifier<bool> {
       destination: '/topic/match/notification/$userNo',
       // 메세지가 수신될때 frame으로 수신되어서 매개변수로 받음
       callback: (StompFrame frame) {
+        logger.i("웹소켓 들");
         // 받아온 정보를 dart Map 객체로 변환
         final Map<String, dynamic> jsonData = jsonDecode(frame.body!);
-
+        logger.i("jsondata $jsonData");
         final Map<String, dynamic> matchUsersJson = jsonData['matchUsers'];
         final Map<String, dynamic> chatRoomUsersJson =
             jsonData['chatRoomUsers'];

@@ -502,7 +502,7 @@ class _ChatMsgBodyState extends ConsumerState<ChatMsgBody> {
           ),
           SizedBox(height: 4),
           Text(
-            "용량: 3333333",
+            "용량: 14kb",
             style: TextStyle(color: Colors.grey, fontSize: 10),
           ),
           SizedBox(height: 8),
