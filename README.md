@@ -13,6 +13,9 @@ Pingo는 위치 기반으로 주변 사용자를 추천하고, 키워드 필터�
 - **Backend**: Java, Spring Boot
 - **Database**: Oracle, MongoDB
 
+## 📌 시연 영상
+- https://www.youtube.com/watch?v=32G4LfPmFdk
+
 ## 📌 깃허브 주소
 - [Frontend Repository](https://github.com/NAIMJAE/pingo_front)
 - [Backend Repository](https://github.com/NAIMJAE/pingo_back)
